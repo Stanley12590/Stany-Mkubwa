@@ -5,13 +5,15 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>STANY MIN TV - SUPREME PRO</title>
     
-    <!-- ICONS & FONTS -->
+    <!-- FONTS & ICONS (NO EMOJIS) -->
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&family=Orbitron:wght@700&display=swap" rel="stylesheet">
     
-    <!-- SDKs -->
+    <!-- SHAKA PLAYER (DRM & TOKEN) -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/shaka-player/4.3.5/shaka-player.ui.min.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/shaka-player/4.3.5/controls.min.css">
+    
+    <!-- FIREBASE -->
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-database-compat.js"></script>
@@ -34,160 +36,154 @@
         .splash-logo { width: 85px; height: 85px; border: 4px solid var(--primary); border-radius: 20px; display: flex; justify-content: center; align-items: center; font-size: 40px; color: var(--primary); font-family: 'Orbitron'; animation: pulse 2s infinite; }
         @keyframes pulse { 0% { transform: scale(1); box-shadow: 0 0 0px var(--primary); } 50% { transform: scale(1.1); box-shadow: 0 0 30px var(--primary); } 100% { transform: scale(1); } }
 
-        /* 2. AD OVERLAY (UNSKIPPABLE) */
+        /* 2. AD OVERLAY (RANDOM POOL) */
         #ad-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #000; z-index: 20000; display: none; flex-direction: column; justify-content: center; align-items: center; }
-        .ad-header-text { position: absolute; top: 70px; width: 100%; text-align: center; color: var(--primary); font-weight: 800; letter-spacing: 2px; text-transform: uppercase; font-size: 13px; }
-        #ad-timer { position: absolute; top: 35px; right: 20px; padding: 6px 14px; border-radius: 20px; background: white; color: black; font-weight: 900; font-size: 12px; }
+        #ad-timer { position: absolute; top: 35px; right: 20px; padding: 6px 14px; border-radius: 20px; background: white; color: black; font-weight: 900; font-size: 11px; }
         #ad-close { position: absolute; top: 35px; left: 20px; font-size: 28px; display: none; cursor: pointer; color: white; }
         .ad-media-box { width: 85%; max-height: 50%; border-radius: 20px; overflow: hidden; border: 1px solid var(--border); background: #050505; }
-        .ad-media-box img, .ad-media-box video { width: 100%; height: auto; display: block; }
-        .ad-social-icons { display: flex; justify-content: center; gap: 15px; margin-top: 25px; }
-        .social-btn { width: 50px; height: 50px; border-radius: 15px; background: var(--surface); display: flex; align-items: center; justify-content: center; font-size: 22px; color: #fff; border: 1px solid var(--border); transition: 0.3s; }
+        .ad-media-box img, .ad-media-box video { width: 100%; height: auto; display: block; border-radius: 15px; }
+        .social-btn { width: 50px; height: 50px; border-radius: 15px; background: var(--surface); display: flex; align-items: center; justify-content: center; font-size: 22px; color: #fff; border: 1px solid var(--border); }
 
-        /* 3. NAVIGATION (iPhone Rounded) */
+        /* 3. NAVIGATION (iPhone Style) */
         .tab-bar {
             position: fixed; bottom: 15px; left: 50%; transform: translateX(-50%);
             width: 94%; height: 75px; display: flex; justify-content: space-around;
             align-items: center; z-index: 10000; background: rgba(10, 10, 10, 0.85);
             backdrop-filter: var(--glass); border: 1px solid var(--border); border-radius: 35px;
         }
-        .tab-item { display: flex; flex-direction: column; align-items: center; color: #444; font-size: 9px; font-weight: 700; cursor: pointer; position: relative; }
+        .tab-item { display: flex; flex-direction: column; align-items: center; color: #444; font-size: 8px; font-weight: 700; cursor: pointer; position: relative; }
         .tab-item.active { color: var(--primary); }
-        .tab-item i { font-size: 19px; margin-bottom: 4px; }
-        .notif-badge { position: absolute; top: -3px; right: -3px; background: var(--primary); width: 14px; height: 14px; border-radius: 50%; font-size: 9px; display: none; align-items: center; justify-content: center; color: white; border: 2px solid black; }
+        .tab-item i { font-size: 18px; margin-bottom: 4px; }
 
-        /* 4. CHAT HEADER FIX */
-        #chat-back-header {
-            display: none; padding: 20px; background: #000; align-items: center;
-            border-bottom: 1px solid var(--border); position: sticky; top: 0; z-index: 11001;
-        }
-        .back-arrow { position: absolute; right: 20px; font-size: 26px; color: var(--primary); cursor: pointer; }
+        /* 4. CHAT HEADER (BACK ARROW RIGHT) */
+        #chat-back-header { display: none; padding: 20px; background: #000; align-items: center; border-bottom: 1px solid var(--border); position: sticky; top: 0; z-index: 1001; }
+        .back-arrow { position: absolute; right: 20px; font-size: 25px; color: var(--primary); cursor: pointer; }
 
         /* 5. APP LAYOUT */
         #app-container { display: none; height: 100vh; flex-direction: column; overflow: hidden; }
         .header { padding: 20px; display: flex; justify-content: space-between; align-items: center; z-index: 1000; background: rgba(0,0,0,0.8); }
-        .logo { font-family: 'Orbitron'; font-size: 20px; letter-spacing: 2px; }
-        .logo span { color: var(--primary); }
         .content-area { flex: 1; overflow-y: auto; padding: 15px 15px 120px; -webkit-overflow-scrolling: touch; }
 
-        /* 6. CARDS & GRID */
+        /* 6. GRID & CARDS */
         .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
         .card { aspect-ratio: 2/3; border-radius: 25px; overflow: hidden; position: relative; border: 1px solid var(--border); background: #050505; }
         .card img { width: 100%; height: 100%; object-fit: cover; }
         .card-info { position: absolute; bottom: 0; width: 100%; padding: 12px 8px; background: linear-gradient(transparent, #000); font-weight: 600; font-size: 11px; text-align: center; }
-        .vip-badge { position: absolute; top: 10px; right: 10px; background: var(--primary); color: white; padding: 4px 8px; border-radius: 8px; font-size: 9px; font-weight: 800; }
-        .lock-badge { position: absolute; top: 10px; left: 10px; color: var(--primary); font-size: 14px; }
-        .fav-btn { position: absolute; top: 10px; left: 10px; color: #fff; font-size: 18px; z-index: 10; }
+        
+        .fav-btn { position: absolute; top: 10px; left: 10px; color: #fff; font-size: 18px; z-index: 5; }
+        .lock-badge { position: absolute; top: 10px; right: 10px; color: var(--primary); font-size: 14px; }
 
-        /* 7. PRO READER (SIMULIZI & TECH) */
-        #reader-view { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #000; z-index: 11000; display: none; flex-direction: column; }
-        .reader-header { padding: 50px 20px 20px; border-bottom: 1px solid var(--border); }
-        .reader-body { flex: 1; overflow-y: auto; padding: 25px; line-height: 1.8; font-size: 17px; color: #ccc; text-align: justify; }
-        .reader-nav { padding: 20px; display: flex; justify-content: space-between; border-top: 1px solid var(--border); background: #050505; }
-        .nav-btn { padding: 12px 25px; border-radius: 15px; background: var(--primary); font-weight: 700; color: #fff; border: none; font-size: 12px; }
-        .nav-btn:disabled { background: #222; color: #555; }
-
-        /* 8. AUTH UI */
-        #auth-pages { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #000; z-index: 9000; display: none; flex-direction: column; justify-content: center; padding: 30px; }
+        /* 7. AUTH SCREEN */
+        #auth-pages { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #000; z-index: 12000; display: none; flex-direction: column; justify-content: center; padding: 30px; }
+        .btn-p { width: 100%; padding: 16px; background: var(--primary); color: white; border: none; border-radius: 18px; font-weight: 800; cursor: pointer; text-transform: uppercase; }
         .input-pro { width: 100%; padding: 16px; background: #0a0a0a; border: 1px solid #222; border-radius: 18px; color: white; margin-bottom: 12px; outline: none; }
-        .btn-p { width: 100%; padding: 16px; background: var(--primary); color: white; border: none; border-radius: 20px; font-weight: 800; cursor: pointer; text-transform: uppercase; }
 
-        /* AGE GATE & PLAYER */
-        #age-gate { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.98); z-index: 16000; display: none; flex-direction: column; justify-content: center; align-items: center; text-align: center; padding: 30px; }
+        /* 8. READER PRO */
+        #reader-view { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #000; z-index: 11000; display: none; flex-direction: column; }
+        .reader-body { flex: 1; overflow-y: auto; padding: 25px; line-height: 1.9; font-size: 17px; color: #ddd; text-align: justify; }
+
+        /* 9. BETTING TIPS STYLES */
+        .bet-card { background: var(--surface); padding: 20px; border-radius: 25px; border: 1px solid var(--border); margin-bottom: 15px; }
+        .bet-match { font-weight: 800; font-size: 18px; margin-bottom: 10px; color: var(--primary); font-family: 'Orbitron'; }
+        .bet-prediction { background: #111; padding: 10px; border-radius: 10px; font-size: 13px; color: #aaa; margin-top: 10px; }
+
+        /* AGE GATE */
+        #age-gate { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #000; z-index: 16000; display: none; flex-direction: column; justify-content: center; align-items: center; text-align: center; padding: 30px; }
+
+        .page { display: none; } .page.active { display: block; animation: slideIn 0.4s; }
+        @keyframes slideIn { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+
         #player-wrap { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #000; z-index: 17000; display: none; }
         .close-player { position: absolute; top: 40px; left: 20px; z-index: 17001; font-size: 30px; color: white; }
 
-        .lib-card { padding: 20px; margin-bottom: 15px; border-radius: 25px; background: var(--surface); border: 1px solid var(--border); }
-        .lib-meta { font-size: 10px; font-weight: 800; color: var(--primary); text-transform: uppercase; margin-bottom: 5px; }
-        .lib-title { font-size: 18px; font-weight: 800; margin-bottom: 5px; }
-        .lib-about { font-size: 12px; color: #888; line-height: 1.4; margin: 10px 0; }
-
         ::-webkit-scrollbar { width: 0; }
-        .page { display: none; } .page.active { display: block; animation: slideUp 0.4s; }
-        @keyframes slideUp { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
     </style>
 </head>
 <body>
 
-    <!-- 1. STARTUP AD (RANDOM POOL) -->
+    <!-- 1. SPLASH -->
+    <div id="splash">
+        <div class="splash-logo">S</div>
+        <h2 style="margin-top: 15px; letter-spacing: 5px; font-family: 'Orbitron'; font-size: 12px; color: white;">STANY MIN TV</h2>
+    </div>
+
+    <!-- 2. ADS OVERLAY -->
     <div id="ad-overlay">
         <div id="ad-timer">AD: 15s</div>
         <i id="ad-close" class="fas fa-times-circle" onclick="closeAd()"></i>
         <div class="ad-header-text" id="ad-header-words">OFFICIAL SPONSOR</div>
         <div id="ad-media-container" class="ad-media-box"></div>
         <div class="ad-social-footer">
-            <div style="font-size: 12px; color: #888; margin-bottom: 15px;">VISIT SPONSOR VIA:</div>
-            <div class="social-icon-grid" id="ad-social-icons"></div>
+            <div style="font-size: 12px; color: #888; margin-bottom: 10px;">VISIT SPONSOR VIA:</div>
+            <div id="ad-social-icons" style="display: flex; justify-content: center; gap: 15px;"></div>
         </div>
-    </div>
-
-    <!-- 2. SPLASH -->
-    <div id="splash">
-        <div class="splash-logo">S</div>
-        <h2 style="margin-top: 20px; letter-spacing: 5px; font-family: 'Orbitron'; font-size: 14px; color: white;">STANY MIN TV</h2>
     </div>
 
     <!-- 3. AGE GATE -->
     <div id="age-gate">
-        <i class="fas fa-user-shield" style="font-size: 60px; color: var(--primary); margin-bottom: 20px;"></i>
+        <i class="fas fa-user-lock" style="font-size: 60px; color: var(--primary); margin-bottom: 20px;"></i>
         <h2>18+ CONTENT</h2>
         <p style="color: #888; margin: 15px 0 30px;">Confirm you are 18 or older to access this private section.</p>
         <button class="btn-p" onclick="confirmAge()">I AM 18+</button>
         <p style="margin-top: 20px; color: #444;" onclick="switchPage('home', document.querySelector('.tab-item'))">CANCEL</p>
     </div>
 
-    <!-- 4. AUTH & GOOGLE -->
+    <!-- 4. AUTH SECTION (REGISTER & LOGIN) -->
     <div id="auth-pages">
-        <div class="glass" style="padding: 35px; text-align: center; border-radius: 30px; width: 90%; max-width: 400px; border: 1px solid var(--border);">
-            <h1 style="color:var(--primary); font-family:'Orbitron'; margin-bottom: 25px; font-size: 22px;">STANY MIN</h1>
+        <div class="ios-glass" style="padding: 35px; text-align: center; border-radius: 30px; width: 90%; max-width: 400px; border: 1px solid var(--border);">
+            <h1 id="auth-title" style="color:var(--primary); font-family:'Orbitron'; margin-bottom: 25px; font-size: 22px;">LOGIN</h1>
             <div id="auth-form">
                 <input type="text" id="reg-name" class="input-pro" placeholder="Full Name" style="display:none;">
                 <input type="email" id="auth-email" class="input-pro" placeholder="Email Address">
                 <input type="password" id="auth-pass" class="input-pro" placeholder="Password">
-                <button class="btn-p" onclick="handleAuth()">Enter App</button>
+                <button class="btn-p" id="auth-btn" onclick="handleAuth()">Enter Pro</button>
                 <div style="color:#444; margin: 15px 0;">OR</div>
                 <button class="btn-p" style="background:#fff; color:#000" onclick="googleLogin()">
-                    <i class="fab fa-google"></i> Continue with Google
+                    <i class="fab fa-google" style="color:#db4437"></i> Continue with Google
                 </button>
             </div>
-            <p style="margin-top: 20px; font-size: 12px; color: #666;" id="toggle-text" onclick="toggleAuth()">New? <span style="color:var(--primary)">Register</span></p>
+            <p style="margin-top: 25px; font-size: 12px; color: #666;" id="toggle-text" onclick="toggleAuth()">New member? <span style="color:var(--primary)">Register</span></p>
         </div>
     </div>
 
     <!-- 5. MAIN APP -->
     <div id="app-container">
+        <!-- Chat header -->
         <div id="chat-back-header">
-            <h3 style="color:var(--primary); font-family:'Orbitron'; font-size:16px;">SUPPORT CHAT</h3>
+            <h3 style="color:var(--primary); font-family:'Orbitron'; font-size:16px;">PRO SUPPORT</h3>
             <i class="fas fa-arrow-left back-arrow" onclick="goHome()"></i>
         </div>
 
         <div class="header" id="main-header">
-            <div class="logo">STANY<span>MIN</span></div>
+            <div class="logo" style="font-family:'Orbitron'">STANY<span>MIN</span></div>
             <i class="fas fa-sync" onclick="location.reload()" style="color:var(--primary); font-size: 18px;"></i>
         </div>
 
         <div class="content-area">
-            <!-- HOME -->
+            <!-- HOME / CHANNELS -->
             <div id="view-home" class="page active">
-                <h4 style="color:var(--primary); font-size:11px; margin-bottom:10px; font-weight:800;">LIVE CHANNELS</h4>
+                <h4 style="color:var(--primary); font-size:11px; margin-bottom:12px; font-weight:800;">LIVE CHANNELS</h4>
                 <div id="chan-grid" class="grid"></div>
             </div>
 
             <!-- MOVIES -->
             <div id="view-movies" class="page">
-                <h4 style="color:var(--primary); font-size:11px; margin-bottom:10px; font-weight:800;">MOVIES</h4>
+                <h4 style="color:var(--primary); font-size:11px; margin-bottom:12px; font-weight:800;">PRO MOVIES</h4>
                 <div id="mov-grid" class="grid"></div>
             </div>
 
-            <!-- ADULT -->
+            <!-- ADULT (18+) -->
             <div id="view-adult" class="page">
-                <h4 style="color:var(--primary); font-size:11px; margin-bottom:10px; font-weight:800;">ADULT (18+)</h4>
+                <div style="text-align:center; padding: 20px;" id="adult-warning">
+                    <i class="fas fa-user-lock" style="font-size: 40px; color: var(--primary); margin-bottom:10px;"></i>
+                    <h4 style="color:var(--primary); font-weight:800;">PRIVATE 18+</h4>
+                </div>
                 <div id="adult-grid" class="grid"></div>
             </div>
 
             <!-- SIMULIZI -->
             <div id="view-simulizi" class="page">
-                <h3 style="color:var(--primary); margin-bottom: 20px;">SIMULIZI</h3>
+                <h3 style="color:var(--primary); margin-bottom: 20px;">SIMULIZI (STORIES)</h3>
                 <div id="sim-list"></div>
             </div>
 
@@ -197,49 +193,64 @@
                 <div id="tech-list"></div>
             </div>
 
+            <!-- BETTING -->
+            <div id="view-betting" class="page">
+                <h3 style="color:var(--primary); margin-bottom: 20px;">BETTING TIPS</h3>
+                <div id="tips-list"></div>
+            </div>
+
             <!-- CHAT -->
             <div id="view-chat" class="page">
                 <div id="chat-box" class="chat-messages"></div>
                 <div style="padding: 10px; display: flex; gap: 10px;">
-                    <input id="chat-input" class="input-pro" style="margin:0; flex:1;" placeholder="Type message...">
+                    <input id="chat-input" class="input-pro" style="margin:0; flex:1;" placeholder="Message...">
                     <button class="btn-p" style="width:60px" onclick="sendMessage()"><i class="fas fa-paper-plane"></i></button>
                 </div>
             </div>
 
-            <!-- ME/PROFILE -->
+            <!-- ME -->
             <div id="view-me" class="page">
                 <div class="glass" style="padding: 25px; border-radius: 30px;">
-                    <h2 id="pName">User</h2>
+                    <h2 id="pName">Username</h2>
                     <p id="pEmail" style="color:#666"></p>
-                    <p id="pStatus" style="color:var(--primary); font-weight:800; margin-top:10px;"></p>
                     <hr style="border:0; border-top:1px solid #111; margin:20px 0">
                     <input type="text" id="token-input" class="input-pro" placeholder="Enter Premium Token">
                     <button class="btn-p" onclick="activateToken()">ACTIVATE PRO</button>
-                    <button class="btn-p" style="background:#222; margin-top:15px; font-size:12px;" onclick="openPassManager()">SET CHANNEL LOCK</button>
+                    <button class="btn-p" style="background:#222; margin-top:15px; font-size:12px;" onclick="openPassManager()">CHANNEL PASSLOCK</button>
                     <button class="btn-p" style="background:#111; margin-top:20px;" onclick="auth.signOut()">LOGOUT</button>
                 </div>
             </div>
         </div>
 
+        <!-- TAB BAR (iPhone STYLE) -->
         <div class="tab-bar">
             <div class="tab-item active" onclick="switchPage('home', this)"><i class="fas fa-house"></i>Home</div>
-            <div class="tab-item" onclick="switchPage('movies', this)"><i class="fas fa-film"></i>Movies</div>
-            <div class="tab-item" onclick="switchPage('adult', this)"><i class="fas fa-explicit"></i>Adult</div>
-            <div class="tab-item" onclick="switchPage('simulizi', this)"><i class="fas fa-book-open"></i>Simulizi</div>
+            <div class="tab-item" onclick="switchPage('movies', this)"><i class="fas fa-film"></i>Movie</div>
+            <div class="tab-item" onclick="switchPage('adult', this)"><i class="fas fa-user-lock"></i>18+</div>
+            <div class="tab-item" onclick="switchPage('betting', this)"><i class="fas fa-chart-line"></i>Bets</div>
+            <div class="tab-item" onclick="switchPage('simulizi', this)"><i class="fas fa-book"></i>Sim</div>
             <div class="tab-item" onclick="switchPage('tech', this)"><i class="fas fa-microchip"></i>Tech</div>
-            <div class="tab-item" onclick="switchPage('chat', this)"><i class="fas fa-comment-dots"></i>Chat<div class="chat-dot" id="chat-count">0</div></div>
-            <div class="tab-item" onclick="switchPage('me', this)"><i class="fas fa-user-circle"></i>Me</div>
+            <div class="tab-item" onclick="switchPage('chat', this)"><i class="fas fa-comment"></i>Chat</div>
+            <div class="tab-item" onclick="switchPage('me', this)"><i class="fas fa-user"></i>Me</div>
         </div>
     </div>
 
-    <!-- MODALS & OVERLAYS -->
+    <!-- PLAYER -->
+    <div id="player-wrap">
+        <i class="fas fa-times close-player" onclick="closePlayer()"></i>
+        <video id="stany-player" style="width:100%; height:100%;" autoplay controls></video>
+    </div>
+
+    <!-- READER -->
     <div id="reader-view">
-        <div class="reader-header">
-            <i class="fas fa-chevron-left" onclick="closeReader()" style="float:left; font-size:24px; color:var(--primary);"></i>
-            <div style="text-align:center;">
-                <h2 id="read-title" style="font-size:18px;">Title</h2>
-                <p id="read-meta" style="font-size:10px; color:var(--primary);"></p>
-            </div>
+        <div class="reader-header" style="display:flex; justify-content:space-between; align-items:center;">
+            <i class="fas fa-chevron-left" onclick="closeReader()" style="font-size:24px; color:var(--primary);"></i>
+            <h2 id="read-title" style="font-size:16px;">Title</h2>
+            <div></div>
+        </div>
+        <div id="read-meta-box" style="padding: 0 25px; margin-top: 10px;">
+            <p id="read-meta" style="font-size:11px; color:var(--primary); font-weight:800;"></p>
+            <p id="read-about" style="font-size:13px; color:#666; margin-top:5px;"></p>
         </div>
         <div class="reader-body" id="read-body"></div>
         <div class="reader-nav">
@@ -248,13 +259,8 @@
         </div>
     </div>
 
-    <div id="player-wrap">
-        <i class="fas fa-times close-player" onclick="closePlayer()"></i>
-        <video id="stany-player" style="width:100%; height:100%;" autoplay controls></video>
-    </div>
-
     <script>
-        // CONFIG
+        // FIREBASE CONFIG
         const firebaseConfig = {
             apiKey: "AIzaSyDiexD5WK9GLhQldr6zNmC8iYWc4em5eyM",
             authDomain: "stany-min-tv.firebaseapp.com",
@@ -267,7 +273,7 @@
         firebase.initializeApp(firebaseConfig);
         const auth = firebase.auth(), db = firebase.database();
 
-        let userData = null, activePlayer = null, isReg = false;
+        let userData = null, activePlayer = null, isRegMode = false;
         let currentBook = null, currentEpIdx = 0;
         let HWID = localStorage.getItem('stany_hwid') || 'SN-' + Math.random().toString(36).substr(2, 9).toUpperCase();
         localStorage.setItem('stany_hwid', HWID);
@@ -280,68 +286,53 @@
                     db.ref('users/' + user.uid).on('value', snap => {
                         userData = snap.val();
                         if(!userData) { registerInDB(user.displayName || "User", user.email); return; }
-                        if(userData.hwid && userData.hwid !== HWID) { alert("ACCOUNT LOCKED!"); auth.signOut(); return; }
-                        document.getElementById('auth-pages').style.display='none';
-                        document.getElementById('app-container').style.display='flex';
+                        if(userData.hwid && userData.hwid !== HWID) { alert("LOCKED TO ANOTHER DEVICE!"); auth.signOut(); return; }
+                        document.getElementById('auth-pages').style.display = 'none';
+                        document.getElementById('app-container').style.display = 'flex';
                         document.getElementById('pName').innerText = userData.name;
                         document.getElementById('pEmail').innerText = userData.email;
-                        const days = Math.ceil((userData.accessExpiry - Date.now())/(1000*60*60*24));
-                        document.getElementById('pStatus').innerText = userData.isPremium ? (days > 0 ? days + " DAYS LEFT" : "EXPIRED") : "FREE USER";
                         loadContent();
-                        if(!window.adShown) { showRandomAd(); window.adShown = true; }
-                        loadChat();
+                        if(!window.adInit) { showRandomAd(); window.adInit = true; }
+                        loadMessages();
                     });
-                } else { document.getElementById('auth-pages').style.display='flex'; }
+                } else {
+                    document.getElementById('auth-pages').style.display = 'flex';
+                    document.getElementById('app-container').style.display = 'none';
+                }
             });
         }
 
-        // --- CONTENT & ADS ---
-        function loadContent() {
-            db.ref('channels').on('value', snap => {
-                const g = document.getElementById('chan-grid'); g.innerHTML = '';
-                snap.forEach(c => {
-                    const lock = userData.lockedChannels && userData.lockedChannels[c.key] ? '<i class="fas fa-lock lock-badge"></i>' : '';
-                    g.innerHTML += `<div class="card" onclick="handlePlay('${c.val().streamURL}', '${c.key}')">${lock}<img src="${c.val().logo}"><div class="card-info">${c.val().name}</div></div>`;
-                });
-            });
-            db.ref('movies').on('value', snap => {
-                const g = document.getElementById('mov-grid'); g.innerHTML = '';
-                snap.forEach(m => { g.innerHTML += `<div class="card" onclick="playMedia('${m.val().movieURL}')"><img src="${m.val().posterURL}"><div class="card-info">${m.val().title}</div></div>`; });
-            });
-            db.ref('adultContent').on('value', snap => {
-                const g = document.getElementById('adult-grid'); g.innerHTML = '';
-                snap.forEach(m => { g.innerHTML += `<div class="card" onclick="playMedia('${m.val().streamURL}')"><img src="${m.val().logo}"><div class="card-info">${m.val().name}</div></div>`; });
-            });
-            db.ref('library').on('value', snap => {
-                const sim = document.getElementById('sim-list'), tech = document.getElementById('tech-list');
-                sim.innerHTML = ''; tech.innerHTML = '';
-                snap.forEach(b => {
-                    const d = b.val();
-                    const html = `
-                    <div class="lib-card" onclick="openBook('${b.key}')">
-                        <div class="lib-meta">${d.genre || 'General'} | By ${d.author}</div>
-                        <div class="lib-title">${d.title}</div>
-                        <div class="lib-about">${d.description || 'No summary available.'}</div>
-                    </div>`;
-                    if(d.category === 'simulizi') sim.innerHTML += html; else tech.innerHTML += html;
-                });
-            });
+        // --- AUTH ENGINE ---
+        function toggleAuth() {
+            isRegMode = !isRegMode;
+            document.getElementById('auth-title').innerText = isRegMode ? "REGISTER" : "LOGIN";
+            document.getElementById('reg-name').style.display = isRegMode ? "block" : "none";
+            document.getElementById('auth-btn').innerText = isRegMode ? "CREATE ACCOUNT" : "LOGIN";
+            document.getElementById('toggle-text').innerHTML = isRegMode ? "Have an account? <span style='color:var(--primary)'>Login</span>" : "New member? <span style='color:var(--primary)'>Register</span>";
         }
+        function handleAuth() {
+            const e = document.getElementById('auth-email').value, p = document.getElementById('auth-pass').value;
+            if(isRegMode) auth.createUserWithEmailAndPassword(e, p).then(res => registerInDB(document.getElementById('reg-name').value, e)).catch(err => alert(err.message));
+            else auth.signInWithEmailAndPassword(e, p).catch(err => alert(err.message));
+        }
+        function googleLogin() { auth.signInWithPopup(new firebase.auth.GoogleAuthProvider()); }
+        function registerInDB(name, email) { db.ref('users/' + auth.currentUser.uid).set({ name, email, isPremium: false, hwid: "" }); }
 
+        // --- ADS ENGINE ---
         function showRandomAd(callback) {
             if(userData && userData.isPremium) { if(callback) callback(); return; }
             db.ref('ads').once('value', snap => {
                 const ads = []; snap.forEach(a => ads.push(a.val()));
                 if(ads.length === 0) { if(callback) callback(); return; }
                 const ad = ads[Math.floor(Math.random() * ads.length)];
-                document.getElementById('ad-overlay').style.display='flex';
-                const media = document.getElementById('ad-media-container');
-                media.innerHTML = ad.type === 'video' ? `<video src="${ad.url}" autoplay muted></video>` : `<img src="${ad.url}">`;
-                const social = document.getElementById('ad-social-icons'); social.innerHTML = '';
+                document.getElementById('ad-overlay').style.display = 'flex';
+                const mediaBox = document.getElementById('ad-media-container');
+                mediaBox.innerHTML = ad.type === 'video' ? `<video src="${ad.url}" autoplay muted></video>` : `<img src="${ad.url}">`;
+                const socials = document.getElementById('ad-social-icons'); socials.innerHTML = '';
                 if(ad.socialLinks) {
                     Object.entries(ad.socialLinks).forEach(([p, url]) => {
                         const icon = p === 'whatsapp' ? 'fab fa-whatsapp' : p === 'telegram' ? 'fab fa-telegram' : 'fab fa-youtube';
-                        social.innerHTML += `<div class="social-btn" onclick="window.open('${url}', '_blank')"><i class="${icon}"></i></div>`;
+                        socials.innerHTML += `<div class="social-btn" onclick="window.open('${url}', '_blank')"><i class="${icon}"></i></div>`;
                     });
                 }
                 let sec = ad.duration || 10;
@@ -352,7 +343,74 @@
                 window.adCallback = callback;
             });
         }
-        function closeAd() { document.getElementById('ad-overlay').style.display='none'; if(window.adCallback) window.adCallback(); }
+        function closeAd() { document.getElementById('ad-overlay').style.display = 'none'; if(window.adCallback) window.adCallback(); }
+
+        // --- CONTENT LOADER ---
+        function loadContent() {
+            db.ref('channels').on('value', snap => {
+                const g = document.getElementById('chan-grid'); g.innerHTML = '';
+                snap.forEach(c => {
+                    const isLocked = userData.lockedChannels && userData.lockedChannels[c.key];
+                    g.innerHTML += `<div class="card" onclick="playMedia('${c.val().streamURL}', '${c.key}')">${isLocked ? '<i class="fas fa-lock lock-badge"></i>' : ''}<img src="${c.val().logo}"><div class="card-info">${c.val().name}</div></div>`;
+                });
+            });
+            db.ref('movies').on('value', snap => {
+                const g = document.getElementById('mov-grid'); g.innerHTML = '';
+                snap.forEach(m => { g.innerHTML += `<div class="card" onclick="playMedia('${m.val().movieURL}')"><img src="${m.val().posterURL}"><div class="card-info">${m.val().title}</div></div>`; });
+            });
+            db.ref('adultContent').on('value', snap => {
+                const g = document.getElementById('adult-grid'); g.innerHTML = '';
+                snap.forEach(m => { g.innerHTML += `<div class="card" onclick="playMedia('${m.val().streamURL}')"><img src="${m.val().logo}"><div class="card-info">${m.val().name}</div></div>`; });
+            });
+            db.ref('bettingTips').on('value', snap => {
+                const l = document.getElementById('tips-list'); l.innerHTML = '';
+                snap.forEach(t => { const d = t.val(); l.innerHTML += `<div class="bet-card"><div class="bet-match">${d.match}</div><p>${d.prediction}</p><small style="color:yellow">ODDS: ${d.odds}</small></div>`; });
+            });
+            db.ref('library').on('value', snap => {
+                const sim = document.getElementById('sim-list'), tech = document.getElementById('tech-list');
+                sim.innerHTML = ''; tech.innerHTML = '';
+                snap.forEach(b => {
+                    const d = b.val();
+                    const html = `<div class="lib-card" onclick="openBook('${b.key}')"><span class="lib-meta">${d.genre || 'Story'}</span><div class="lib-title">${d.title}</div><div class="lib-about">${d.description || 'About section...'}</div><small style="color:#444">By ${d.author}</small></div>`;
+                    if(d.category === 'simulizi') sim.innerHTML += html; else tech.innerHTML += html;
+                });
+            });
+        }
+
+        // --- PLAYER ---
+        async function playMedia(url, id) {
+            if(id && userData.lockedChannels && userData.lockedChannels[id]) {
+                const p = prompt("Enter Secret Password:");
+                if(p !== userData.secretPassword) { alert("Denied!"); return; }
+            }
+            showRandomAd(() => {
+                document.getElementById('player-wrap').style.display='block';
+                const video = document.getElementById('stany-player');
+                if(!activePlayer) activePlayer = new shaka.Player(video);
+                activePlayer.load(url).catch(e => alert("Connection Error"));
+            });
+        }
+        function closePlayer() { if(activePlayer) activePlayer.unload(); document.getElementById('player-wrap').style.display='none'; }
+
+        // --- READER ---
+        function openBook(id) {
+            db.ref('library/' + id).once('value', snap => {
+                currentBook = snap.val(); currentEpIdx = 0;
+                document.getElementById('reader-view').style.display='flex';
+                showEp();
+            });
+        }
+        function showEp() {
+            const ep = currentBook.episodes[currentEpIdx];
+            document.getElementById('read-title').innerText = currentBook.title;
+            document.getElementById('read-meta').innerText = `PART ${currentEpIdx+1} | BY ${currentBook.author.toUpperCase()}`;
+            document.getElementById('read-about').innerText = currentBook.description || "";
+            document.getElementById('read-body').innerText = ep.content;
+            document.getElementById('prev-btn').style.display = (currentEpIdx === 0) ? 'none' : 'block';
+            document.getElementById('next-btn').style.display = (currentEpIdx === currentBook.episodes.length - 1) ? 'none' : 'block';
+        }
+        function changeEp(d) { currentEpIdx += d; showEp(); }
+        function closeReader() { document.getElementById('reader-view').style.display='none'; }
 
         // --- NAVIGATION ---
         function switchPage(p, el) {
@@ -362,53 +420,31 @@
             document.querySelectorAll('.tab-item').forEach(x => x.classList.remove('active'));
             if(el) el.classList.add('active');
 
-            const nav = document.querySelector('.tab-bar');
-            const header = document.getElementById('main-header');
-            const chatHeader = document.getElementById('chat-back-header');
-            if(p === 'chat') { nav.style.display='none'; header.style.display='none'; chatHeader.style.display='flex'; }
-            else { nav.style.display='flex'; header.style.display='flex'; chatHeader.style.display='none'; }
+            const nav = document.querySelector('.tab-bar'), h1 = document.getElementById('main-header'), h2 = document.getElementById('chat-back-header');
+            if(p === 'chat') { nav.style.display='none'; h1.style.display='none'; h2.style.display='flex'; }
+            else { nav.style.display='flex'; h1.style.display='flex'; h2.style.display='none'; }
         }
-
         function confirmAge() { window.ageConfirmed = true; document.getElementById('age-gate').style.display='none'; switchPage('adult', document.querySelectorAll('.tab-item')[2]); }
         function goHome() { switchPage('home', document.querySelector('.tab-item')); }
 
-        // --- PLAYER ---
-        async function playMedia(url, id) {
-            if(id && userData.lockedChannels && userData.lockedChannels[id]) {
-                const p = prompt("Enter Secret Password:");
-                if(p !== userData.secretPassword) { alert("Wrong!"); return; }
-            }
-            showRandomAd(() => {
-                document.getElementById('player-wrap').style.display='block';
-                const video = document.getElementById('stany-player');
-                if(!activePlayer) activePlayer = new shaka.Player(video);
-                activePlayer.load(url).catch(e => alert("Stream Connection Failed."));
+        // --- CHAT ---
+        function sendMessage() {
+            const t = document.getElementById('chat-input').value; if(!t) return;
+            db.ref('supportChats/' + auth.currentUser.uid).push({ name: userData.name, text: t, timestamp: Date.now() });
+            document.getElementById('chat-input').value = '';
+        }
+        function loadMessages() {
+            db.ref('supportChats/' + auth.currentUser.uid).on('value', snap => {
+                const b = document.getElementById('chat-box'); b.innerHTML = '';
+                snap.forEach(m => {
+                    const d = m.val(), me = d.uid === auth.currentUser.uid;
+                    b.innerHTML += `<div class="msg ${me ? 'msg-me' : 'msg-other'}">${d.text}</div>`;
+                });
+                b.scrollTop = b.scrollHeight;
             });
         }
 
-        // --- READER ---
-        function openBook(id) {
-            db.ref('library/' + id).once('value', snap => {
-                currentBook = snap.val(); currentEpIdx = 0;
-                document.getElementById('reader-view').style.display='flex'; showEp();
-            });
-        }
-        function showEp() {
-            const ep = currentBook.episodes[currentEpIdx];
-            document.getElementById('read-title').innerText = currentBook.title;
-            document.getElementById('read-meta').innerText = `PART ${currentEpIdx+1} OF ${currentBook.episodes.length}`;
-            document.getElementById('read-body').innerText = ep.content;
-            document.getElementById('prev-btn').disabled = (currentEpIdx === 0);
-            document.getElementById('next-btn').disabled = (currentEpIdx === currentBook.episodes.length - 1);
-            document.getElementById('read-body').scrollTop = 0;
-        }
-        function changeEp(d) { currentEpIdx += d; showEp(); }
-        function closeReader() { document.getElementById('reader-view').style.display='none'; }
-
-        // --- AUTH & TOKENS ---
-        function googleLogin() { auth.signInWithPopup(new firebase.auth.GoogleAuthProvider()); }
-        function login() { auth.signInWithEmailAndPassword(document.getElementById('lemail').value, document.getElementById('lpass').value); }
-        function registerInDB(name, email) { db.ref('users/'+auth.currentUser.uid).set({ name, email, isPremium: false, hwid: "", accessExpiry: Date.now() }); }
+        // --- TOKENS ---
         function activateToken() {
             const t = document.getElementById('token-input').value;
             db.ref('tokens/' + t).once('value', snap => {
@@ -426,23 +462,6 @@
                 }
             });
         }
-        function sendMessage() {
-            const t = document.getElementById('chat-input').value; if(!t) return;
-            db.ref('supportChats/' + auth.currentUser.uid).push({ uid: auth.currentUser.uid, name: userData.name, text: t, timestamp: Date.now() });
-            document.getElementById('chat-input').value = '';
-        }
-        function loadChat() {
-            db.ref('supportChats/' + auth.currentUser.uid).on('value', snap => {
-                const b = document.getElementById('chat-box'); b.innerHTML = '';
-                snap.forEach(m => {
-                    const d = m.val(), me = d.uid === auth.currentUser.uid;
-                    b.innerHTML += `<div class="msg ${me ? 'msg-me' : 'msg-other'}"><small style="color:red; font-size:10px; display:block">${d.name}</small>${d.text}</div>`;
-                });
-                b.scrollTop = b.scrollHeight;
-            });
-        }
-        function closePlayer() { if(activePlayer) activePlayer.unload(); document.getElementById('player-wrap').style.display='none'; }
-        function toggleAuth() { isReg = !isReg; document.getElementById('auth-form').style.display = isReg ? "none" : "block"; }
     </script>
 </body>
 </html>
