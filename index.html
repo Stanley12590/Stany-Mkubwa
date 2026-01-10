@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>STANY MIN TV - iOS 26 ULTIMATE</title>
     
-    <!-- FONTS & ICONS (NO EMOJIS) -->
+    <!-- ICONS & FONTS (NO EMOJIS) -->
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&family=Orbitron:wght@700&display=swap" rel="stylesheet">
     
@@ -26,235 +26,205 @@
             --border: rgba(255, 255, 255, 0.1);
             --text: #FFFFFF;
             --glass: blur(25px);
-            --ios-radius: 30px;
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Outfit', sans-serif; -webkit-tap-highlight-color: transparent; }
         body { background: var(--bg); color: var(--text); overflow: hidden; height: 100vh; width: 100vw; }
 
-        /* 1. SPLASH SCREEN ANIMATION */
-        #splash {
+        /* GLASSMORPHISM */
+        .glass { background: var(--surface); backdrop-filter: var(--glass); -webkit-backdrop-filter: var(--glass); border: 1px solid var(--border); }
+
+        /* 1. STARTUP AD OVERLAY */
+        #ad-overlay {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: #000; z-index: 20000; display: flex; 
+            background: #000; z-index: 15000; display: none;
             flex-direction: column; justify-content: center; align-items: center;
         }
-        .splash-logo {
-            width: 90px; height: 90px; border: 5px solid var(--primary);
-            border-radius: 22px; display: flex; justify-content: center;
-            align-items: center; font-size: 45px; color: var(--primary);
-            font-family: 'Orbitron'; animation: splashPulse 2s infinite;
-        }
-        @keyframes splashPulse { 0% { transform: scale(1); box-shadow: 0 0 0px var(--primary); } 50% { transform: scale(1.1); box-shadow: 0 0 30px var(--primary); } 100% { transform: scale(1); } }
+        .ad-header-text { position: absolute; top: 70px; width: 100%; text-align: center; color: var(--primary); font-weight: 800; letter-spacing: 2px; font-size: 14px; text-transform: uppercase; }
+        #ad-timer { position: absolute; top: 35px; right: 20px; padding: 6px 14px; border-radius: 20px; background: white; color: black; font-weight: 900; font-size: 12px; }
+        #ad-close { position: absolute; top: 35px; left: 20px; font-size: 30px; display: none; cursor: pointer; color: white; }
+        
+        .ad-media-box { width: 85%; max-height: 50%; border-radius: 20px; overflow: hidden; border: 1px solid var(--border); background: #050505; }
+        .ad-media-box img, .ad-media-box video { width: 100%; height: auto; display: block; border-radius: 15px; }
+        
+        /* SOCIAL ICONS WITHIN ADS */
+        .ad-social-footer { margin-top: 25px; width: 100%; text-align: center; }
+        .social-btn-grid { display: flex; justify-content: center; gap: 15px; margin-top: 15px; }
+        .social-btn { width: 50px; height: 50px; border-radius: 15px; background: rgba(255,255,255,0.05); border: 1px solid var(--border); display: flex; align-items: center; justify-content: center; font-size: 22px; color: #fff; cursor: pointer; transition: 0.3s; }
+        .social-btn:active { transform: scale(0.9); background: var(--primary); }
 
-        /* 2. LAYOUT & SCROLLING */
-        #app-container { display: none; height: 100vh; flex-direction: column; overflow: hidden; }
-        .header { padding: 20px; display: flex; justify-content: space-between; align-items: center; z-index: 1000; }
-        .content-area { flex: 1; overflow-y: auto; padding: 15px 15px 120px; -webkit-overflow-scrolling: touch; }
-
-        /* 3. NAVIGATION (iPhone Style Rounded) */
+        /* 2. NAVIGATION (iPhone Style) */
         .tab-bar {
             position: fixed; bottom: 15px; left: 50%; transform: translateX(-50%);
             width: 94%; height: 75px; display: flex; justify-content: space-around;
-            align-items: center; z-index: 10000; background: rgba(10, 10, 10, 0.85);
+            align-items: center; z-index: 10000; background: rgba(10, 10, 10, 0.8);
             backdrop-filter: var(--glass); border: 1px solid var(--border); border-radius: 35px;
+            transition: 0.3s ease;
         }
-        .tab-item { display: flex; flex-direction: column; align-items: center; color: #555; font-size: 10px; font-weight: 700; cursor: pointer; position: relative; }
+        .tab-item { display: flex; flex-direction: column; align-items: center; color: #444; font-size: 10px; font-weight: 700; cursor: pointer; }
         .tab-item.active { color: var(--primary); }
-        .tab-item i { font-size: 22px; margin-bottom: 4px; }
-        .notif-dot { position: absolute; top: -2px; right: -2px; background: var(--primary); color: white; width: 16px; height: 16px; border-radius: 50%; font-size: 9px; display: none; justify-content: center; align-items: center; border: 2px solid black; }
+        .tab-item i { font-size: 20px; margin-bottom: 4px; }
 
-        /* 4. ADS SYSTEM */
-        #ad-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #000; z-index: 15000; display: none; flex-direction: column; justify-content: center; align-items: center; }
-        #ad-timer { position: absolute; top: 40px; right: 20px; padding: 8px 16px; border-radius: 20px; background: white; color: black; font-weight: 900; }
-        #ad-close { position: absolute; top: 40px; left: 20px; font-size: 30px; display: none; cursor: pointer; color: white; }
+        /* 3. CHAT VIEW (BACK ARROW RIGHT) */
+        #chat-header {
+            display: none; padding: 20px; background: #000; align-items: center; 
+            border-bottom: 1px solid var(--border); position: relative; z-index: 1001;
+        }
+        .back-arrow { position: absolute; right: 20px; font-size: 28px; color: var(--primary); cursor: pointer; }
 
-        /* 5. CHAT SYSTEM */
-        .chat-container { display: flex; flex-direction: column; height: 100%; }
-        .chat-messages { flex: 1; overflow-y: auto; padding: 15px; display: flex; flex-direction: column; gap: 12px; }
-        .msg { padding: 12px 16px; border-radius: 20px; max-width: 80%; font-size: 14px; position: relative; line-height: 1.4; }
-        .msg-user { align-self: flex-end; background: var(--primary); color: white; border-bottom-right-radius: 4px; }
-        .msg-admin { align-self: flex-start; background: #222; color: white; border-bottom-left-radius: 4px; }
-        .msg-name { font-size: 10px; font-weight: 800; color: var(--primary); margin-bottom: 4px; display: block; }
-        .typing-indicator { font-size: 11px; color: #666; margin-left: 20px; display: none; }
+        /* 4. LAYOUT & SCROLLING */
+        #app-container { display: none; height: 100vh; flex-direction: column; overflow: hidden; }
+        .header { padding: 20px; display: flex; justify-content: space-between; align-items: center; z-index: 1000; }
+        .content-area { flex: 1; overflow-y: auto; padding: 15px 15px 110px; -webkit-overflow-scrolling: touch; }
 
-        /* 6. CARDS & GRID */
+        /* 5. CARDS & GRID */
         .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
         .card { aspect-ratio: 2/3; border-radius: 25px; overflow: hidden; position: relative; border: 1px solid var(--border); background: #050505; }
         .card img { width: 100%; height: 100%; object-fit: cover; }
-        .card-info { position: absolute; bottom: 0; width: 100%; padding: 15px 10px; background: linear-gradient(transparent, #000); font-weight: 600; font-size: 11px; text-align: center; }
-        .fav-btn { position: absolute; top: 10px; left: 10px; z-index: 10; color: white; font-size: 18px; }
-        .lock-badge { position: absolute; top: 10px; right: 10px; color: var(--primary); font-size: 14px; }
+        .card-info { position: absolute; bottom: 0; width: 100%; padding: 12px 8px; background: linear-gradient(transparent, #000); font-weight: 600; font-size: 11px; text-align: center; }
 
-        /* AGE GATE */
-        #age-gate { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.95); z-index: 11000; display: none; flex-direction: column; justify-content: center; align-items: center; text-align: center; padding: 30px; }
+        /* 6. SECURITY LOCK & FAV */
+        .fav-btn { position: absolute; top: 10px; left: 10px; color: #fff; font-size: 18px; z-index: 10; }
+        .lock-badge { position: absolute; top: 10px; right: 10px; color: var(--primary); font-size: 14px; z-index: 10; }
 
-        .btn-p { width: 100%; padding: 16px; background: var(--primary); color: white; border: none; border-radius: 18px; font-weight: 800; cursor: pointer; text-transform: uppercase; letter-spacing: 1px; }
+        /* SPLASH & AGE GATE */
+        #splash { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #000; z-index: 20000; display: flex; flex-direction: column; justify-content: center; align-items: center; }
+        .splash-logo { width: 85px; height: 85px; border: 4px solid var(--primary); border-radius: 20px; display: flex; justify-content: center; align-items: center; font-size: 40px; color: var(--primary); font-family: 'Orbitron'; animation: pulse 2s infinite; }
+        @keyframes pulse { 0% { transform: scale(1); box-shadow: 0 0 0px var(--primary); } 50% { transform: scale(1.1); box-shadow: 0 0 30px var(--primary); } 100% { transform: scale(1); } }
+        
+        #age-gate { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.98); z-index: 16000; display: none; flex-direction: column; justify-content: center; align-items: center; text-align: center; padding: 30px; }
+
+        .btn-p { width: 100%; padding: 16px; background: var(--primary); color: white; border: none; border-radius: 20px; font-weight: 800; cursor: pointer; text-transform: uppercase; }
         .input-pro { width: 100%; padding: 16px; background: #0a0a0a; border: 1px solid #222; border-radius: 18px; color: white; margin-bottom: 12px; outline: none; }
         
         .page { display: none; height: 100%; }
-        .page.active { display: block; animation: slideFade 0.4s ease; }
-        @keyframes slideFade { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        .page.active { display: block; animation: slideUp 0.4s ease; }
+        @keyframes slideUp { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
 
-        #player-wrap { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #000; z-index: 14000; display: none; }
-        .close-player { position: absolute; top: 40px; left: 20px; z-index: 14001; font-size: 30px; color: white; }
+        #player-wrap { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #000; z-index: 17000; display: none; }
+        .close-player { position: absolute; top: 40px; left: 20px; z-index: 17001; font-size: 30px; color: white; }
+
+        ::-webkit-scrollbar { width: 0; }
     </style>
 </head>
 <body>
 
-    <!-- 1. SPLASH SCREEN -->
-    <div id="splash">
-        <div class="splash-logo">S</div>
-        <h2 style="margin-top: 20px; letter-spacing: 6px; font-family: 'Orbitron'; font-size: 14px; color: white;">STANY MIN TV</h2>
-    </div>
-
-    <!-- 2. UNSKIPPABLE AD -->
+    <!-- 1. STARTUP AD (POOL SYSTEM) -->
     <div id="ad-overlay">
         <div id="ad-timer">AD: 15s</div>
         <i id="ad-close" class="fas fa-times-circle" onclick="closeAd()"></i>
-        <div id="ad-media-container" style="width: 90%; max-height: 60%; border-radius: 20px; overflow: hidden; border: 1px solid var(--primary);"></div>
-        <div style="margin-top: 20px; text-align: center; padding: 0 30px;">
-            <p id="ad-text-header" style="color:var(--primary); font-weight: 800; margin-bottom: 10px;"></p>
-            <div id="ad-social-icons" style="display: flex; justify-content: center; gap: 15px;"></div>
+        <div class="ad-header-text" id="ad-header-words">OFFICIAL SPONSOR</div>
+        <div id="ad-media-container" class="ad-media-box"></div>
+        <div class="ad-social-footer">
+            <div id="ad-footer-words" style="font-size: 12px; color: #888; margin-bottom: 15px;">VISIT SPONSOR VIA:</div>
+            <div class="social-icon-grid" id="ad-social-icons"></div>
         </div>
+    </div>
+
+    <!-- 2. SPLASH -->
+    <div id="splash">
+        <div class="splash-logo">S</div>
+        <h2 style="margin-top: 20px; letter-spacing: 5px; font-family: 'Orbitron'; font-size: 14px; color: white;">STANY MIN TV</h2>
     </div>
 
     <!-- 3. AGE GATE -->
     <div id="age-gate">
         <i class="fas fa-user-shield" style="font-size: 60px; color: var(--primary); margin-bottom: 20px;"></i>
-        <h2>18+ ADULT CONTENT</h2>
-        <p style="color: #888; margin: 15px 0 30px;">You must be 18 years or older to view this section. Do you confirm your age?</p>
+        <h2>18+ CONTENT</h2>
+        <p style="color: #888; margin: 15px 0 30px;">Confirm that you are over 18 years old to access this section.</p>
         <button class="btn-p" onclick="confirmAge()">I AM 18+</button>
-        <p style="margin-top: 20px; color: #444;" onclick="switchPage('home', document.querySelector('.tab-item'))">CANCEL</button>
+        <p style="margin-top: 20px; color: #444;" onclick="switchPage('home', document.querySelector('.tab-item'))">CANCEL</p>
     </div>
 
-    <!-- 4. AUTH SCREEN -->
-    <div id="auth-screen">
-        <div class="ios-glass" style="padding: 35px; width: 90%; max-width: 400px; text-align: center;">
-            <h2 id="auth-title" style="margin-bottom: 25px;">LOGIN</h2>
-            <input type="text" id="reg-name" class="input-pro" placeholder="Full Name" style="display:none;">
-            <input type="email" id="auth-email" class="input-pro" placeholder="Email Address">
-            <input type="password" id="auth-pass" class="input-pro" placeholder="Password">
-            <button class="btn-p" onclick="handleAuth()">Enter Pro</button>
-            <div style="margin: 15px 0; color: #333;">OR</div>
-            <button class="btn-p" style="background: white; color: black;" onclick="googleLogin()">
-                <i class="fab fa-google"></i> Continue with Google
-            </button>
-            <p id="toggle-text" style="margin-top: 25px; font-size: 13px; color: #666;" onclick="toggleAuth()">New member? <span style="color:var(--primary)">Register</span></p>
+    <!-- 4. AUTH & GOOGLE -->
+    <div id="authPages" class="auth-screen" style="position:fixed; top:0; left:0; width:100%; height:100%; background:#000; z-index:9000; display:none; flex-direction:column; justify-content:center; padding:30px;">
+        <div class="glass" style="padding: 30px; text-align: center; border-radius: 30px;">
+            <h1 style="color:var(--primary); font-family: 'Orbitron'; margin-bottom: 25px;">STANY MIN</h1>
+            <div id="login-form">
+                <input type="email" id="lemail" class="input-pro" placeholder="Email Address">
+                <input type="password" id="lpass" class="input-pro" placeholder="Password">
+                <button class="btn-p" onclick="login()">LOGIN</button>
+                <div style="color:#444; margin: 15px 0;">OR</div>
+                <button class="btn-p" style="background:#fff; color:#000" onclick="googleLogin()">
+                    <i class="fab fa-google"></i> Continue with Google
+                </button>
+            </div>
         </div>
     </div>
 
     <!-- 5. MAIN APP -->
     <div id="app-container">
-        <div class="header">
+        <!-- Chat Page Back Header -->
+        <div id="chat-header">
+            <h3 style="color:var(--primary); font-family: 'Orbitron'; font-size: 16px;">SUPPORT CHAT</h3>
+            <i class="fas fa-arrow-left back-arrow" onclick="goHome()"></i>
+        </div>
+
+        <div class="header" id="main-header">
             <div class="logo">STANY<span>MIN</span></div>
-            <div style="display: flex; gap: 15px; align-items: center;">
-                <i class="fas fa-search" style="font-size: 20px;"></i>
-                <div id="premium-badge" style="background: var(--primary); color: white; padding: 4px 10px; border-radius: 10px; font-size: 10px; font-weight: 800; display: none;">PRO</div>
-            </div>
+            <i class="fas fa-sync" onclick="location.reload()" style="color:var(--primary); font-size: 18px;"></i>
         </div>
 
         <div class="content-area">
-            <!-- HOME PAGE -->
             <div id="view-home" class="page active">
-                <div class="grid" id="chan-grid"></div>
+                <h4 style="margin-bottom:15px; color:var(--primary); font-size:12px; font-weight:800; letter-spacing:1px;">LIVE CHANNELS</h4>
+                <div id="chan-grid" class="grid"></div>
             </div>
 
-            <!-- MOVIES PAGE -->
             <div id="view-movies" class="page">
-                <h3 class="section-title">LATEST MOVIES</h3>
-                <div class="grid" id="mov-grid"></div>
+                <h4 style="margin-bottom:15px; color:var(--primary); font-size:12px; font-weight:800; letter-spacing:1px;">FEATURED MOVIES</h4>
+                <div id="mov-grid" class="grid"></div>
             </div>
 
-            <!-- ADULTS PAGE -->
             <div id="view-adults" class="page">
-                <h3 class="section-title">ADULT SECTION</h3>
-                <div class="grid" id="adult-grid"></div>
+                <h4 style="margin-bottom:15px; color:var(--primary); font-size:12px; font-weight:800; letter-spacing:1px;">ADULT (18+)</h4>
+                <div id="adult-grid" class="grid"></div>
             </div>
 
-            <!-- CHAT SYSTEM -->
             <div id="view-chat" class="page">
-                <div style="display: flex; gap: 10px; margin-bottom: 15px;" class="ios-glass p-2">
-                    <button class="btn-p" style="flex:1; padding: 10px;" onclick="toggleChatMode('group')">GROUP</button>
-                    <button class="btn-p" style="flex:1; padding: 10px; background: #222;" id="bot-btn" onclick="toggleChatMode('bot')">BOT</button>
-                </div>
-                <div class="chat-container ios-glass">
-                    <div class="chat-messages" id="chat-box"></div>
-                    <div class="typing-indicator" id="typing-indicator">User is typing...</div>
-                    <div style="padding: 15px; display: flex; gap: 10px; border-top: 1px solid var(--border);">
-                        <input type="text" id="chat-input" class="input-pro" style="margin:0;" placeholder="Message..." oninput="broadcastTyping()">
-                        <button class="btn-p" style="width: 60px; height: 55px;" onclick="sendMessage()"><i class="fas fa-paper-plane"></i></button>
-                    </div>
+                <div id="chatBox" style="height: calc(100vh - 200px); overflow-y: auto; padding: 10px;"></div>
+                <div style="padding: 10px; display: flex; gap: 10px;">
+                    <input id="chatInput" class="input-pro" style="margin:0; flex:1;" placeholder="Ask Bot...">
+                    <button class="btn-p" style="width:60px" onclick="sendMessage()"><i class="fas fa-paper-plane"></i></button>
                 </div>
             </div>
 
-            <!-- ME PAGE -->
-            <div id="view-me" class="page">
-                <div class="ios-glass" style="padding: 25px; margin-bottom: 20px;">
-                    <h2 id="p-name">Username</h2>
-                    <p id="p-email" style="color: #666; font-size: 14px;"></p>
-                    <div id="p-expiry" style="color: var(--primary); font-weight: 800; margin-top: 10px;">FREE USER</div>
-                    
-                    <div style="margin-top: 30px;">
-                        <label style="font-size: 12px; color: #444; display: block; margin-bottom: 8px;">ACTIVATE PREMIUM TOKEN</label>
-                        <input type="text" id="token-input" class="input-pro" placeholder="Enter Token...">
-                        <button class="btn-p" onclick="activateToken()">ACTIVATE</button>
-                    </div>
+            <div id="view-library" class="page">
+                <h3 style="color:var(--primary); margin-bottom: 20px;">SIMULIZI & TECH</h3>
+                <div id="lib-list"></div>
+            </div>
 
-                    <div style="margin-top: 25px; border-top: 1px solid var(--border); padding-top: 20px;">
-                        <button class="btn-p" style="background: #222;" onclick="openPassManager()">CHANNEL LOCK SETTINGS</button>
-                        <button class="btn-p" style="background: #111; margin-top: 10px;" onclick="auth.signOut().then(()=>location.reload())">LOGOUT</button>
-                    </div>
+            <div id="view-me" class="page">
+                <div class="glass" style="padding: 25px; border-radius: 30px;">
+                    <h2 id="pName">User</h2>
+                    <p id="pEmail" style="color:#666"></p>
+                    <hr style="border:0; border-top:1px solid #111; margin:20px 0">
+                    <input type="text" id="token-input" class="input-pro" placeholder="Enter Token ID">
+                    <button class="btn-p" onclick="activateToken()">ACTIVATE PREMIUM</button>
+                    <button class="btn-p" style="background:#111; margin-top:20px;" onclick="auth.signOut()">LOGOUT</button>
                 </div>
             </div>
         </div>
 
-        <!-- TAB BAR -->
+        <!-- TAB BAR (iPhone Style) -->
         <div class="tab-bar">
             <div class="tab-item active" onclick="switchPage('home', this)"><i class="fas fa-house"></i>Home</div>
             <div class="tab-item" onclick="switchPage('movies', this)"><i class="fas fa-film"></i>Movies</div>
             <div class="tab-item" onclick="switchPage('adults', this)"><i class="fas fa-explicit"></i>Adult</div>
-            <div class="tab-item" onclick="switchPage('chat', this)">
-                <i class="fas fa-comment-dots"></i>Chat
-                <div class="notif-dot" id="chat-notif">0</div>
-            </div>
+            <div class="tab-item" onclick="switchPage('chat', this)"><i class="fas fa-comment-dots"></i>Chat</div>
+            <div class="tab-item" onclick="switchPage('library', this)"><i class="fas fa-book-open"></i>Library</div>
             <div class="tab-item" onclick="switchPage('me', this)"><i class="fas fa-user-circle"></i>Me</div>
-        </div>
-    </div>
-
-    <!-- MODAL: PASSWORD PROMPT -->
-    <div id="pass-modal" class="modal">
-        <div class="modal-box">
-            <i class="fas fa-lock" style="font-size: 40px; color: var(--primary); margin-bottom: 15px;"></i>
-            <h3>CHANNEL LOCKED</h3>
-            <p style="color:#666; margin: 10px 0 20px;">Enter your secret password to unlock.</p>
-            <input type="password" id="lock-pass-input" class="input-pro" placeholder="Enter Password">
-            <button class="btn-p" onclick="verifyChannelLock()">UNLOCK</button>
-            <button class="btn-p" style="background: #111; margin-top: 10px;" onclick="closeModal('pass-modal')">CANCEL</button>
-        </div>
-    </div>
-
-    <!-- MODAL: PASS MANAGER -->
-    <div id="pass-manager-modal" class="modal">
-        <div class="modal-box">
-            <h3>LOCK SETTINGS</h3>
-            <p style="font-size: 12px; color: #666; margin: 10px 0 20px;">Create a unique password to lock specific channels.</p>
-            <input type="password" id="new-lock-pass" class="input-pro" placeholder="New Secret Password">
-            <input type="password" id="confirm-lock-pass" class="input-pro" placeholder="Confirm Password">
-            <button class="btn-p" onclick="saveSecretPassword()">SAVE PASSWORD</button>
-            <button class="btn-p" style="background: #111; margin-top: 10px;" onclick="closeModal('pass-manager-modal')">CLOSE</button>
         </div>
     </div>
 
     <!-- PLAYER -->
     <div id="player-wrap">
         <i class="fas fa-chevron-left close-player" onclick="closePlayer()"></i>
-        <div id="stany-player-container" style="width:100%; height:100%;">
-            <video id="main-video" style="width:100%; height:100%;" controls autoplay></video>
-        </div>
+        <video id="stany-player" style="width:100%; height:100%;" autoplay controls></video>
     </div>
 
     <script>
-        // CONFIG
+        // FIREBASE CONFIG
         const firebaseConfig = {
             apiKey: "AIzaSyDiexD5WK9GLhQldr6zNmC8iYWc4em5eyM",
             authDomain: "stany-min-tv.firebaseapp.com",
@@ -265,289 +235,173 @@
             appId: "1:16513327552:web:b4b2247053f83aa0b8e825"
         };
         firebase.initializeApp(firebaseConfig);
-        const auth = firebase.auth(), db = firebase.database();
+        const auth = firebase.auth();
+        const db = firebase.database();
 
-        let currentUser = null, userData = null, isRegMode = false, activePlayer = null;
-        let chatMode = 'group', typingTimeout = null;
-        let HWID = localStorage.getItem('stany_did') || 'SN-' + Math.random().toString(36).substr(2, 9).toUpperCase();
-        localStorage.setItem('stany_did', HWID);
+        let userData = null;
+        let activePlayer = null;
+        let HWID = localStorage.getItem('stany_hwid') || 'SN-' + Math.random().toString(36).substr(2, 9).toUpperCase();
+        localStorage.setItem('stany_hwid', HWID);
 
-        // --- 1. INITIALIZE ---
         window.onload = () => {
-            setTimeout(() => {
-                document.getElementById('splash').style.display = 'none';
-                initAuth();
-            }, 3000);
+            setTimeout(() => { document.getElementById('splash').style.display='none'; checkAuth(); }, 3000);
         };
 
-        function initAuth() {
+        function checkAuth() {
             auth.onAuthStateChanged(user => {
                 if(user) {
-                    currentUser = user;
                     db.ref('users/' + user.uid).on('value', snap => {
                         userData = snap.val();
-                        if(!userData) { registerInDB(user.displayName, user.email); return; }
+                        if(!userData) { registerInDB(user); return; }
+                        if(userData.hwid && userData.hwid !== HWID) { alert("ACCOUNT LOCKED!"); auth.signOut(); return; }
                         
-                        // One Device Lock
-                        if(userData.hwid && userData.hwid !== HWID) {
-                            alert("ACCOUNT LOCKED TO ANOTHER DEVICE!");
-                            auth.signOut(); return;
-                        }
-
-                        document.getElementById('auth-screen').style.display = 'none';
+                        document.getElementById('auth-pages').style.display = 'none';
                         document.getElementById('app-container').style.display = 'flex';
-                        updateProfileUI();
+                        document.getElementById('pName').innerText = userData.name;
+                        document.getElementById('pEmail').innerText = userData.email;
                         loadContent();
-                        if(!window.initialAd) { showRandomAd(); window.initialAd = true; }
+                        if(!window.adShown) { showRandomAd(); window.adShown = true; }
                     });
                 } else {
-                    document.getElementById('auth-screen').style.display = 'flex';
+                    document.getElementById('auth-pages').style.display = 'flex';
                     document.getElementById('app-container').style.display = 'none';
                 }
             });
         }
 
-        function updateProfileUI() {
-            document.getElementById('p-name').innerText = userData.name || "User";
-            document.getElementById('p-email').innerText = userData.email;
-            
-            const now = Date.now();
-            if(userData.isPremium && userData.accessExpiry > now) {
-                const diff = userData.accessExpiry - now;
-                const days = Math.floor(diff / (1000 * 60 * 60 * 24));
-                const hours = Math.floor((diff / (1000 * 60 * 60)) % 24);
-                document.getElementById('p-expiry').innerText = `PRO: ${days}d ${hours}h LEFT`;
-                document.getElementById('premium-badge').style.display = 'block';
-            } else {
-                document.getElementById('p-expiry').innerText = "FREE USER";
-                document.getElementById('premium-badge').style.display = 'none';
-            }
-        }
-
-        // --- 2. ADS ENGINE ---
+        // --- ADS ENGINE (RANDOM + SOCIALS) ---
         function showRandomAd(callback) {
             if(userData && userData.isPremium) { if(callback) callback(); return; }
-
             db.ref('ads').once('value', snap => {
                 const ads = []; snap.forEach(a => ads.push(a.val()));
                 if(ads.length === 0) { if(callback) callback(); return; }
-
                 const ad = ads[Math.floor(Math.random() * ads.length)];
-                const overlay = document.getElementById('ad-overlay');
-                const container = document.getElementById('ad-media-container');
-                const socialBox = document.getElementById('ad-social-icons');
-                const timer = document.getElementById('ad-timer');
-                const close = document.getElementById('ad-close');
-
-                container.innerHTML = ad.type === 'video' ? `<video src="${ad.url}" autoplay muted></video>` : `<img src="${ad.url}">`;
-                document.getElementById('ad-text-header').innerText = ad.header || "SPONSORED";
                 
+                const overlay = document.getElementById('ad-overlay');
+                const mediaBox = document.getElementById('ad-media-container');
+                const socialBox = document.getElementById('ad-social-icons');
+                
+                mediaBox.innerHTML = ad.type === 'video' ? `<video src="${ad.url}" autoplay muted></video>` : `<img src="${ad.url}">`;
                 socialBox.innerHTML = '';
+                
                 if(ad.socialLinks) {
-                    Object.entries(ad.socialLinks).forEach(([p, url]) => {
-                        const icon = p === 'whatsapp' ? 'fab fa-whatsapp' : 'fab fa-telegram';
+                    Object.entries(ad.socialLinks).forEach(([platform, url]) => {
+                        const icon = getSocialIcon(platform);
                         socialBox.innerHTML += `<div class="social-btn" onclick="window.open('${url}', '_blank')"><i class="${icon}"></i></div>`;
                     });
                 }
-
+                
                 overlay.style.display = 'flex';
                 let sec = ad.duration || 10;
-                timer.innerText = `AD: ${sec}s`;
-                close.style.display = 'none';
-
-                const countdown = setInterval(() => {
-                    sec--; timer.innerText = `AD: ${sec}s`;
-                    if(sec <= 0) {
-                        clearInterval(countdown);
-                        timer.style.display = 'none';
-                        close.style.display = 'block';
-                    }
+                const timer = document.getElementById('ad-timer');
+                const interval = setInterval(() => {
+                    sec--; timer.innerText = "AD: " + sec + "s";
+                    if(sec <= 0) { clearInterval(interval); timer.style.display='none'; document.getElementById('ad-close').style.display='block'; }
                 }, 1000);
                 window.adCallback = callback;
             });
         }
-        function closeAd() { document.getElementById('ad-overlay').style.display = 'none'; if(window.adCallback) window.adCallback(); }
 
-        // --- 3. CONTENT & SECURITY ---
+        function getSocialIcon(p) {
+            const icons = { whatsapp: 'fab fa-whatsapp', telegram: 'fab fa-telegram', youtube: 'fab fa-youtube', facebook: 'fab fa-facebook', instagram: 'fab fa-instagram', website: 'fas fa-globe' };
+            return icons[p] || 'fas fa-link';
+        }
+
+        function closeAd() { document.getElementById('ad-overlay').style.display='none'; if(window.adCallback) window.adCallback(); }
+
+        // --- NAVIGATION ENGINE ---
+        function switchPage(page, el) {
+            if(page === 'adults' && !window.ageConfirmed) {
+                document.getElementById('age-gate').style.display = 'flex';
+                return;
+            }
+            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+            document.getElementById('view-' + page).classList.add('active');
+            document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+            if(el) el.classList.add('active');
+
+            const navBar = document.querySelector('.tab-bar');
+            const mainHeader = document.getElementById('main-header');
+            const chatHeader = document.getElementById('chat-back-header');
+
+            if(page === 'chat') {
+                navBar.style.display = 'none';
+                mainHeader.style.display = 'none';
+                chatHeader.style.display = 'flex';
+            } else {
+                navBar.style.display = 'flex';
+                mainHeader.style.display = 'flex';
+                chatHeader.style.display = 'none';
+            }
+        }
+
+        function confirmAge() { window.ageConfirmed = true; document.getElementById('age-gate').style.display = 'none'; switchPage('adults', document.querySelectorAll('.tab-item')[2]); }
+        function goHome() { switchPage('home', document.querySelector('.tab-item')); }
+
+        // --- CONTENT LOADER ---
         function loadContent() {
-            // Channels
             db.ref('channels').on('value', snap => {
                 const g = document.getElementById('chan-grid'); g.innerHTML = '';
                 snap.forEach(c => {
                     const d = c.val(), id = c.key;
                     const isFav = userData.favorites && userData.favorites[id];
                     const isLocked = userData.lockedChannels && userData.lockedChannels[id];
-                    
                     g.innerHTML += `
-                        <div class="card" onclick="handleChannelClick('${id}')">
-                            <i class="${isFav ? 'fas' : 'far'} fa-heart fav-btn" onclick="toggleFav(event, '${id}')"></i>
+                        <div class="card" onclick="handleItemClick('${id}', 'channels')">
                             ${isLocked ? '<i class="fas fa-lock lock-badge"></i>' : ''}
                             <img src="${d.logo}">
                             <div class="card-info">${d.name}</div>
                         </div>`;
                 });
             });
-
-            // Movies
             db.ref('movies').on('value', snap => {
                 const g = document.getElementById('mov-grid'); g.innerHTML = '';
-                snap.forEach(m => {
-                    const d = m.val();
-                    g.innerHTML += `<div class="card" onclick="playMedia('${m.key}', 'movies')"><img src="${d.posterURL}"><div class="card-info">${d.title}</div></div>`;
-                });
+                snap.forEach(m => { g.innerHTML += `<div class="card" onclick="playMedia('${m.val().movieURL}')"><img src="${m.val().posterURL}"><div class="card-info">${m.val().title}</div></div>`; });
             });
-
-            // Adult
             db.ref('adultContent').on('value', snap => {
                 const g = document.getElementById('adult-grid'); g.innerHTML = '';
-                snap.forEach(m => {
-                    const d = m.val();
-                    g.innerHTML += `<div class="card" onclick="playMedia('${m.key}', 'adult')"><img src="${d.posterURL}"><div class="card-info">${d.title}</div></div>`;
-                });
+                snap.forEach(m => { g.innerHTML += `<div class="card" onclick="playMedia('${m.val().streamURL}')"><img src="${m.val().logo}"><div class="card-info">${m.val().name}</div></div>`; });
             });
         }
 
-        function handleChannelClick(id) {
+        function handleItemClick(id, path) {
             if(userData.lockedChannels && userData.lockedChannels[id]) {
-                window.pendingChannel = id;
-                document.getElementById('pass-modal').style.display = 'flex';
+                const pass = prompt("Enter Secret Password to Unlock:");
+                if(pass === userData.secretPassword) {
+                    db.ref(`${path}/${id}`).once('value', s => playMedia(s.val().streamURL));
+                } else { alert("Wrong Password!"); }
             } else {
-                playMedia(id, 'channels');
+                db.ref(`${path}/${id}`).once('value', s => playMedia(s.val().streamURL));
             }
         }
 
-        function verifyChannelLock() {
-            const pass = document.getElementById('lock-pass-input').value;
-            if(pass === userData.secretPassword) {
-                closeModal('pass-modal');
-                playMedia(window.pendingChannel, 'channels');
-            } else {
-                alert("WRONG PASSWORD!");
-            }
+        // --- PLAYER ---
+        function playMedia(url) {
+            document.getElementById('player-wrap').style.display = 'block';
+            document.getElementById('stany-player').src = url;
         }
 
-        function toggleFav(e, id) {
-            e.stopPropagation();
-            const current = (userData.favorites && userData.favorites[id]) ? null : true;
-            db.ref(`users/${currentUser.uid}/favorites/${id}`).set(current);
-        }
-
-        function playMedia(id, path) {
-            showRandomAd(() => {
-                db.ref(`${path}/${id}`).once('value', snap => {
-                    const d = snap.val();
-                    document.getElementById('player-wrap').style.display = 'block';
-                    const video = document.getElementById('main-video');
-                    if(!activePlayer) activePlayer = new shaka.Player(video);
-                    
-                    if(d.playerType === 'drm') {
-                        activePlayer.configure({ drm: { servers: { 'com.widevine.alpha': d.licenseURL } } });
-                        if(d.tokenID) {
-                            activePlayer.getNetworkingEngine().registerRequestFilter((type, req) => {
-                                if (type == shaka.net.NetworkingEngine.RequestType.LICENSE) req.headers['Authorization'] = 'Bearer ' + d.tokenID;
-                            });
-                        }
-                    } else { activePlayer.configure({ drm: { servers: {} } }); }
-                    
-                    activePlayer.load(d.streamURL || d.movieURL).catch(e => alert("Error playing."));
-                });
-            });
-        }
-
-        // --- 4. CHAT SYSTEM ---
-        function toggleChatMode(m) {
-            chatMode = m;
-            document.querySelectorAll('#view-chat button').forEach(b => b.style.background = '#222');
-            event.target.style.background = 'var(--primary)';
-            loadMessages();
-        }
-
-        function loadMessages() {
-            const path = chatMode === 'group' ? 'groupChat' : `supportChats/${currentUser.uid}`;
-            db.ref(path).limitToLast(30).on('value', snap => {
-                const box = document.getElementById('chat-box');
-                box.innerHTML = '';
-                snap.forEach(m => {
-                    const d = m.val();
-                    const isMe = d.uid === currentUser.uid;
-                    box.innerHTML += `
-                        <div class="msg ${isMe ? 'msg-user' : 'msg-admin'}">
-                            <span class="msg-name">${d.name} ${d.isPremium ? '★' : ''}</span>
-                            ${d.text}
-                        </div>`;
-                });
-                box.scrollTop = box.scrollHeight;
-            });
-        }
-
-        function sendMessage() {
-            const text = document.getElementById('chat-input').value;
-            if(!text) return;
-            const path = chatMode === 'group' ? 'groupChat' : `supportChats/${currentUser.uid}`;
-            db.ref(path).push({
-                uid: currentUser.uid,
-                name: userData.name,
-                isPremium: userData.isPremium || false,
-                text: text,
-                timestamp: Date.now()
-            });
-            document.getElementById('chat-input').value = '';
-        }
-
-        // --- 5. TOKEN SYSTEM ---
+        function closePlayer() { document.getElementById('player-wrap').style.display = 'none'; document.getElementById('stany-player').pause(); }
+        function login() { auth.signInWithEmailAndPassword(document.getElementById('lemail').value, document.getElementById('lpass').value).catch(e => alert(e.message)); }
+        function googleLogin() { auth.signInWithPopup(new firebase.auth.GoogleAuthProvider()); }
+        function registerInDB(u) { db.ref('users/'+u.uid).set({ name: u.displayName || "User", email: u.email, isPremium: false, hwid: "" }); }
         function activateToken() {
-            const tk = document.getElementById('token-input').value;
-            db.ref(`tokens/${tk}`).once('value', snap => {
-                const t = snap.val();
-                if(t && t.status === 'unused') {
+            const t = document.getElementById('token-input').value;
+            db.ref('tokens/' + t).once('value', snap => {
+                const val = snap.val();
+                if(val && val.status === 'unused') {
                     let expiry = Date.now();
-                    const val = parseInt(t.durationValue);
-                    if(t.durationUnit === 'seconds') expiry += val * 1000;
-                    else if(t.durationUnit === 'minutes') expiry += val * 60000;
-                    else if(t.durationUnit === 'hours') expiry += val * 3600000;
-                    else if(t.durationUnit === 'days') expiry += val * 86400000;
-
-                    db.ref(`users/${currentUser.uid}`).update({
-                        isPremium: true,
-                        accessExpiry: expiry,
-                        hwid: HWID
-                    });
-                    db.ref(`tokens/${tk}`).update({ status: 'used', usedBy: userData.email });
-                    alert("PRO ACTIVATED!");
+                    const amount = parseInt(val.durationValue);
+                    if(val.durationUnit === 'seconds') expiry += amount * 1000;
+                    else if(val.durationUnit === 'minutes') expiry += amount * 60000;
+                    else if(val.durationUnit === 'hours') expiry += amount * 3600000;
+                    else if(val.durationUnit === 'days') expiry += amount * 86400000;
+                    db.ref('users/'+auth.currentUser.uid).update({ isPremium: true, hwid: HWID, accessExpiry: expiry });
+                    db.ref('tokens/'+t).update({ status: 'used', usedBy: userData.email });
+                    alert("PREMIUM UNLOCKED!");
                 } else { alert("INVALID TOKEN"); }
             });
         }
-
-        // --- UTILS ---
-        function switchPage(id, el) {
-            if(id === 'adults' && !window.ageConfirmed) {
-                document.getElementById('age-gate').style.display = 'flex';
-                return;
-            }
-            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-            document.getElementById('view-' + id).classList.add('active');
-            document.querySelectorAll('.tab-item').forEach(t => t.classList.remove('active'));
-            el.classList.add('active');
-        }
-        function confirmAge() { window.ageConfirmed = true; document.getElementById('age-gate').style.display = 'none'; switchPage('adults', document.querySelectorAll('.tab-item')[2]); }
-        function closeModal(id) { document.getElementById(id).style.display = 'none'; }
-        function openPassManager() { document.getElementById('pass-manager-modal').style.display = 'flex'; }
-        function saveSecretPassword() {
-            const p1 = document.getElementById('new-lock-pass').value;
-            const p2 = document.getElementById('confirm-lock-pass').value;
-            if(p1 && p1 === p2) {
-                db.ref(`users/${currentUser.uid}/secretPassword`).set(p1).then(() => { alert("Password Saved!"); closeModal('pass-manager-modal'); });
-            } else { alert("Passwords don't match!"); }
-        }
-        function toggleAuth() { isRegMode = !isRegMode; document.getElementById('auth-title').innerText = isRegMode ? "REGISTER" : "LOGIN"; document.getElementById('reg-name').style.display = isRegMode ? "block" : "none"; }
-        function handleAuth() {
-            const e = document.getElementById('auth-email').value, p = document.getElementById('auth-pass').value;
-            if(isRegMode) auth.createUserWithEmailAndPassword(e, p).then(res => registerInDB(document.getElementById('reg-name').value, e)).catch(err => alert(err.message));
-            else auth.signInWithEmailAndPassword(e, p).catch(err => alert(err.message));
-        }
-        function googleLogin() { const provider = new firebase.auth.GoogleAuthProvider(); auth.signInWithPopup(provider); }
-        function registerInDB(name, email) { db.ref('users/' + auth.currentUser.uid).set({ name, email, isPremium: false, hwid: "" }); }
-        function closePlayer() { if(activePlayer) activePlayer.unload(); document.getElementById('player-wrap').style.display = 'none'; }
     </script>
 </body>
 </html>
