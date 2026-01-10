@@ -3,373 +3,186 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>STANY MIN TV</title>
+    <title>STANY MIN TV - iOS 26 PRO</title>
     
-    <!-- FONTS & ICONS -->
+    <!-- ICONS & FONTS -->
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=SF+Pro+Display:wght@300;400;600;800&family=Orbitron:wght@700&display=swap" rel="stylesheet">
     
-    <!-- SHAKA PLAYER (PREMIUM DRM) -->
+    <!-- SHAKA PLAYER (DRM & TOKENS) -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/shaka-player/4.3.5/shaka-player.ui.min.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/shaka-player/4.3.5/controls.min.css">
     
-    <!-- FIREBASE SDK -->
+    <!-- FIREBASE -->
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-database-compat.js"></script>
 
     <style>
         :root {
-            --primary: #ff0000; /* Premium Red */
-            --dark: #000000;
-            --card-bg: #121212;
-            --text: #ffffff;
-            --gray: #888888;
-            --glass: rgba(18, 18, 18, 0.95);
-            --gold: #ffd700;
-            --radius: 12px;
+            --primary: #FF0000;
+            --bg: #000000;
+            --surface: rgba(255, 255, 255, 0.05);
+            --border: rgba(255, 255, 255, 0.1);
+            --text: #FFFFFF;
+            --glass: blur(30px);
         }
 
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', sans-serif; -webkit-tap-highlight-color: transparent; outline: none; }
-        body { background: var(--dark); color: var(--text); overflow: hidden; height: 100vh; width: 100vw; }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'SF Pro Display', sans-serif; -webkit-tap-highlight-color: transparent; }
+        body { background: var(--bg); color: var(--text); overflow: hidden; height: 100vh; width: 100vw; }
 
-        /* --- 1. NEW ANIMATION (FEATURE J) --- */
-        #splash {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: #000; z-index: 9999; display: flex; flex-direction: column;
-            justify-content: center; align-items: center; perspective: 1000px;
-        }
-        
-        /* 3D Elements Dropping */
-        .anim-item { opacity: 0; transform: translateY(-500px) rotateX(45deg); transition: all 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
-        
-        .tv-box { 
-            width: 100px; height: 80px; border: 4px solid var(--primary); border-radius: 10px;
-            position: relative; display: flex; justify-content: center; align-items: center;
-            box-shadow: 0 0 30px rgba(255,0,0,0.3);
-        }
-        .antenna {
-            position: absolute; top: -30px; width: 60px; height: 30px;
-            border-left: 4px solid var(--primary); border-bottom: 4px solid var(--primary);
-            transform: rotate(45deg); left: 20px;
-        }
-        .tv-screen { font-size: 30px; color: white; font-weight: bold; }
-        
-        .app-name-anim { 
-            font-size: 28px; font-weight: 800; margin-top: 20px; letter-spacing: 2px;
-            text-shadow: 0 5px 15px rgba(255,0,0,0.5); transform: scale(0); transition: 0.5s;
-        }
+        /* GLASSMORPHISM UI */
+        .ios-glass { background: var(--surface); backdrop-filter: var(--glass); -webkit-backdrop-filter: var(--glass); border: 1px solid var(--border); border-radius: 25px; }
 
-        .anim-active .anim-item { opacity: 1; transform: translateY(0) rotateX(0); }
-        .anim-active .app-name-anim { transform: scale(1); }
+        /* ADVANCED AD SYSTEM */
+        #ad-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #000; z-index: 10000; display: none; flex-direction: column; justify-content: center; align-items: center; }
+        .ad-header-text { position: absolute; top: 80px; width: 100%; text-align: center; color: var(--primary); font-weight: 800; letter-spacing: 2px; }
+        .ad-footer-text { position: absolute; bottom: 120px; width: 100%; text-align: center; color: #888; font-size: 14px; }
+        #ad-timer { position: absolute; top: 50px; right: 20px; padding: 8px 16px; border-radius: 20px; background: white; color: black; font-weight: 900; }
+        #ad-close { position: absolute; top: 50px; left: 20px; font-size: 30px; display: none; cursor: pointer; color: white; }
+        .ad-media-box { width: 90%; max-height: 60%; border-radius: 20px; overflow: hidden; border: 1px solid var(--primary); display: flex; align-items: center; justify-content: center; }
+        .ad-media-box img, .ad-media-box video { width: 100%; height: auto; }
+        .ad-slider { display: flex; transition: 0.5s; width: 100%; }
 
-        /* --- 2. AUTH SCREEN (LOGIN & REGISTER) --- */
-        #auth-screen {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: linear-gradient(to bottom, #000, #1a0000); z-index: 5000;
-            display: none; flex-direction: column; justify-content: center; align-items: center;
-            padding: 30px;
-        }
-        .auth-card {
-            width: 100%; background: #1a1a1a; padding: 25px; border-radius: 20px;
-            border: 1px solid #333; box-shadow: 0 10px 30px rgba(0,0,0,0.5);
-        }
-        .auth-tabs { display: flex; margin-bottom: 20px; border-bottom: 1px solid #333; }
-        .auth-tab { flex: 1; padding: 10px; text-align: center; color: var(--gray); cursor: pointer; font-weight: bold; }
-        .auth-tab.active { color: var(--primary); border-bottom: 2px solid var(--primary); }
-        
-        .input-group { margin-bottom: 15px; }
-        .input-box { 
-            width: 100%; padding: 14px; background: #000; border: 1px solid #333; 
-            color: white; border-radius: 10px; font-size: 14px;
-        }
-        .btn { 
-            width: 100%; padding: 14px; background: var(--primary); color: white; 
-            border: none; border-radius: 10px; font-weight: bold; font-size: 16px; 
-            cursor: pointer; margin-top: 10px; box-shadow: 0 4px 15px rgba(255,0,0,0.3);
-        }
-        .btn-google {
-            background: white; color: black; display: flex; align-items: center; 
-            justify-content: center; gap: 10px; margin-top: 20px;
-        }
-
-        /* --- 3. MAIN UI (IOS 26 STYLE) --- */
+        /* MAIN APP */
         #app-container { display: none; height: 100vh; flex-direction: column; }
-        
-        .header { 
-            padding: 15px 20px; background: rgba(0,0,0,0.8); backdrop-filter: blur(20px);
-            display: flex; justify-content: space-between; align-items: center;
-            position: sticky; top: 0; z-index: 100; border-bottom: 1px solid #222;
-        }
-        .logo-text { font-size: 20px; font-weight: 800; color: white; }
-        .logo-text span { color: var(--primary); }
-        .profile-btn { width: 35px; height: 35px; border-radius: 50%; background: #333; overflow: hidden; border: 2px solid var(--primary); }
-        .profile-btn img { width: 100%; height: 100%; object-fit: cover; }
+        .header { padding: 20px; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; background: rgba(0,0,0,0.8); z-index: 1000; }
+        .logo { font-family: 'Orbitron'; font-size: 20px; letter-spacing: 2px; }
+        .logo span { color: var(--primary); }
 
-        .content-area { flex: 1; overflow-y: auto; padding: 15px; padding-bottom: 90px; }
+        .content-area { flex: 1; overflow-y: auto; padding: 15px; padding-bottom: 100px; }
 
-        /* CARDS (B: 2 Per Row) */
-        .section-title { font-size: 16px; font-weight: 700; margin: 20px 0 10px; color: #ddd; display: flex; align-items: center; gap: 8px; }
+        /* GRID CONTENT */
         .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-        
-        .card { 
-            background: var(--card-bg); border-radius: 12px; overflow: hidden; position: relative; 
-            aspect-ratio: 2/3; box-shadow: 0 4px 10px rgba(0,0,0,0.3); transition: transform 0.2s;
-        }
-        .card:active { transform: scale(0.96); }
+        .card { aspect-ratio: 2/3; border-radius: 20px; overflow: hidden; position: relative; border: 1px solid var(--border); background: #111; }
         .card img { width: 100%; height: 100%; object-fit: cover; }
-        .card-overlay { 
-            position: absolute; bottom: 0; left: 0; width: 100%; 
-            background: linear-gradient(transparent, #000); padding: 15px 10px 8px; 
-        }
-        .card-title { font-size: 12px; font-weight: bold; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-        
-        .badge { position: absolute; top: 8px; right: 8px; padding: 3px 8px; border-radius: 6px; font-size: 10px; font-weight: 800; z-index: 2; }
-        .badge-vip { background: var(--gold); color: black; }
-        .badge-free { background: var(--primary); color: white; }
+        .card-info { position: absolute; bottom: 0; width: 100%; padding: 12px 8px; background: linear-gradient(transparent, #000); font-weight: 600; font-size: 12px; text-align: center; }
+        .vip-badge { position: absolute; top: 10px; right: 10px; background: var(--primary); padding: 4px 8px; border-radius: 8px; font-size: 10px; font-weight: 800; }
 
-        /* NAVIGATION (iOS Floating) */
-        .nav-bar { 
-            position: fixed; bottom: 20px; left: 20px; right: 20px; height: 65px; 
-            background: rgba(20,20,20,0.9); backdrop-filter: blur(20px); border-radius: 35px;
-            display: flex; justify-content: space-around; align-items: center; 
-            border: 1px solid #333; z-index: 1000; box-shadow: 0 10px 30px rgba(0,0,0,0.5);
-        }
-        .nav-item { color: #666; font-size: 22px; transition: 0.3s; position: relative; }
-        .nav-item.active { color: var(--primary); transform: translateY(-5px); }
-        .nav-item.active::after { content: ''; position: absolute; bottom: -5px; left: 50%; transform: translateX(-50%); width: 5px; height: 5px; background: var(--primary); border-radius: 50%; }
+        /* TAB BAR (iOS) */
+        .tab-bar { position: fixed; bottom: 0; width: 100%; height: 85px; display: flex; justify-content: space-around; align-items: center; padding-bottom: 25px; border-top: 1px solid var(--border); background: rgba(0,0,0,0.8); backdrop-filter: var(--glass); }
+        .tab-item { display: flex; flex-direction: column; align-items: center; font-size: 10px; color: #555; cursor: pointer; }
+        .tab-item.active { color: var(--primary); }
+        .tab-item i { font-size: 22px; margin-bottom: 4px; }
 
-        /* --- CHAT ROOM (C) --- */
-        .chat-view { display: flex; flex-direction: column; height: 100%; }
-        .chat-list { flex: 1; overflow-y: auto; padding: 10px; display: flex; flex-direction: column; gap: 12px; }
-        .chat-msg { max-width: 80%; padding: 10px 15px; border-radius: 15px; font-size: 13px; position: relative; }
-        .msg-me { align-self: flex-end; background: var(--primary); color: white; border-bottom-right-radius: 2px; }
-        .msg-other { align-self: flex-start; background: #222; color: #ddd; border-bottom-left-radius: 2px; }
-        .msg-name { font-size: 10px; opacity: 0.7; display: block; margin-bottom: 2px; color: var(--gold); }
-        .chat-input-bar { padding: 10px; background: #111; display: flex; gap: 10px; align-items: center; }
-        .chat-input { flex: 1; padding: 12px; background: #222; border: none; border-radius: 25px; color: white; }
+        /* READER VIEW */
+        #reader-view { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #000; z-index: 5000; display: none; flex-direction: column; }
+        .reader-header { padding: 50px 20px 20px; border-bottom: 1px solid var(--border); }
+        .reader-body { flex: 1; overflow-y: auto; padding: 25px; line-height: 1.8; font-size: 18px; color: #ccc; }
+        .reader-nav { padding: 20px; display: flex; justify-content: space-between; border-top: 1px solid var(--border); }
+        .nav-btn { padding: 12px 25px; border-radius: 15px; background: var(--primary); font-weight: 700; color: #fff; border: none; }
+        .nav-btn:disabled { background: #222; color: #555; }
 
-        /* --- BOOK / TECH READER (K) --- */
-        .book-list { display: flex; flex-direction: column; gap: 10px; }
-        .book-item { background: #1a1a1a; padding: 15px; border-radius: 10px; border-left: 4px solid var(--primary); display: flex; justify-content: space-between; align-items: center; }
-        .reader-modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #000; z-index: 3000; padding: 20px; overflow-y: auto; display: none; }
-        .reader-content { font-size: 16px; line-height: 1.8; color: #ccc; text-align: justify; margin-top: 20px; }
+        /* AUTH & SPLASH */
+        #splash { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #000; z-index: 11000; display: flex; flex-direction: column; justify-content: center; align-items: center; }
+        #auth-screen { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #000; z-index: 9000; display: none; flex-direction: column; justify-content: center; padding: 30px; }
+        .input-box { width: 100%; padding: 16px; background: rgba(255,255,255,0.05); border: 1px solid var(--border); border-radius: 15px; color: white; margin-bottom: 15px; outline: none; }
+        .btn-red { width: 100%; padding: 16px; background: var(--primary); color: white; border: none; border-radius: 15px; font-weight: 800; cursor: pointer; }
 
-        /* --- MODALS --- */
-        .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); z-index: 4000; display: none; justify-content: center; align-items: center; }
-        .modal-card { background: #151515; width: 85%; padding: 25px; border-radius: 20px; border: 1px solid var(--primary); text-align: center; }
-        .hwid-disp { font-family: monospace; background: #000; padding: 8px; color: var(--primary); margin: 10px 0; border: 1px dashed #333; font-size: 12px; }
+        /* PLAYER */
+        #player-wrap { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #000; z-index: 8000; display: none; }
+        .close-player { position: absolute; top: 40px; left: 20px; z-index: 8001; font-size: 30px; color: white; }
 
-        /* --- PLAYER --- */
-        #player-modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #000; z-index: 5000; display: none; flex-direction: column; justify-content: center; }
-        #video { width: 100%; height: 100%; }
-        .close-player { position: absolute; top: 20px; left: 20px; color: white; font-size: 30px; z-index: 5001; cursor: pointer; text-shadow: 0 0 10px black; }
-
-        /* --- FLOATING & ADS --- */
-        .wa-float { position: fixed; bottom: 100px; right: 20px; width: 50px; height: 50px; background: #25D366; border-radius: 50%; display: flex; justify-content: center; align-items: center; font-size: 24px; color: white; z-index: 900; box-shadow: 0 5px 15px rgba(0,0,0,0.5); }
-        .ad-modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #000; z-index: 6000; display: none; flex-direction: column; justify-content: center; align-items: center; }
-        
-        /* Side Menu */
-        .side-menu { position: fixed; top: 0; right: -80%; width: 70%; height: 100%; background: #111; z-index: 2000; padding: 20px; transition: 0.3s; border-left: 1px solid #333; }
-        .side-menu.open { right: 0; }
-        .menu-item { padding: 15px 0; border-bottom: 1px solid #222; font-weight: bold; display: flex; align-items: center; gap: 10px; }
-
-        /* Notifications */
-        .notif-badge { position: absolute; top: -5px; right: -5px; width: 10px; height: 10px; background: var(--primary); border-radius: 50%; display: none; }
-        
-        #injected-code { display: none; }
+        ::-webkit-scrollbar { width: 0; }
+        .page { display: none; } .page.active { display: block; animation: slideUp 0.4s; }
+        @keyframes slideUp { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
     </style>
 </head>
 <body>
 
-    <!-- 1. SPLASH SCREEN (ANIMATION J) -->
+    <!-- AD OVERLAY -->
+    <div id="ad-overlay">
+        <div id="ad-timer">AD: 15s</div>
+        <i id="ad-close" class="fas fa-times-circle" onclick="closeAd()"></i>
+        <div class="ad-header-text" id="ad-header-words">SPECIAL SPONSOR</div>
+        <div class="ad-media-box" id="ad-media-container"></div>
+        <div class="ad-footer-text" id="ad-footer-words">Support Stany Min TV by watching this ad.</div>
+        <button class="btn-red" style="width: 200px; position: absolute; bottom: 50px;" onclick="visitAd()">VISIT WEBSITE</button>
+    </div>
+
+    <!-- SPLASH -->
     <div id="splash">
-        <div class="tv-box anim-item">
-            <div class="antenna"></div>
-            <div class="tv-screen">S</div>
-        </div>
-        <div class="app-name-anim">STANY MIN TV</div>
+        <div style="width: 80px; height: 80px; border: 4px solid var(--primary); border-radius: 20px; display: flex; justify-content: center; align-items: center; font-size: 40px; color: var(--primary); font-family: 'Orbitron';">S</div>
+        <h2 style="margin-top: 20px; letter-spacing: 5px; font-family: 'Orbitron'; font-size: 14px;">STANY MIN TV</h2>
     </div>
 
-    <!-- 2. AUTH SCREEN (LOGIN/REGISTER/GOOGLE) -->
+    <!-- AUTH -->
     <div id="auth-screen">
-        <div class="auth-card">
-            <h2 style="text-align: center; color: var(--primary); margin-bottom: 20px;">WELCOME</h2>
-            <div class="auth-tabs">
-                <div class="auth-tab active" onclick="switchAuth('login')">LOGIN</div>
-                <div class="auth-tab" onclick="switchAuth('register')">REGISTER</div>
-            </div>
-
-            <!-- Login Form -->
-            <div id="login-form">
-                <div class="input-group">
-                    <input type="email" id="l-email" class="input-box" placeholder="Email Address">
-                </div>
-                <div class="input-group">
-                    <input type="password" id="l-pass" class="input-box" placeholder="Password">
-                </div>
-                <button class="btn" onclick="emailLogin()">LOGIN</button>
-            </div>
-
-            <!-- Register Form -->
-            <div id="register-form" style="display: none;">
-                <div class="input-group">
-                    <input type="text" id="r-name" class="input-box" placeholder="Full Name">
-                </div>
-                <div class="input-group">
-                    <input type="email" id="r-email" class="input-box" placeholder="Email Address">
-                </div>
-                <div class="input-group">
-                    <input type="password" id="r-pass" class="input-box" placeholder="Password (6+ chars)">
-                </div>
-                <button class="btn" onclick="emailRegister()">REGISTER</button>
-            </div>
-
-            <div class="btn-google btn" onclick="googleLogin()">
-                <i class="fab fa-google"></i> Continue with Google
-            </div>
-            <p id="auth-msg" style="color: var(--danger); text-align: center; margin-top: 15px; font-size: 12px;"></p>
+        <div class="ios-glass" style="padding: 30px; text-align: center;">
+            <h2 style="margin-bottom: 25px; letter-spacing: 2px;">LOGIN</h2>
+            <input type="email" id="l-email" class="input-box" placeholder="Email Address">
+            <input type="password" id="l-pass" class="input-box" placeholder="Password">
+            <button class="btn-red" onclick="login()">Enter App</button>
+            <p style="margin-top: 20px; font-size: 13px; color: #888;" onclick="toggleAuth()">New member? <span style="color:var(--primary)">Register</span></p>
         </div>
     </div>
 
-    <!-- 3. MAIN APP -->
+    <!-- MAIN APP -->
     <div id="app-container">
-        <!-- HEADER -->
         <div class="header">
-            <div class="logo-text">STANY <span>MIN TV</span></div>
-            <div style="display: flex; gap: 15px; align-items: center;">
-                <i class="fas fa-sync-alt" style="color: white;" onclick="location.reload()"></i>
-                <div style="position: relative;" onclick="openPage('notif')">
-                    <i class="fas fa-bell" style="color: white;"></i>
-                    <div class="notif-badge"></div>
-                </div>
-                <div class="profile-btn" onclick="openProfile()">
-                    <img id="header-pic" src="https://via.placeholder.com/50">
-                </div>
-            </div>
+            <div class="logo">STANY<span>MIN</span> TV</div>
+            <i class="fas fa-sync" onclick="location.reload()"></i>
         </div>
 
-        <!-- CONTENT -->
         <div class="content-area">
-            
-            <!-- HOME VIEW -->
-            <div id="view-home">
-                <!-- Banner Slider (Auto) -->
-                <div id="banner-slider" style="height: 200px; border-radius: 15px; overflow: hidden; margin-bottom: 20px; position: relative;">
-                    <img id="banner-img" src="" style="width: 100%; height: 100%; object-fit: cover;">
-                    <div style="position: absolute; bottom: 0; left: 0; width: 100%; background: linear-gradient(transparent, #000); padding: 10px; color: white; font-weight: bold;">Featured Movie</div>
-                </div>
-
-                <div class="section-title"><i class="fas fa-tv" style="color:var(--primary);"></i> Live Channels</div>
-                <div id="channels-grid" class="grid"></div>
-
-                <div class="section-title"><i class="fas fa-film" style="color:var(--primary);"></i> Latest Movies</div>
-                <div id="movies-grid" class="grid"></div>
+            <div id="view-home" class="page active">
+                <h3 style="margin-bottom: 15px; font-size: 14px; color: var(--primary);">LIVE CHANNELS</h3>
+                <div id="chan-grid" class="grid"></div>
+                <h3 style="margin: 25px 0 15px; font-size: 14px; color: var(--primary);">MOVIES</h3>
+                <div id="mov-grid" class="grid"></div>
             </div>
 
-            <!-- CHAT VIEW (C) -->
-            <div id="view-chat" style="display: none; height: 100%;">
-                <div class="chat-view">
-                    <div id="chat-messages" class="chat-list"></div>
-                    <div class="chat-input-bar">
-                        <input type="text" id="chat-input" class="chat-input" placeholder="Type message...">
-                        <button onclick="sendChat()" style="width: 40px; height: 40px; border-radius: 50%; background: var(--primary); border: none; color: white;"><i class="fas fa-paper-plane"></i></button>
+            <div id="view-library" class="page">
+                <h3 style="color:var(--primary); margin-bottom: 20px;">SIMULIZI & TECH</h3>
+                <div id="book-list"></div>
+            </div>
+
+            <div id="view-premium" class="page">
+                <div class="ios-glass" style="padding: 25px;">
+                    <h3>ACTIVATE TOKEN</h3>
+                    <p style="color:#888; font-size: 12px; margin: 10px 0 20px;">Weka token yako hapa kuondoa matangazo na ku-lock kifaa hiki.</p>
+                    <input type="text" id="token-input" class="input-box" placeholder="Enter Token ID...">
+                    <button class="btn-red" onclick="activateToken()">ACTIVATE PREMIUM</button>
+                    <div id="user-info" style="margin-top: 20px; padding-top: 20px; border-top: 1px solid var(--border);">
+                        <p style="font-size: 14px;">Status: <span id="sub-status" style="color:var(--primary)">FREE USER</span></p>
+                        <p style="font-size: 11px; color:#444; margin-top: 10px;" id="hwid-val"></p>
+                        <button class="btn-red" style="background:#111; margin-top: 20px;" onclick="auth.signOut()">LOGOUT</button>
                     </div>
                 </div>
             </div>
-
-            <!-- LIBRARY VIEW (Stories & Tech) -->
-            <div id="view-library" style="display: none;">
-                <div class="section-title">Simulizi (Stories)</div>
-                <div id="stories-list" class="book-list"></div>
-                
-                <div class="section-title">Tech Updates</div>
-                <div id="tech-list" class="book-list"></div>
-                
-                <div class="section-title">Downloads</div>
-                <div id="downloads-list" class="book-list"></div>
-            </div>
-
-            <!-- NOTIFICATIONS & REQUESTS -->
-            <div id="view-notif" style="display: none;">
-                <div class="section-title">Notifications</div>
-                <div id="notif-list" class="book-list"></div>
-                
-                <div class="section-title">Requests & Complaints</div>
-                <div style="background: #1a1a1a; padding: 15px; border-radius: 10px;">
-                    <textarea id="req-text" class="input-box" rows="3" placeholder="Movie request or Complaint..."></textarea>
-                    <button class="btn" onclick="sendRequest()">Send to Admin</button>
-                </div>
-            </div>
-
         </div>
 
-        <!-- NAV BAR -->
-        <div class="nav-bar">
-            <div class="nav-item active" onclick="switchTab('home', this)"><i class="fas fa-home"></i></div>
-            <div class="nav-item" onclick="switchTab('library', this)"><i class="fas fa-book"></i></div>
-            <div class="nav-item" onclick="switchTab('chat', this)"><i class="fas fa-comments"></i></div>
-            <div class="nav-item" onclick="toggleMenu()"><i class="fas fa-bars"></i></div>
-        </div>
-
-    </div>
-
-    <!-- SIDE MENU -->
-    <div id="side-menu" class="side-menu">
-        <h2 style="color: var(--primary); margin-bottom: 20px;">MENU</h2>
-        <div class="menu-item" onclick="openProfile()"><i class="fas fa-user"></i> My Profile</div>
-        <div class="menu-item" onclick="openPage('view-notif')"><i class="fas fa-bell"></i> Notifications</div>
-        <div class="menu-item" onclick="window.open('https://wa.me/'+adminNumber, '_blank')"><i class="fab fa-whatsapp"></i> Support</div>
-        <div class="menu-item" style="color: var(--danger);" onclick="auth.signOut()"><i class="fas fa-sign-out-alt"></i> Logout</div>
-        <div class="menu-item" onclick="toggleMenu()" style="margin-top: auto; justify-content: center; background: #222; border-radius: 10px;">CLOSE</div>
-    </div>
-
-    <!-- MODALS -->
-    
-    <!-- Profile Modal (G & M) -->
-    <div id="profile-modal" class="modal-overlay" onclick="if(event.target==this)this.style.display='none'">
-        <div class="modal-card">
-            <img id="p-img" src="" style="width: 80px; height: 80px; border-radius: 50%; margin-bottom: 10px;">
-            <h3 id="p-name">User</h3>
-            <p id="p-email" style="color: gray; font-size: 12px;">email</p>
-            <div class="hwid-box">
-                <small>DEVICE ID (HWID):</small>
-                <div id="p-hwid" class="hwid-disp">LOADING...</div>
-            </div>
-            <button class="btn" style="background: #333; font-size: 12px;" onclick="copyHwid()">Copy ID for Admin</button>
-            <div id="p-sub" style="margin-top: 15px; color: var(--gold); font-weight: bold;">Checking Subscription...</div>
+        <div class="tab-bar">
+            <div class="tab-item active" onclick="switchPage('home', this)"><i class="fas fa-house"></i>Home</div>
+            <div class="tab-item" onclick="switchPage('library', this)"><i class="fas fa-book-open"></i>Library</div>
+            <div class="tab-item" onclick="switchPage('premium', this)"><i class="fas fa-crown"></i>Premium</div>
         </div>
     </div>
 
-    <!-- Reader Modal (K) -->
-    <div id="reader-modal" class="reader-modal">
-        <i class="fas fa-arrow-left" style="font-size: 24px; color: var(--primary); margin-bottom: 20px;" onclick="document.getElementById('reader-modal').style.display='none'"></i>
-        <h2 id="read-title" style="color: var(--primary);">Title</h2>
-        <div id="read-content" class="reader-content"></div>
+    <!-- READER -->
+    <div id="reader-view">
+        <div class="reader-header">
+            <i class="fas fa-times" onclick="closeReader()" style="float: right; font-size: 24px;"></i>
+            <h2 id="read-title" style="color:var(--primary);">Title</h2>
+            <p id="read-meta" style="font-size: 13px; color:#666; margin-top: 5px;"></p>
+        </div>
+        <div class="reader-body" id="read-body"></div>
+        <div class="reader-nav">
+            <button id="prev-btn" class="nav-btn" onclick="changeEp(-1)">BACK</button>
+            <button id="next-btn" class="nav-btn" onclick="changeEp(1)">NEXT</button>
+        </div>
     </div>
 
-    <!-- Player Modal (F) -->
-    <div id="player-modal">
-        <i class="fas fa-times close-player" onclick="closePlayer()"></i>
-        <video id="video" width="100%" height="100%" controls autoplay></video>
+    <!-- PLAYER -->
+    <div id="player-wrap">
+        <i class="fas fa-chevron-left close-player" onclick="closePlayer()"></i>
+        <div id="video-container" style="width:100%; height:100%;">
+            <video id="stany-player" style="width:100%; height:100%;" autoplay controls></video>
+        </div>
     </div>
-
-    <!-- Ad Overlay (L) -->
-    <div id="ad-overlay" class="ad-modal">
-        <div style="background: white; padding: 5px 10px; border-radius: 5px; position: absolute; top: 20px; right: 20px; color: black; font-weight: bold;">AD <span id="ad-timer">15</span>s</div>
-        <img id="ad-img" src="" style="max-width: 90%; max-height: 50%; border-radius: 10px; margin-bottom: 20px;">
-        <button id="ad-btn" class="btn" style="width: 200px;" onclick="openAd()">Visit Site</button>
-        <button id="ad-skip" class="btn" style="width: 200px; background: #333; display: none;" onclick="closeAd()">Skip Ad</button>
-    </div>
-
-    <!-- WhatsApp Float -->
-    <a href="#" id="wa-link" class="wa-float"><i class="fab fa-whatsapp"></i></a>
-
-    <!-- Injected Code Receiver -->
-    <div id="injected-code"></div>
 
     <script>
-        // FIREBASE CONFIG
+        // CONFIG
         const firebaseConfig = {
             apiKey: "AIzaSyDiexD5WK9GLhQldr6zNmC8iYWc4em5eyM",
             authDomain: "stany-min-tv.firebaseapp.com",
@@ -377,354 +190,165 @@
             projectId: "stany-min-tv",
             storageBucket: "stany-min-tv.firebasestorage.app",
             messagingSenderId: "16513327552",
-            appId: "1:16513327552:web:b4b2247053f83aa0b8e825",
-            measurementId: "G-JM25LJXL5C"
+            appId: "1:16513327552:web:b4b2247053f83aa0b8e825"
         };
         firebase.initializeApp(firebaseConfig);
         const auth = firebase.auth();
         const db = firebase.database();
 
-        // VARIABLES
-        let currentUser = null;
-        let userData = null;
-        let shakaPlayer = null;
-        let adminNumber = "";
-        let currentAd = null;
-        
-        // HWID GENERATION (A)
-        let HWID = localStorage.getItem('hwid');
-        if(!HWID) {
-            HWID = 'ID_' + Math.random().toString(36).substr(2, 9).toUpperCase() + navigator.hardwareConcurrency;
-            localStorage.setItem('hwid', HWID);
-        }
+        let currentUser = null, userData = null, activePlayer = null;
+        let currentBook = null, currentEpIdx = 0;
+        let HWID = localStorage.getItem('stany_hwid') || 'SN-' + Math.random().toString(36).substr(2, 9).toUpperCase();
+        localStorage.setItem('stany_hwid', HWID);
 
-        // --- SPLASH ANIMATION ---
         window.onload = () => {
-            const splash = document.getElementById('splash');
-            const box = document.querySelector('.tv-box');
-            setTimeout(() => { box.parentElement.classList.add('anim-active'); }, 500);
-            setTimeout(() => {
-                splash.style.opacity = 0;
-                setTimeout(() => splash.style.display='none', 800);
-            }, 4000); // 4s Animation
-            
-            initShaka();
+            document.getElementById('hwid-val').innerText = "DEVICE ID: " + HWID;
+            setTimeout(() => { document.getElementById('splash').style.display='none'; checkAuth(); }, 3000);
         };
 
-        // --- AUTHENTICATION ---
-        auth.onAuthStateChanged(user => {
-            if(user) {
-                currentUser = user;
-                checkUserDB(user);
-            } else {
-                document.getElementById('auth-screen').style.display = 'flex';
-                document.getElementById('app-container').style.display = 'none';
-            }
-        });
-
-        function switchAuth(tab) {
-            document.querySelectorAll('.auth-tab').forEach(t => t.classList.remove('active'));
-            event.target.classList.add('active');
-            if(tab === 'login') {
-                document.getElementById('login-form').style.display = 'block';
-                document.getElementById('register-form').style.display = 'none';
-            } else {
-                document.getElementById('login-form').style.display = 'none';
-                document.getElementById('register-form').style.display = 'block';
-            }
-        }
-
-        function emailLogin() {
-            const e = document.getElementById('l-email').value;
-            const p = document.getElementById('l-pass').value;
-            if(e && p) auth.signInWithEmailAndPassword(e, p).catch(err => document.getElementById('auth-msg').innerText = err.message);
-        }
-
-        function emailRegister() {
-            const n = document.getElementById('r-name').value;
-            const e = document.getElementById('r-email').value;
-            const p = document.getElementById('r-pass').value;
-            if(n && e && p) {
-                auth.createUserWithEmailAndPassword(e, p).then(cred => {
-                    createUserEntry(cred.user, n);
-                }).catch(err => document.getElementById('auth-msg').innerText = err.message);
-            }
-        }
-
-        function googleLogin() {
-            const p = new firebase.auth.GoogleAuthProvider();
-            auth.signInWithPopup(p).catch(err => document.getElementById('auth-msg').innerText = err.message);
-        }
-
-        function createUserEntry(user, name) {
-            db.ref('users/' + user.uid).set({
-                name: name || user.displayName,
-                email: user.email,
-                photoURL: user.photoURL,
-                activeDeviceId: HWID,
-                subscriptionType: 'trial',
-                accessExpiry: Date.now() + (10 * 60 * 1000), // 10 Min Trial
-                isBlocked: false
+        function checkAuth() {
+            auth.onAuthStateChanged(user => {
+                if(user) {
+                    currentUser = user;
+                    db.ref('users/' + user.uid).on('value', snap => {
+                        userData = snap.val();
+                        if(!userData) { registerDB(user); return; }
+                        if(userData.hwid && userData.hwid !== HWID) { alert("LOCKED TO ANOTHER DEVICE!"); auth.signOut(); return; }
+                        document.getElementById('auth-screen').style.display = 'none';
+                        document.getElementById('app-container').style.display = 'flex';
+                        document.getElementById('sub-status').innerText = userData.isPremium ? 'PREMIUM ACTIVE' : 'FREE USER';
+                        loadContent();
+                    });
+                } else { document.getElementById('auth-screen').style.display = 'flex'; }
             });
         }
 
-        function checkUserDB(user) {
-            db.ref('users/' + user.uid).on('value', s => {
-                userData = s.val();
-                if(!userData) { createUserEntry(user, null); return; }
-
-                // G: Device Lock
-                if(userData.activeDeviceId && userData.activeDeviceId !== HWID) {
-                    alert("Account locked to another device!");
-                    auth.signOut();
-                    return;
-                }
-                if(!userData.activeDeviceId) db.ref('users/' + user.uid).update({ activeDeviceId: HWID });
-
-                // A: Block
-                if(userData.isBlocked) { alert("Account Banned!"); auth.signOut(); return; }
-
-                // Success
-                document.getElementById('auth-screen').style.display = 'none';
-                document.getElementById('app-container').style.display = 'flex';
-                updateProfileUI();
-                loadContent();
-            });
-        }
-
-        // --- CONTENT & FEATURES ---
         function loadContent() {
-            // Load Channels
-            db.ref('channels').on('value', s => {
-                const g = document.getElementById('channels-grid'); g.innerHTML='';
-                s.forEach(c => {
+            db.ref('channels').on('value', snap => {
+                const g = document.getElementById('chan-grid'); g.innerHTML = '';
+                snap.forEach(c => {
                     const d = c.val();
-                    const card = createCard(d, c.key, 'channel');
-                    g.appendChild(card);
+                    g.innerHTML += `<div class="card" onclick="handlePlay('${c.key}', 'channels')"><img src="${d.logo}"><div class="card-info">${d.name}</div></div>`;
                 });
             });
-
-            // Load Movies
-            db.ref('movies').on('value', s => {
-                const g = document.getElementById('movies-grid'); g.innerHTML='';
-                const movies = [];
-                s.forEach(m => movies.push(m.val()));
-                movies.reverse().forEach((d, i) => {
-                    if(i===0) document.getElementById('banner-img').src = d.backdropURL || d.posterURL;
-                    const card = createCard(d, i, 'movie');
-                    g.appendChild(card);
+            db.ref('movies').on('value', snap => {
+                const g = document.getElementById('mov-grid'); g.innerHTML = '';
+                snap.forEach(m => {
+                    const d = m.val();
+                    g.innerHTML += `<div class="card" onclick="handlePlay('${m.key}', 'movies')"><img src="${d.posterURL}"><div class="card-info">${d.title}</div></div>`;
                 });
             });
-
-            // Load Stories & Tech
-            db.ref('stories').on('value', s => {
-                const l = document.getElementById('stories-list'); l.innerHTML='';
-                s.forEach(st => {
-                    const d = st.val();
-                    l.innerHTML += `<div class="book-item" onclick='openReader(${JSON.stringify(d)})'><div><b>${d.title}</b><br><small>${d.author}</small></div><i class="fas fa-chevron-right"></i></div>`;
+            db.ref('library').on('value', snap => {
+                const l = document.getElementById('book-list'); l.innerHTML = '';
+                snap.forEach(b => {
+                    const d = b.val();
+                    l.innerHTML += `<div class="ios-glass" style="padding:20px; margin-bottom:12px;" onclick="openBook('${b.key}')"><span style="color:var(--primary); font-size:11px; font-weight:800;">${d.category.toUpperCase()}</span><h2 style="margin:5px 0;">${d.title}</h2><p style="color:#666; font-size:13px;">Author: ${d.author}</p></div>`;
                 });
             });
-            
-            db.ref('techUpdates').on('value', s => {
-                const l = document.getElementById('tech-list'); l.innerHTML='';
-                s.forEach(t => {
-                    const d = t.val();
-                    l.innerHTML += `<div class="book-item" onclick='openReader(${JSON.stringify(d)})'><div><b>${d.title}</b></div><i class="fas fa-chevron-right"></i></div>`;
-                });
-            });
+        }
 
-            // Downloads (Existing)
-            db.ref('downloadableMovies').on('value', s => {
-                const l = document.getElementById('downloads-list'); l.innerHTML='';
-                s.forEach(d => {
-                    const v = d.val();
-                    l.innerHTML += `<div class="book-item" onclick="window.open('${v.downloadURL}')"><div><b>${v.title}</b></div><i class="fas fa-download"></i></div>`;
-                });
-            });
+        // ADS ENGINE
+        function handlePlay(id, type) {
+            if(userData.isPremium) processPlay(id, type);
+            else showRandomAd(() => processPlay(id, type));
+        }
 
-            // Chat
-            db.ref('chatRoom').limitToLast(50).on('child_added', s => {
-                const m = s.val();
-                const div = document.createElement('div');
-                div.className = `chat-msg ${m.uid === currentUser.uid ? 'msg-me' : 'msg-other'}`;
-                div.innerHTML = `<span class="msg-name">${m.name}</span>${m.text}`;
-                const list = document.getElementById('chat-messages');
-                list.appendChild(div);
-                list.scrollTop = list.scrollHeight;
-            });
-
-            // Settings & Inject
-            db.ref('settings').on('value', s => {
-                const set = s.val();
-                if(set) {
-                    adminNumber = set.adminContactNumber;
-                    document.getElementById('wa-link').href = `https://wa.me/${adminNumber}`;
-                    if(set.injectedCode) {
-                        const container = document.getElementById('injected-code');
-                        container.innerHTML = set.injectedCode;
-                        Array.from(container.querySelectorAll("script")).forEach( oldScript => {
-                            const newScript = document.createElement("script");
-                            Array.from(oldScript.attributes).forEach( attr => newScript.setAttribute(attr.name, attr.value) );
-                            newScript.appendChild(document.createTextNode(oldScript.innerHTML));
-                            oldScript.parentNode.replaceChild(newScript, oldScript);
-                        });
-                    }
+        function showRandomAd(callback) {
+            db.ref('ads').once('value', snap => {
+                const ads = []; snap.forEach(a => ads.push(a.val()));
+                if(ads.length === 0) { callback(); return; }
+                const ad = ads[Math.floor(Math.random() * ads.length)];
+                const overlay = document.getElementById('ad-overlay');
+                const mediaBox = document.getElementById('ad-media-container');
+                const timer = document.getElementById('ad-timer');
+                document.getElementById('ad-header-words').innerText = ad.header || "SPONSOR AD";
+                document.getElementById('ad-footer-words').innerText = ad.footer || "Supported by Sponsor";
+                mediaBox.innerHTML = '';
+                if(ad.type === 'video') mediaBox.innerHTML = `<video src="${ad.url}" autoplay muted></video>`;
+                else if(ad.type === 'image') mediaBox.innerHTML = `<img src="${ad.url}">`;
+                else if(ad.type === 'slider') {
+                    let slides = ad.images.map(img => `<img src="${img}" style="width:100%">`).join('');
+                    mediaBox.innerHTML = `<div id="adSlider" style="display:flex; transition:0.5s;">${slides}</div>`;
+                    startSlider();
                 }
+                overlay.style.display = 'flex';
+                let sec = ad.duration || 15; timer.innerText = "AD: " + sec + "s";
+                const countdown = setInterval(() => {
+                    sec--; timer.innerText = "AD: " + sec + "s";
+                    if(sec <= 0) { clearInterval(countdown); timer.style.display = 'none'; document.getElementById('ad-close').style.display = 'block'; }
+                }, 1000);
+                window.adCallback = callback; window.currentAdLink = ad.link;
             });
         }
 
-        function createCard(data, key, type) {
-            const isVip = data.access === 'VIP';
-            const div = document.createElement('div');
-            div.className = 'card';
-            div.innerHTML = `
-                <span class="badge ${isVip ? 'badge-vip' : 'badge-free'}">${isVip ? 'VIP' : 'FREE'}</span>
-                <img src="${type==='channel'?data.logo:data.posterURL}">
-                <div class="card-overlay"><div class="card-title">${type==='channel'?data.name:data.title}</div></div>
-            `;
-            div.onclick = () => handleAccess(data);
-            return div;
-        }
+        function closeAd() { document.getElementById('ad-overlay').style.display = 'none'; document.getElementById('ad-timer').style.display = 'block'; if(window.adCallback) window.adCallback(); }
+        function visitAd() { if(window.currentAdLink) window.open(window.currentAdLink, '_blank'); }
+        function startSlider() { let i = 0; setInterval(() => { const s = document.getElementById('adSlider'); if(!s) return; i = (i + 1) % s.children.length; s.style.transform = `translateX(-${i * 100}%)`; }, 3000); }
 
-        function handleAccess(data) {
-            // E: Check Access
-            const isVip = data.access === 'VIP';
-            const isSub = userData.subscriptionType === 'premium' && userData.accessExpiry > Date.now();
-            const isTrial = userData.subscriptionType === 'trial' && userData.accessExpiry > Date.now();
-
-            if(isVip && !isSub) {
-                // H: Token System
-                const token = prompt("🔒 VIP Content. Enter Token to Unlock:");
-                if(token) verifyToken(token, data);
-                return;
-            }
-
-            // L: Ads for non-premium
-            if(!isSub) {
-                showAd(() => playContent(data));
-            } else {
-                playContent(data);
-            }
-        }
-
-        function verifyToken(token, data) {
-            db.ref('tokens').orderByChild('token').equalTo(token).once('value', s => {
-                let valid = false;
-                s.forEach(t => {
-                    const info = t.val();
-                    if(info.status === 'ACTIVE' && (info.hwid === 'ANY' || info.hwid === HWID)) {
-                        valid = true;
-                        db.ref('tokens/'+t.key).update({status: 'USED', usedBy: currentUser.uid});
-                        db.ref('users/'+currentUser.uid).update({
-                            subscriptionType: 'premium',
-                            accessExpiry: Date.now() + (info.duration * 86400000)
-                        });
-                        alert("Premium Activated!");
-                        playContent(data);
-                    }
-                });
-                if(!valid) alert("Invalid Token");
+        // DRM PLAYER
+        async function processPlay(id, path) {
+            db.ref(path + '/' + id).once('value', async snap => {
+                const item = snap.val();
+                document.getElementById('player-wrap').style.display = 'block';
+                const video = document.getElementById('stany-player');
+                if(!activePlayer) activePlayer = new shaka.Player(video);
+                try {
+                    if(item.playerType === 'drm') {
+                        activePlayer.configure({ drm: { servers: { 'com.widevine.alpha': item.licenseURL } } });
+                        if(item.tokenID) {
+                            activePlayer.getNetworkingEngine().registerRequestFilter((type, req) => {
+                                if (type == shaka.net.NetworkingEngine.RequestType.LICENSE) req.headers['Authorization'] = 'Bearer ' + item.tokenID;
+                            });
+                        }
+                    } else { activePlayer.configure({ drm: { servers: {} } }); }
+                    await activePlayer.load(item.streamURL || item.movieURL);
+                } catch(e) { alert("Stream Error"); }
             });
         }
 
-        // --- PLAYER (F: SHAKA DRM) ---
-        function initShaka() {
-            shaka.polyfill.installAll();
-            if(shaka.Player.isBrowserSupported()) {
-                shakaPlayer = new shaka.Player(document.getElementById('video'));
-            }
-        }
-
-        function playContent(data) {
-            const url = data.stream || data.movieURL;
-            document.getElementById('player-modal').style.display = 'flex';
-            
-            let config = {};
-            if(data.drmKey && data.drmId) {
-                config = { drm: { clearKeys: { [data.drmId]: data.drmKey } } };
-            } else if(data.license) {
-                config = { drm: { servers: { 'com.widevine.alpha': data.license } } };
-            }
-            
-            shakaPlayer.configure(config);
-            shakaPlayer.load(url).catch(e => console.error(e));
-        }
-
-        function closePlayer() {
-            shakaPlayer.unload();
-            document.getElementById('player-modal').style.display = 'none';
-        }
-
-        // --- EXTRAS ---
-        function showAd(cb) {
-            db.ref('ads').limitToLast(1).once('value', s => {
-                let ad = null; s.forEach(a => ad = a.val());
-                if(ad) {
-                    document.getElementById('ad-img').src = ad.image;
-                    document.getElementById('ad-overlay').style.display = 'flex';
-                    currentAd = ad;
-                    let t = parseInt(ad.duration) || 15;
-                    const timer = document.getElementById('ad-timer');
-                    const skip = document.getElementById('ad-skip');
-                    const int = setInterval(() => {
-                        t--; timer.innerText = t;
-                        if(t <= 0) { clearInterval(int); skip.style.display = 'block'; skip.onclick = () => { document.getElementById('ad-overlay').style.display='none'; cb(); }; }
-                    }, 1000);
-                } else { cb(); }
+        // LIBRARY READER
+        function openBook(id) {
+            db.ref('library/' + id).once('value', snap => {
+                currentBook = snap.val(); currentEpIdx = 0;
+                document.getElementById('reader-view').style.display = 'flex'; showEp();
             });
         }
-        function openAd() { if(currentAd) window.open(currentAd.link); }
+        function showEp() {
+            const ep = currentBook.episodes[currentEpIdx];
+            document.getElementById('read-title').innerText = currentBook.title;
+            document.getElementById('read-meta').innerText = `${currentBook.category.toUpperCase()} | ${ep.partTitle}`;
+            document.getElementById('read-body').innerText = ep.content;
+            document.getElementById('prev-btn').disabled = (currentEpIdx === 0);
+            document.getElementById('next-btn').disabled = (currentEpIdx === currentBook.episodes.length - 1);
+            document.getElementById('read-body').scrollTop = 0;
+        }
+        function changeEp(dir) { currentEpIdx += dir; showEp(); }
+        function closeReader() { document.getElementById('reader-view').style.display = 'none'; }
 
-        function sendChat() {
-            const txt = document.getElementById('chat-input').value;
-            if(txt) {
-                db.ref('chatRoom').push({ text: txt, name: userData.name, uid: currentUser.uid, timestamp: Date.now() });
-                document.getElementById('chat-input').value = "";
-            }
+        // TOKEN SYSTEM
+        function activateToken() {
+            const token = document.getElementById('token-input').value;
+            db.ref('tokens/' + token).once('value', snap => {
+                const t = snap.val();
+                if(t && t.status === 'unused') {
+                    db.ref('users/' + currentUser.uid).update({ isPremium: true, hwid: HWID });
+                    db.ref('tokens/' + token).update({ status: 'used', usedBy: currentUser.uid });
+                    alert("PREMIUM ACTIVATED!");
+                } else { alert("INVALID TOKEN"); }
+            });
         }
 
-        function openReader(data) {
-            document.getElementById('read-title').innerText = data.title;
-            document.getElementById('read-content').innerHTML = data.content;
-            document.getElementById('reader-modal').style.display = 'block';
-        }
-
-        // UI UTILS
-        function switchTab(id, el) {
-            document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
+        function switchPage(id, el) {
+            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+            document.getElementById('view-' + id).classList.add('active');
+            document.querySelectorAll('.tab-item').forEach(n => n.classList.remove('active'));
             el.classList.add('active');
-            ['home','chat','library','notif'].forEach(v => document.getElementById('view-'+v).style.display='none');
-            document.getElementById('view-'+id).style.display = id === 'chat' ? 'flex' : 'block';
-            document.getElementById('side-menu').classList.remove('open');
-        }
-        function toggleMenu() { document.getElementById('side-menu').classList.toggle('open'); }
-        function openPage(id) {
-            document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
-            ['home','chat','library','notif'].forEach(v => document.getElementById('view-'+v).style.display='none');
-            document.getElementById('view-'+id).style.display='block';
-            document.getElementById('side-menu').classList.remove('open');
         }
 
-        function updateProfileUI() {
-            document.getElementById('p-name').innerText = userData.name;
-            document.getElementById('p-email').innerText = userData.email;
-            document.getElementById('p-hwid').innerText = HWID;
-            document.getElementById('header-pic').src = userData.photoURL || 'https://via.placeholder.com/50';
-            document.getElementById('p-img').src = userData.photoURL || 'https://via.placeholder.com/80';
-            const exp = new Date(userData.accessExpiry).toLocaleDateString();
-            document.getElementById('p-sub').innerText = `${userData.subscriptionType.toUpperCase()} (Exp: ${exp})`;
-        }
-        function openProfile() { document.getElementById('profile-modal').style.display='flex'; }
-        function copyHwid() { navigator.clipboard.writeText(HWID); alert("Copied ID!"); }
-        
-        function sendRequest() {
-            const txt = document.getElementById('req-text').value;
-            if(txt) {
-                db.ref('requests').push({ user: userData.name, text: txt, uid: currentUser.uid });
-                alert("Sent!");
-            }
-        }
-
+        function closePlayer() { if(activePlayer) activePlayer.unload(); document.getElementById('player-wrap').style.display = 'none'; }
+        function login() { auth.signInWithEmailAndPassword(document.getElementById('l-email').value, document.getElementById('l-pass').value).catch(e => alert(e.message)); }
+        function registerDB(u) { db.ref('users/' + u.uid).set({ email: u.email, isPremium: false, hwid: "" }); }
+        function toggleAuth() { /* Add Register Logic if needed */ }
     </script>
 </body>
 </html>
