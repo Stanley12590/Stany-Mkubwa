@@ -5,13 +5,15 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>STANY MIN TV - iOS 26 PRO</title>
     
-    <!-- ICONS & FONTS -->
+    <!-- FONTS & ICONS (NO EMOJIS) -->
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=SF+Pro+Display:wght@300;400;600;800&family=Orbitron:wght@700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&family=Orbitron:wght@700&display=swap" rel="stylesheet">
     
-    <!-- SHAKA PLAYER -->
+    <!-- VIDEO PLAYER SDKs -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/shaka-player/4.3.5/shaka-player.ui.min.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/shaka-player/4.3.5/controls.min.css">
+    <link href="https://unpkg.com/video.js@7.21.1/dist/video-js.min.css" rel="stylesheet">
+    <script src="https://unpkg.com/video.js@7.21.1/dist/video.min.js"></script>
     
     <!-- FIREBASE SDK -->
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
@@ -28,101 +30,109 @@
             --glass: blur(25px);
         }
 
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'SF Pro Display', sans-serif; -webkit-tap-highlight-color: transparent; }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Outfit', sans-serif; -webkit-tap-highlight-color: transparent; }
         body { background: var(--bg); color: var(--text); overflow: hidden; height: 100vh; width: 100vw; }
 
-        .ios-glass {
-            background: var(--surface);
-            backdrop-filter: var(--glass);
-            -webkit-backdrop-filter: var(--glass);
-            border: 1px solid var(--border);
-            border-radius: 25px;
+        /* GLASS UI */
+        .ios-glass { background: var(--surface); backdrop-filter: var(--glass); -webkit-backdrop-filter: var(--glass); border: 1px solid var(--border); border-radius: 25px; }
+
+        /* 1. ULTIMATE STARTUP AD OVERLAY */
+        #ad-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: #000; z-index: 15000; display: none;
+            flex-direction: column; justify-content: center; align-items: center;
         }
+        .ad-header-text { position: absolute; top: 70px; width: 100%; text-align: center; color: var(--primary); font-weight: 800; letter-spacing: 2px; }
+        #ad-timer { position: absolute; top: 40px; right: 20px; padding: 8px 16px; border-radius: 20px; background: white; color: black; font-weight: 900; font-size: 13px; }
+        #ad-close { position: absolute; top: 40px; left: 20px; font-size: 30px; display: none; cursor: pointer; color: white; }
+        .ad-media-box { width: 90%; max-height: 55%; border-radius: 20px; overflow: hidden; border: 1px solid var(--border); background: #050505; display: flex; align-items: center; justify-content: center; }
+        .ad-media-box img, .ad-media-box video { width: 100%; height: auto; border-radius: 15px; }
+        .ad-social-footer { position: absolute; bottom: 80px; width: 100%; text-align: center; padding: 0 20px; }
+        .social-icon-grid { display: flex; justify-content: center; gap: 15px; margin-top: 15px; }
+        .social-btn { width: 50px; height: 50px; border-radius: 15px; background: rgba(255,255,255,0.1); border: 1px solid var(--border); display: flex; align-items: center; justify-content: center; font-size: 22px; color: #fff; cursor: pointer; transition: 0.3s; }
 
-        /* AUTH UI */
-        #auth-screen { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #000; z-index: 9500; display: none; flex-direction: column; justify-content: center; padding: 30px; }
-        .input-box { width: 100%; padding: 16px; background: rgba(255,255,255,0.05); border: 1px solid var(--border); border-radius: 15px; color: white; margin-bottom: 15px; outline: none; }
-        .btn-p { width: 100%; padding: 16px; background: var(--primary); color: white; border: none; border-radius: 15px; font-weight: 800; cursor: pointer; margin-bottom: 10px; }
-        .btn-google { width: 100%; padding: 14px; background: white; color: black; border: none; border-radius: 15px; font-weight: 700; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 10px; margin-top: 10px; }
-
-        /* MAIN APP */
+        /* 2. MAIN APP INTERFACE */
         #app-container { display: none; height: 100vh; flex-direction: column; }
-        .header { padding: 20px; display: flex; justify-content: space-between; align-items: center; }
+        .header { padding: 20px; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; background: rgba(0,0,0,0.8); z-index: 1000; }
         .logo { font-family: 'Orbitron'; font-size: 20px; letter-spacing: 2px; }
         .logo span { color: var(--primary); }
         .content-area { flex: 1; overflow-y: auto; padding: 15px; padding-bottom: 100px; }
 
-        /* GRID & CARDS */
+        /* CAROUSEL */
+        .carousel { width: 100%; height: 200px; overflow: hidden; position: relative; border-radius: 20px; margin-bottom: 20px; border: 1px solid var(--border); }
+        .carousel-slide { position: absolute; width: 100%; height: 100%; opacity: 0; transition: 0.8s; }
+        .carousel-slide.active { opacity: 1; }
+        .carousel-slide img { width: 100%; height: 100%; object-fit: cover; }
+
+        /* CARDS */
         .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-        .card { aspect-ratio: 2/3; border-radius: 20px; overflow: hidden; position: relative; border: 1px solid var(--border); background: #111; }
+        .card { aspect-ratio: 2/3; border-radius: 20px; overflow: hidden; position: relative; border: 1px solid var(--border); background: #0a0a0a; }
         .card img { width: 100%; height: 100%; object-fit: cover; }
-        .card-info { position: absolute; bottom: 0; width: 100%; padding: 12px 8px; background: linear-gradient(transparent, #000); font-weight: 600; font-size: 12px; text-align: center; }
+        .card-info { position: absolute; bottom: 0; width: 100%; padding: 12px 8px; background: linear-gradient(transparent, #000); font-weight: 600; font-size: 11px; text-align: center; }
 
-        /* ADS SYSTEM */
-        #ad-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #000; z-index: 10000; display: none; flex-direction: column; justify-content: center; align-items: center; }
-        #ad-timer { position: absolute; top: 50px; right: 20px; padding: 8px 16px; border-radius: 20px; background: white; color: black; font-weight: 900; }
-        #ad-close { position: absolute; top: 50px; left: 20px; font-size: 30px; display: none; cursor: pointer; color: white; }
-        .ad-media-box { width: 90%; max-height: 60%; border-radius: 20px; overflow: hidden; border: 1px solid var(--primary); display: flex; align-items: center; justify-content: center; }
-        .ad-media-box img, .ad-media-box video { width: 100%; height: auto; }
-
-        /* TAB BAR */
-        .tab-bar { position: fixed; bottom: 0; width: 100%; height: 85px; display: flex; justify-content: space-around; align-items: center; padding-bottom: 25px; border-top: 1px solid var(--border); background: rgba(0,0,0,0.8); backdrop-filter: var(--glass); z-index: 1000; }
-        .tab-item { display: flex; flex-direction: column; align-items: center; font-size: 10px; color: #555; cursor: pointer; }
+        /* IPHONE BOTTOM NAVIGATION */
+        .tab-bar { position: fixed; bottom: 0; width: 100%; height: 85px; display: flex; justify-content: space-around; align-items: center; padding-bottom: 25px; border-top: 1px solid var(--border); background: rgba(0,0,0,0.8); backdrop-filter: var(--glass); z-index: 2000; }
+        .tab-item { display: flex; flex-direction: column; align-items: center; font-size: 10px; color: #555; cursor: pointer; font-weight: 600; }
         .tab-item.active { color: var(--primary); }
         .tab-item i { font-size: 22px; margin-bottom: 4px; }
 
-        /* READER */
+        /* PRO READER VIEW */
         #reader-view { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #000; z-index: 5000; display: none; flex-direction: column; }
-        .reader-body { flex: 1; overflow-y: auto; padding: 25px; line-height: 1.8; font-size: 18px; color: #ccc; }
-        .reader-nav { padding: 20px; display: flex; justify-content: space-between; border-top: 1px solid var(--border); }
+        .reader-header { padding: 50px 20px 20px; border-bottom: 1px solid var(--border); text-align: center; }
+        .reader-body { flex: 1; overflow-y: auto; padding: 25px; line-height: 1.8; font-size: 17px; color: #ccc; }
+        .reader-nav { padding: 20px; display: flex; justify-content: space-between; border-top: 1px solid var(--border); background: #050505; }
+        .nav-btn { padding: 12px 25px; border-radius: 15px; background: var(--primary); font-weight: 700; color: #fff; border: none; font-size: 12px; }
 
-        #splash { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #000; z-index: 11000; display: flex; flex-direction: column; justify-content: center; align-items: center; }
+        /* AUTH & LOADER */
+        #auth-screen { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #000; z-index: 9000; display: none; flex-direction: column; justify-content: center; padding: 30px; }
+        #loader { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #000; z-index: 20000; display: flex; justify-content: center; align-items: center; }
+        .input-box { width: 100%; padding: 16px; background: rgba(255,255,255,0.05); border: 1px solid var(--border); border-radius: 15px; color: white; margin-bottom: 15px; outline: none; }
+        .btn-p { width: 100%; padding: 16px; background: var(--primary); color: white; border: none; border-radius: 15px; font-weight: 800; cursor: pointer; }
+        
         #player-wrap { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #000; z-index: 8000; display: none; }
-        .close-player { position: absolute; top: 40px; left: 20px; z-index: 8001; font-size: 30px; color: white; }
+        .close-player { position: absolute; top: 40px; left: 20px; z-index: 8001; font-size: 28px; color: white; cursor: pointer; }
 
         ::-webkit-scrollbar { width: 0; }
-        .page { display: none; } .page.active { display: block; }
+        .page { display: none; } .page.active { display: block; animation: slideUp 0.4s; }
+        @keyframes slideUp { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
     </style>
 </head>
 <body>
 
-    <!-- AD OVERLAY -->
+    <!-- 1. STARTUP AD OVERLAY -->
     <div id="ad-overlay">
         <div id="ad-timer">AD: 15s</div>
         <i id="ad-close" class="fas fa-times-circle" onclick="closeAd()"></i>
+        <div class="ad-header-text" id="ad-header-words">OFFICIAL SPONSOR</div>
         <div id="ad-media-container" class="ad-media-box"></div>
-        <button class="btn-p" style="width: 200px; position: absolute; bottom: 50px;" onclick="visitAd()">VISIT SPONSOR</button>
+        <div class="ad-social-footer">
+            <div id="ad-footer-words" style="margin-bottom: 15px; font-size: 13px; color:#aaa;">Visit Sponsor via:</div>
+            <div class="social-icon-grid" id="ad-social-icons"></div>
+        </div>
     </div>
 
-    <!-- SPLASH -->
-    <div id="splash">
-        <div style="width: 80px; height: 80px; border: 4px solid var(--primary); border-radius: 20px; display: flex; justify-content: center; align-items: center; font-size: 40px; color: var(--primary); font-family: 'Orbitron';">S</div>
-        <h2 style="margin-top: 20px; letter-spacing: 5px; font-family: 'Orbitron'; font-size: 14px;">STANY MIN TV</h2>
+    <!-- LOADER -->
+    <div id="loader">
+        <div style="width: 50px; height: 50px; border: 3px solid #111; border-top: 3px solid var(--primary); border-radius: 50%; animation: spin 1s linear infinite;"></div>
     </div>
+    <style>@keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }</style>
 
     <!-- AUTH SCREEN -->
     <div id="auth-screen">
         <div class="ios-glass" style="padding: 30px; text-align: center;">
-            <h2 id="auth-title" style="margin-bottom: 25px; letter-spacing: 2px;">LOGIN</h2>
-            
+            <h1 style="color:var(--primary); font-family: 'Orbitron'; margin-bottom: 25px;">STANY MIN</h1>
             <div id="auth-forms">
-                <!-- Username/Email Field -->
-                <input type="text" id="auth-name" class="input-box" placeholder="Full Name" style="display:none;">
+                <input type="text" id="reg-name" class="input-box" placeholder="Full Name" style="display:none;">
                 <input type="email" id="auth-email" class="input-box" placeholder="Email Address">
                 <input type="password" id="auth-pass" class="input-box" placeholder="Password">
-                
-                <button class="btn-p" id="main-auth-btn" onclick="handleAuth()">Enter App</button>
-                
-                <div style="color:#444; margin: 10px 0;">OR</div>
-                
-                <button class="btn-google" onclick="googleLogin()">
-                    <img src="https://upload.wikimedia.org/wikipedia/commons/5/53/Google_%22G%22_Logo.svg" width="20">
-                    Continue with Google
+                <button class="btn-p" id="auth-btn" onclick="handleAuth()">LOGIN</button>
+                <div style="color:#444; margin: 10px 0; font-size: 12px;">OR</div>
+                <button class="btn-p" style="background:#fff; color:#000" onclick="googleLogin()">
+                    <i class="fab fa-google"></i> Google Sign In
                 </button>
             </div>
-
-            <p style="margin-top: 25px; font-size: 13px; color: #888;" id="toggle-text" onclick="toggleAuth()">
-                New member? <span style="color:var(--primary)">Create Account</span>
+            <p style="margin-top: 25px; font-size: 12px; color: #888;" id="toggle-text" onclick="toggleAuth()">
+                Need Account? <span style="color:var(--primary)">Register</span>
             </p>
         </div>
     </div>
@@ -130,58 +140,88 @@
     <!-- MAIN APP -->
     <div id="app-container">
         <div class="header">
-            <div class="logo">STANY<span>MIN</span> TV</div>
-            <i class="fas fa-sync" onclick="location.reload()"></i>
+            <div class="logo">STANY<span>MIN</span></div>
+            <div style="display:flex; gap:15px; align-items:center;">
+                <i class="fas fa-search" style="font-size: 18px;"></i>
+                <i class="fas fa-sync" onclick="location.reload()" style="font-size: 18px;"></i>
+            </div>
         </div>
 
         <div class="content-area">
+            <!-- HOME VIEW -->
             <div id="view-home" class="page active">
-                <h3 style="margin-bottom: 15px; font-size: 14px; color: var(--primary);">LIVE CHANNELS</h3>
+                <div class="carousel" id="home-carousel"></div>
+                <div id="cat-tags" style="padding:10px 0; overflow-x:auto; white-space:nowrap; margin-bottom:10px;"></div>
+                <h4 style="color:var(--primary); font-size:12px; margin-bottom:15px; letter-spacing:1px; font-weight:800;">LIVE CHANNELS</h4>
                 <div id="chan-grid" class="grid"></div>
-                <h3 style="margin: 25px 0 15px; font-size: 14px; color: var(--primary);">MOVIES</h3>
+                <h4 style="color:var(--primary); font-size:12px; margin:25px 0 15px; letter-spacing:1px; font-weight:800;">MOVIES</h4>
                 <div id="mov-grid" class="grid"></div>
             </div>
 
+            <!-- LIBRARY (SIMULIZI & TECH) -->
             <div id="view-library" class="page">
-                <h3 style="color:var(--primary); margin-bottom: 20px;">SIMULIZI & TECH</h3>
+                <h3 style="color:var(--primary); margin-bottom: 20px;">LIBRARY</h3>
                 <div id="book-list"></div>
             </div>
 
-            <div id="view-premium" class="page">
-                <div class="ios-glass" style="padding: 25px;">
-                    <h3>ACTIVATE TOKEN</h3>
-                    <input type="text" id="token-input" class="input-box" placeholder="Enter Token ID...">
-                    <button class="btn-p" onclick="activateToken()">ACTIVATE PREMIUM</button>
-                    <div id="user-info" style="margin-top: 20px; padding-top: 20px; border-top: 1px solid var(--border);">
-                        <p style="font-size: 14px;">Status: <span id="sub-status" style="color:var(--primary)">FREE USER</span></p>
-                        <p style="font-size: 11px; color:#444; margin-top: 10px;" id="hwid-val"></p>
-                        <button class="btn-p" style="background:#111; margin-top: 20px;" onclick="logout()">LOGOUT</button>
+            <!-- BETTING TIPS -->
+            <div id="view-tips" class="page">
+                <h3 style="color:var(--primary); margin-bottom: 20px;">BETTING TIPS</h3>
+                <div id="tips-list"></div>
+            </div>
+
+            <!-- DOWNLOADS -->
+            <div id="view-downloads" class="page">
+                <h3 style="color:var(--primary); margin-bottom: 20px;">DOWNLOADS</h3>
+                <div id="dl-list"></div>
+            </div>
+
+            <!-- BOT & PROFILE -->
+            <div id="view-profile" class="page">
+                <div class="ios-glass" style="padding: 25px; margin-bottom: 20px;">
+                    <h3 id="pName">User</h3>
+                    <p id="pEmail" style="color:#666; font-size:13px;"></p>
+                    <p id="pDays" style="color:var(--primary); font-weight:800; margin-top:10px;"></p>
+                    <input type="text" id="token-input" class="input-box" style="margin-top:20px" placeholder="Enter Premium Token...">
+                    <button class="btn-p" onclick="activateToken()">ACTIVATE PRO</button>
+                    <button class="btn-p" style="background:#111; margin-top:15px;" onclick="auth.signOut().then(()=>location.reload())">LOGOUT</button>
+                </div>
+                <div class="ios-glass chat-container" style="padding: 20px; height: 300px; display: flex; flex-direction: column;">
+                    <h4 style="margin-bottom:10px">STANY BOT</h4>
+                    <div id="chatBox" style="flex:1; overflow-y:auto; margin-bottom:10px; font-size:14px;"></div>
+                    <div style="display:flex; gap:5px;">
+                        <input id="chatInput" class="input-box" style="margin:0; flex:1;" placeholder="Ask Bot...">
+                        <button class="btn-p" style="width:60px" onclick="sendChat()"><i class="fas fa-paper-plane"></i></button>
                     </div>
                 </div>
             </div>
         </div>
 
+        <!-- TAB BAR -->
         <div class="tab-bar">
-            <div class="tab-item active" onclick="switchPage('home', this)"><i class="fas fa-house"></i>Home</div>
-            <div class="tab-item" onclick="switchPage('library', this)"><i class="fas fa-book-open"></i>Library</div>
-            <div class="tab-item" onclick="switchPage('premium', this)"><i class="fas fa-crown"></i>Premium</div>
+            <div class="tab-item active" onclick="switchTab('home', this)"><i class="fas fa-house"></i>Home</div>
+            <div class="tab-item" onclick="switchTab('library', this)"><i class="fas fa-book-open"></i>Library</div>
+            <div class="tab-item" onclick="switchTab('tips', this)"><i class="fas fa-futbol"></i>Tips</div>
+            <div class="tab-item" onclick="switchTab('downloads', this)"><i class="fas fa-download"></i>Down</div>
+            <div class="tab-item" onclick="switchTab('profile', this)"><i class="fas fa-user-circle"></i>Me</div>
         </div>
     </div>
 
-    <!-- READER & PLAYER AS BEFORE -->
+    <!-- READER -->
     <div id="reader-view">
-        <div style="padding: 50px 20px 20px; border-bottom: 1px solid var(--border);">
-            <i class="fas fa-times" onclick="closeReader()" style="float: right; font-size: 24px;"></i>
+        <div class="reader-header">
+            <i class="fas fa-times" onclick="closeReader()" style="position:absolute; top:40px; right:20px; font-size:25px;"></i>
             <h2 id="read-title" style="color:var(--primary);">Title</h2>
-            <p id="read-meta" style="font-size: 13px; color:#666; margin-top: 5px;"></p>
+            <p id="read-meta" style="font-size:11px; color:#666; margin-top: 5px;"></p>
         </div>
         <div class="reader-body" id="read-body"></div>
         <div class="reader-nav">
-            <button id="prev-btn" class="btn-p" style="width:120px" onclick="changeEp(-1)">BACK</button>
-            <button id="next-btn" class="btn-p" style="width:120px" onclick="changeEp(1)">NEXT</button>
+            <button id="prev-btn" class="nav-btn" onclick="changeEp(-1)">BACK</button>
+            <button id="next-btn" class="nav-btn" onclick="changeEp(1)">NEXT</button>
         </div>
     </div>
 
+    <!-- PLAYER -->
     <div id="player-wrap">
         <i class="fas fa-chevron-left close-player" onclick="closePlayer()"></i>
         <video id="stany-player" style="width:100%; height:100%;" autoplay controls></video>
@@ -203,139 +243,102 @@
         const db = firebase.database();
         const googleProvider = new firebase.auth.GoogleAuthProvider();
 
-        let currentUser = null, userData = null, isRegisterMode = false, activePlayer = null;
+        let currentUser = null, userData = null, isRegMode = false, activePlayer = null;
         let currentBook = null, currentEpIdx = 0;
         let HWID = localStorage.getItem('stany_hwid') || 'SN-' + Math.random().toString(36).substr(2, 9).toUpperCase();
         localStorage.setItem('stany_hwid', HWID);
 
-        window.onload = () => {
-            document.getElementById('hwid-val').innerText = "DEVICE ID: " + HWID;
-            setTimeout(() => { document.getElementById('splash').style.display='none'; checkAuth(); }, 2500);
-        };
+        window.onload = () => { checkAuth(); };
 
         function checkAuth() {
             auth.onAuthStateChanged(user => {
+                document.getElementById('loader').style.display = 'none';
                 if(user) {
                     currentUser = user;
                     db.ref('users/' + user.uid).on('value', snap => {
                         userData = snap.val();
-                        if(!userData) { 
-                            // If user exists in Auth but not DB (happens with Google)
-                            saveUserToDB(user.displayName || "User", user.email);
-                            return; 
-                        }
-                        if(userData.hwid && userData.hwid !== HWID) {
-                            alert("ACCOUNT LOCKED TO ANOTHER DEVICE!");
-                            auth.signOut(); return;
-                        }
+                        if(!userData) { registerInDB(user.displayName || "User", user.email); return; }
+                        if(userData.hwid && userData.hwid !== HWID) { alert("ACCOUNT LOCKED!"); auth.signOut(); return; }
+                        
                         document.getElementById('auth-screen').style.display = 'none';
                         document.getElementById('app-container').style.display = 'flex';
-                        document.getElementById('sub-status').innerText = userData.isPremium ? 'PREMIUM ACTIVE' : 'FREE USER';
+                        document.getElementById('pName').innerText = userData.name;
+                        document.getElementById('pEmail').innerText = userData.email;
+                        
+                        const days = Math.ceil((userData.accessExpiry - Date.now())/(1000*60*60*24));
+                        document.getElementById('pDays').innerText = days > 0 ? days + " DAYS LEFT" : "FREE TRIAL EXPIRED";
+                        
                         loadContent();
+                        if(!window.adShown) { showStartupAd(); window.adShown = true; }
                     });
                 } else {
                     document.getElementById('auth-screen').style.display = 'flex';
-                    document.getElementById('app-container').style.display = 'none';
                 }
             });
         }
 
-        // --- AUTH LOGIC ---
-        function toggleAuth() {
-            isRegisterMode = !isRegisterMode;
-            document.getElementById('auth-title').innerText = isRegisterMode ? "REGISTER" : "LOGIN";
-            document.getElementById('auth-name').style.display = isRegisterMode ? "block" : "none";
-            document.getElementById('main-auth-btn').innerText = isRegisterMode ? "Create Account" : "Enter App";
-            document.getElementById('toggle-text').innerHTML = isRegisterMode ? 
-                "Already member? <span style='color:var(--primary)'>Login</span>" : 
-                "New member? <span style='color:var(--primary)'>Create Account</span>";
-        }
-
-        function handleAuth() {
-            const email = document.getElementById('auth-email').value;
-            const pass = document.getElementById('auth-pass').value;
-            const name = document.getElementById('auth-name').value;
-
-            if(!email || !pass) return alert("Fill all fields");
-
-            if(isRegisterMode) {
-                auth.createUserWithEmailAndPassword(email, pass)
-                    .then(res => saveUserToDB(name, email))
-                    .catch(e => alert(e.message));
-            } else {
-                auth.signInWithEmailAndPassword(email, pass).catch(e => alert(e.message));
-            }
-        }
-
-        function googleLogin() {
-            auth.signInWithPopup(googleProvider).catch(e => alert(e.message));
-        }
-
-        function saveUserToDB(name, email) {
-            db.ref('users/' + auth.currentUser.uid).set({
-                name: name,
-                email: email,
-                isPremium: false,
-                hwid: "" // Will be locked when token is used
-            });
-        }
-
-        function logout() { auth.signOut().then(() => location.reload()); }
-
-        // --- CONTENT & ADS LOGIC (SAME AS BEFORE) ---
-        function loadContent() {
-            db.ref('channels').on('value', snap => {
-                const g = document.getElementById('chan-grid'); g.innerHTML = '';
-                snap.forEach(c => {
-                    const d = c.val();
-                    g.innerHTML += `<div class="card" onclick="handlePlay('${c.key}', 'channels')"><img src="${d.logo}"><div class="card-info">${d.name}</div></div>`;
-                });
-            });
-            db.ref('movies').on('value', snap => {
-                const g = document.getElementById('mov-grid'); g.innerHTML = '';
-                snap.forEach(m => {
-                    const d = m.val();
-                    g.innerHTML += `<div class="card" onclick="handlePlay('${m.key}', 'movies')"><img src="${d.posterURL}"><div class="card-info">${d.title}</div></div>`;
-                });
-            });
-            db.ref('library').on('value', snap => {
-                const l = document.getElementById('book-list'); l.innerHTML = '';
-                snap.forEach(b => {
-                    const d = b.val();
-                    l.innerHTML += `<div class="ios-glass" style="padding:20px; margin-bottom:12px;" onclick="openBook('${b.key}')"><span style="color:var(--primary); font-size:11px; font-weight:800;">${d.category.toUpperCase()}</span><h2 style="margin:5px 0;">${d.title}</h2><p style="color:#666; font-size:13px;">Author: ${d.author}</p></div>`;
-                });
-            });
-        }
-
-        function handlePlay(id, type) {
-            if(userData.isPremium) processPlay(id, type);
-            else showRandomAd(() => processPlay(id, type));
-        }
-
-        function showRandomAd(callback) {
+        // ADS
+        function showStartupAd() {
             db.ref('ads').once('value', snap => {
                 const ads = []; snap.forEach(a => ads.push(a.val()));
-                if(ads.length === 0) { callback(); return; }
+                if(ads.length === 0) return;
                 const ad = ads[Math.floor(Math.random() * ads.length)];
                 const overlay = document.getElementById('ad-overlay');
                 const mediaBox = document.getElementById('ad-media-container');
                 const timer = document.getElementById('ad-timer');
-                overlay.style.display = 'flex';
+                const socialBox = document.getElementById('ad-social-icons');
+
                 mediaBox.innerHTML = ad.type === 'video' ? `<video src="${ad.url}" autoplay muted></video>` : `<img src="${ad.url}">`;
-                let sec = ad.duration || 10;
-                timer.innerText = "AD: " + sec + "s";
-                const countdown = setInterval(() => {
-                    sec--; timer.innerText = "AD: " + sec + "s";
-                    if(sec <= 0) { clearInterval(countdown); timer.style.display = 'none'; document.getElementById('ad-close').style.display = 'block'; }
-                }, 1000);
-                window.adCallback = callback;
-                window.currentAdLink = ad.link;
+                socialBox.innerHTML = '';
+                if(ad.socialLinks) {
+                    ad.socialLinks.forEach(link => {
+                        const icon = link.platform === 'whatsapp' ? 'fab fa-whatsapp' : 'fab fa-telegram';
+                        socialBox.innerHTML += `<div class="social-btn" onclick="window.open('${link.url}', '_blank')"><i class="${icon}"></i></div>`;
+                    });
+                }
+                overlay.style.display = 'flex';
+                if(userData.isPremium) {
+                    document.getElementById('ad-close').style.display = 'block';
+                    timer.style.display = 'none';
+                } else {
+                    let sec = ad.duration || 10;
+                    const countdown = setInterval(() => {
+                        sec--; timer.innerText = "AD: " + sec + "s";
+                        if(sec <= 0) { clearInterval(countdown); timer.style.display = 'none'; document.getElementById('ad-close').style.display = 'block'; }
+                    }, 1000);
+                }
             });
         }
 
-        function closeAd() { document.getElementById('ad-overlay').style.display = 'none'; document.getElementById('ad-timer').style.display = 'block'; if(window.adCallback) window.adCallback(); }
-        function visitAd() { if(window.currentAdLink) window.open(window.currentAdLink, '_blank'); }
+        function closeAd() { document.getElementById('ad-overlay').style.display = 'none'; }
 
+        // CONTENT
+        function loadContent() {
+            db.ref('channels').on('value', snap => {
+                const g = document.getElementById('chan-grid'); g.innerHTML = '';
+                snap.forEach(c => { g.innerHTML += `<div class="card" onclick="processPlay('${c.key}', 'channels')"><img src="${c.val().logo}"><div class="card-info">${c.val().name}</div></div>`; });
+            });
+            db.ref('movies').on('value', snap => {
+                const g = document.getElementById('mov-grid'); g.innerHTML = '';
+                snap.forEach(m => { g.innerHTML += `<div class="card" onclick="processPlay('${m.key}', 'movies')"><img src="${m.val().posterURL}"><div class="card-info">${m.val().title}</div></div>`; });
+            });
+            db.ref('carousel').on('value', snap => {
+                const c = document.getElementById('home-carousel'); c.innerHTML = '';
+                let i = 0;
+                snap.forEach(s => { c.innerHTML += `<div class="carousel-slide ${i===0?'active':''}"><img src="${s.val().imageURL}"></div>`; i++; });
+                startCarousel();
+            });
+            db.ref('library').on('value', snap => {
+                const list = document.getElementById('book-list'); list.innerHTML = '';
+                snap.forEach(b => {
+                    const d = b.val();
+                    list.innerHTML += `<div class="ios-glass" style="padding:20px; margin-bottom:12px;" onclick="openBook('${b.key}')"><h2>${d.title}</h2><p style="font-size:12px; color:#666;">Author: ${d.author}</p></div>`;
+                });
+            });
+            // Tips, Downloads, Chat (Logic based on old features)
+        }
+
+        // PLAYER
         async function processPlay(id, path) {
             db.ref(path + '/' + id).once('value', async snap => {
                 const item = snap.val();
@@ -345,17 +348,14 @@
                 try {
                     if(item.playerType === 'drm') {
                         activePlayer.configure({ drm: { servers: { 'com.widevine.alpha': item.licenseURL } } });
-                        if(item.tokenID) {
-                            activePlayer.getNetworkingEngine().registerRequestFilter((type, req) => {
-                                if (type == shaka.net.NetworkingEngine.RequestType.LICENSE) req.headers['Authorization'] = 'Bearer ' + item.tokenID;
-                            });
-                        }
+                        if(item.tokenID) { activePlayer.getNetworkingEngine().registerRequestFilter((type, req) => { if (type == shaka.net.NetworkingEngine.RequestType.LICENSE) req.headers['Authorization'] = 'Bearer ' + item.tokenID; }); }
                     } else { activePlayer.configure({ drm: { servers: {} } }); }
                     await activePlayer.load(item.streamURL || item.movieURL);
-                } catch(e) { alert("Playback Error"); }
+                } catch(e) { alert("Stream Error"); }
             });
         }
 
+        // READER
         function openBook(id) {
             db.ref('library/' + id).once('value', snap => {
                 currentBook = snap.val(); currentEpIdx = 0;
@@ -365,33 +365,31 @@
         function showEp() {
             const ep = currentBook.episodes[currentEpIdx];
             document.getElementById('read-title').innerText = currentBook.title;
-            document.getElementById('read-meta').innerText = `${currentBook.category.toUpperCase()} | ${ep.partTitle}`;
+            document.getElementById('read-meta').innerText = `${currentBook.category.toUpperCase()} | PART ${currentEpIdx + 1}`;
             document.getElementById('read-body').innerText = ep.content;
-            document.getElementById('prev-btn').disabled = (currentEpIdx === 0);
-            document.getElementById('next-btn').disabled = (currentEpIdx === currentBook.episodes.length - 1);
+            document.getElementById('prev-btn').style.display = (currentEpIdx === 0) ? 'none' : 'block';
+            document.getElementById('next-btn').style.display = (currentEpIdx === currentBook.episodes.length - 1) ? 'none' : 'block';
         }
         function changeEp(dir) { currentEpIdx += dir; showEp(); }
         function closeReader() { document.getElementById('reader-view').style.display = 'none'; }
 
+        // AUTH & MISC
+        function googleLogin() { auth.signInWithPopup(googleProvider).catch(e => alert(e.message)); }
+        function registerInDB(name, email) { db.ref('users/' + auth.currentUser.uid).set({ name, email, isPremium: false, hwid: "", accessExpiry: Date.now() + (7*24*60*60*1000) }); }
+        function switchTab(id, el) { document.querySelectorAll('.page').forEach(p => p.classList.remove('active')); document.getElementById('view-' + id).classList.add('active'); document.querySelectorAll('.tab-item').forEach(n => n.classList.remove('active')); el.classList.add('active'); }
+        function closePlayer() { if(activePlayer) activePlayer.unload(); document.getElementById('player-wrap').style.display = 'none'; }
         function activateToken() {
-            const token = document.getElementById('token-input').value;
-            db.ref('tokens/' + token).once('value', snap => {
-                const t = snap.val();
-                if(t && t.status === 'unused') {
-                    db.ref('users/' + currentUser.uid).update({ isPremium: true, hwid: HWID });
-                    db.ref('tokens/' + token).update({ status: 'used', usedBy: currentUser.uid });
-                    alert("PREMIUM ACTIVATED & DEVICE LOCKED!");
-                } else { alert("INVALID TOKEN"); }
+            const t = document.getElementById('token-input').value;
+            db.ref('tokens/' + t).once('value', snap => {
+                const val = snap.val();
+                if(val && val.status === 'unused') {
+                    db.ref('users/'+currentUser.uid).update({ isPremium: true, hwid: HWID });
+                    db.ref('tokens/'+t).update({ status: 'used', usedBy: currentUser.uid });
+                    alert("Premium Activated!");
+                } else { alert("Invalid Token"); }
             });
         }
-
-        function switchPage(id, el) {
-            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-            document.getElementById('view-' + id).classList.add('active');
-            document.querySelectorAll('.tab-item').forEach(n => n.classList.remove('active'));
-            el.classList.add('active');
-        }
-        function closePlayer() { if(activePlayer) activePlayer.unload(); document.getElementById('player-wrap').style.display = 'none'; }
+        function startCarousel() { let s = document.querySelectorAll('.carousel-slide'), c = 0; setInterval(() => { if(s.length<2) return; s[c].classList.remove('active'); c = (c+1)%s.length; s[c].classList.add('active'); }, 5000); }
     </script>
 </body>
 </html>
