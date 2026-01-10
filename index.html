@@ -9,11 +9,11 @@
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=SF+Pro+Display:wght@300;400;600;800&family=Orbitron:wght@700&display=swap" rel="stylesheet">
     
-    <!-- SHAKA PLAYER (DRM & TOKENS) -->
+    <!-- SHAKA PLAYER -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/shaka-player/4.3.5/shaka-player.ui.min.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/shaka-player/4.3.5/controls.min.css">
     
-    <!-- FIREBASE -->
+    <!-- FIREBASE SDK -->
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-database-compat.js"></script>
@@ -25,67 +25,63 @@
             --surface: rgba(255, 255, 255, 0.05);
             --border: rgba(255, 255, 255, 0.1);
             --text: #FFFFFF;
-            --glass: blur(30px);
+            --glass: blur(25px);
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'SF Pro Display', sans-serif; -webkit-tap-highlight-color: transparent; }
         body { background: var(--bg); color: var(--text); overflow: hidden; height: 100vh; width: 100vw; }
 
-        /* GLASSMORPHISM UI */
-        .ios-glass { background: var(--surface); backdrop-filter: var(--glass); -webkit-backdrop-filter: var(--glass); border: 1px solid var(--border); border-radius: 25px; }
+        .ios-glass {
+            background: var(--surface);
+            backdrop-filter: var(--glass);
+            -webkit-backdrop-filter: var(--glass);
+            border: 1px solid var(--border);
+            border-radius: 25px;
+        }
 
-        /* ADVANCED AD SYSTEM */
-        #ad-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #000; z-index: 10000; display: none; flex-direction: column; justify-content: center; align-items: center; }
-        .ad-header-text { position: absolute; top: 80px; width: 100%; text-align: center; color: var(--primary); font-weight: 800; letter-spacing: 2px; }
-        .ad-footer-text { position: absolute; bottom: 120px; width: 100%; text-align: center; color: #888; font-size: 14px; }
-        #ad-timer { position: absolute; top: 50px; right: 20px; padding: 8px 16px; border-radius: 20px; background: white; color: black; font-weight: 900; }
-        #ad-close { position: absolute; top: 50px; left: 20px; font-size: 30px; display: none; cursor: pointer; color: white; }
-        .ad-media-box { width: 90%; max-height: 60%; border-radius: 20px; overflow: hidden; border: 1px solid var(--primary); display: flex; align-items: center; justify-content: center; }
-        .ad-media-box img, .ad-media-box video { width: 100%; height: auto; }
-        .ad-slider { display: flex; transition: 0.5s; width: 100%; }
+        /* AUTH UI */
+        #auth-screen { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #000; z-index: 9500; display: none; flex-direction: column; justify-content: center; padding: 30px; }
+        .input-box { width: 100%; padding: 16px; background: rgba(255,255,255,0.05); border: 1px solid var(--border); border-radius: 15px; color: white; margin-bottom: 15px; outline: none; }
+        .btn-p { width: 100%; padding: 16px; background: var(--primary); color: white; border: none; border-radius: 15px; font-weight: 800; cursor: pointer; margin-bottom: 10px; }
+        .btn-google { width: 100%; padding: 14px; background: white; color: black; border: none; border-radius: 15px; font-weight: 700; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 10px; margin-top: 10px; }
 
         /* MAIN APP */
         #app-container { display: none; height: 100vh; flex-direction: column; }
-        .header { padding: 20px; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; background: rgba(0,0,0,0.8); z-index: 1000; }
+        .header { padding: 20px; display: flex; justify-content: space-between; align-items: center; }
         .logo { font-family: 'Orbitron'; font-size: 20px; letter-spacing: 2px; }
         .logo span { color: var(--primary); }
-
         .content-area { flex: 1; overflow-y: auto; padding: 15px; padding-bottom: 100px; }
 
-        /* GRID CONTENT */
+        /* GRID & CARDS */
         .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
         .card { aspect-ratio: 2/3; border-radius: 20px; overflow: hidden; position: relative; border: 1px solid var(--border); background: #111; }
         .card img { width: 100%; height: 100%; object-fit: cover; }
         .card-info { position: absolute; bottom: 0; width: 100%; padding: 12px 8px; background: linear-gradient(transparent, #000); font-weight: 600; font-size: 12px; text-align: center; }
-        .vip-badge { position: absolute; top: 10px; right: 10px; background: var(--primary); padding: 4px 8px; border-radius: 8px; font-size: 10px; font-weight: 800; }
 
-        /* TAB BAR (iOS) */
-        .tab-bar { position: fixed; bottom: 0; width: 100%; height: 85px; display: flex; justify-content: space-around; align-items: center; padding-bottom: 25px; border-top: 1px solid var(--border); background: rgba(0,0,0,0.8); backdrop-filter: var(--glass); }
+        /* ADS SYSTEM */
+        #ad-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #000; z-index: 10000; display: none; flex-direction: column; justify-content: center; align-items: center; }
+        #ad-timer { position: absolute; top: 50px; right: 20px; padding: 8px 16px; border-radius: 20px; background: white; color: black; font-weight: 900; }
+        #ad-close { position: absolute; top: 50px; left: 20px; font-size: 30px; display: none; cursor: pointer; color: white; }
+        .ad-media-box { width: 90%; max-height: 60%; border-radius: 20px; overflow: hidden; border: 1px solid var(--primary); display: flex; align-items: center; justify-content: center; }
+        .ad-media-box img, .ad-media-box video { width: 100%; height: auto; }
+
+        /* TAB BAR */
+        .tab-bar { position: fixed; bottom: 0; width: 100%; height: 85px; display: flex; justify-content: space-around; align-items: center; padding-bottom: 25px; border-top: 1px solid var(--border); background: rgba(0,0,0,0.8); backdrop-filter: var(--glass); z-index: 1000; }
         .tab-item { display: flex; flex-direction: column; align-items: center; font-size: 10px; color: #555; cursor: pointer; }
         .tab-item.active { color: var(--primary); }
         .tab-item i { font-size: 22px; margin-bottom: 4px; }
 
-        /* READER VIEW */
+        /* READER */
         #reader-view { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #000; z-index: 5000; display: none; flex-direction: column; }
-        .reader-header { padding: 50px 20px 20px; border-bottom: 1px solid var(--border); }
         .reader-body { flex: 1; overflow-y: auto; padding: 25px; line-height: 1.8; font-size: 18px; color: #ccc; }
         .reader-nav { padding: 20px; display: flex; justify-content: space-between; border-top: 1px solid var(--border); }
-        .nav-btn { padding: 12px 25px; border-radius: 15px; background: var(--primary); font-weight: 700; color: #fff; border: none; }
-        .nav-btn:disabled { background: #222; color: #555; }
 
-        /* AUTH & SPLASH */
         #splash { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #000; z-index: 11000; display: flex; flex-direction: column; justify-content: center; align-items: center; }
-        #auth-screen { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #000; z-index: 9000; display: none; flex-direction: column; justify-content: center; padding: 30px; }
-        .input-box { width: 100%; padding: 16px; background: rgba(255,255,255,0.05); border: 1px solid var(--border); border-radius: 15px; color: white; margin-bottom: 15px; outline: none; }
-        .btn-red { width: 100%; padding: 16px; background: var(--primary); color: white; border: none; border-radius: 15px; font-weight: 800; cursor: pointer; }
-
-        /* PLAYER */
         #player-wrap { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #000; z-index: 8000; display: none; }
         .close-player { position: absolute; top: 40px; left: 20px; z-index: 8001; font-size: 30px; color: white; }
 
         ::-webkit-scrollbar { width: 0; }
-        .page { display: none; } .page.active { display: block; animation: slideUp 0.4s; }
-        @keyframes slideUp { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+        .page { display: none; } .page.active { display: block; }
     </style>
 </head>
 <body>
@@ -94,10 +90,8 @@
     <div id="ad-overlay">
         <div id="ad-timer">AD: 15s</div>
         <i id="ad-close" class="fas fa-times-circle" onclick="closeAd()"></i>
-        <div class="ad-header-text" id="ad-header-words">SPECIAL SPONSOR</div>
-        <div class="ad-media-box" id="ad-media-container"></div>
-        <div class="ad-footer-text" id="ad-footer-words">Support Stany Min TV by watching this ad.</div>
-        <button class="btn-red" style="width: 200px; position: absolute; bottom: 50px;" onclick="visitAd()">VISIT WEBSITE</button>
+        <div id="ad-media-container" class="ad-media-box"></div>
+        <button class="btn-p" style="width: 200px; position: absolute; bottom: 50px;" onclick="visitAd()">VISIT SPONSOR</button>
     </div>
 
     <!-- SPLASH -->
@@ -106,14 +100,30 @@
         <h2 style="margin-top: 20px; letter-spacing: 5px; font-family: 'Orbitron'; font-size: 14px;">STANY MIN TV</h2>
     </div>
 
-    <!-- AUTH -->
+    <!-- AUTH SCREEN -->
     <div id="auth-screen">
         <div class="ios-glass" style="padding: 30px; text-align: center;">
-            <h2 style="margin-bottom: 25px; letter-spacing: 2px;">LOGIN</h2>
-            <input type="email" id="l-email" class="input-box" placeholder="Email Address">
-            <input type="password" id="l-pass" class="input-box" placeholder="Password">
-            <button class="btn-red" onclick="login()">Enter App</button>
-            <p style="margin-top: 20px; font-size: 13px; color: #888;" onclick="toggleAuth()">New member? <span style="color:var(--primary)">Register</span></p>
+            <h2 id="auth-title" style="margin-bottom: 25px; letter-spacing: 2px;">LOGIN</h2>
+            
+            <div id="auth-forms">
+                <!-- Username/Email Field -->
+                <input type="text" id="auth-name" class="input-box" placeholder="Full Name" style="display:none;">
+                <input type="email" id="auth-email" class="input-box" placeholder="Email Address">
+                <input type="password" id="auth-pass" class="input-box" placeholder="Password">
+                
+                <button class="btn-p" id="main-auth-btn" onclick="handleAuth()">Enter App</button>
+                
+                <div style="color:#444; margin: 10px 0;">OR</div>
+                
+                <button class="btn-google" onclick="googleLogin()">
+                    <img src="https://upload.wikimedia.org/wikipedia/commons/5/53/Google_%22G%22_Logo.svg" width="20">
+                    Continue with Google
+                </button>
+            </div>
+
+            <p style="margin-top: 25px; font-size: 13px; color: #888;" id="toggle-text" onclick="toggleAuth()">
+                New member? <span style="color:var(--primary)">Create Account</span>
+            </p>
         </div>
     </div>
 
@@ -140,13 +150,12 @@
             <div id="view-premium" class="page">
                 <div class="ios-glass" style="padding: 25px;">
                     <h3>ACTIVATE TOKEN</h3>
-                    <p style="color:#888; font-size: 12px; margin: 10px 0 20px;">Weka token yako hapa kuondoa matangazo na ku-lock kifaa hiki.</p>
                     <input type="text" id="token-input" class="input-box" placeholder="Enter Token ID...">
-                    <button class="btn-red" onclick="activateToken()">ACTIVATE PREMIUM</button>
+                    <button class="btn-p" onclick="activateToken()">ACTIVATE PREMIUM</button>
                     <div id="user-info" style="margin-top: 20px; padding-top: 20px; border-top: 1px solid var(--border);">
                         <p style="font-size: 14px;">Status: <span id="sub-status" style="color:var(--primary)">FREE USER</span></p>
                         <p style="font-size: 11px; color:#444; margin-top: 10px;" id="hwid-val"></p>
-                        <button class="btn-red" style="background:#111; margin-top: 20px;" onclick="auth.signOut()">LOGOUT</button>
+                        <button class="btn-p" style="background:#111; margin-top: 20px;" onclick="logout()">LOGOUT</button>
                     </div>
                 </div>
             </div>
@@ -159,30 +168,27 @@
         </div>
     </div>
 
-    <!-- READER -->
+    <!-- READER & PLAYER AS BEFORE -->
     <div id="reader-view">
-        <div class="reader-header">
+        <div style="padding: 50px 20px 20px; border-bottom: 1px solid var(--border);">
             <i class="fas fa-times" onclick="closeReader()" style="float: right; font-size: 24px;"></i>
             <h2 id="read-title" style="color:var(--primary);">Title</h2>
             <p id="read-meta" style="font-size: 13px; color:#666; margin-top: 5px;"></p>
         </div>
         <div class="reader-body" id="read-body"></div>
         <div class="reader-nav">
-            <button id="prev-btn" class="nav-btn" onclick="changeEp(-1)">BACK</button>
-            <button id="next-btn" class="nav-btn" onclick="changeEp(1)">NEXT</button>
+            <button id="prev-btn" class="btn-p" style="width:120px" onclick="changeEp(-1)">BACK</button>
+            <button id="next-btn" class="btn-p" style="width:120px" onclick="changeEp(1)">NEXT</button>
         </div>
     </div>
 
-    <!-- PLAYER -->
     <div id="player-wrap">
         <i class="fas fa-chevron-left close-player" onclick="closePlayer()"></i>
-        <div id="video-container" style="width:100%; height:100%;">
-            <video id="stany-player" style="width:100%; height:100%;" autoplay controls></video>
-        </div>
+        <video id="stany-player" style="width:100%; height:100%;" autoplay controls></video>
     </div>
 
     <script>
-        // CONFIG
+        // FIREBASE CONFIG
         const firebaseConfig = {
             apiKey: "AIzaSyDiexD5WK9GLhQldr6zNmC8iYWc4em5eyM",
             authDomain: "stany-min-tv.firebaseapp.com",
@@ -195,15 +201,16 @@
         firebase.initializeApp(firebaseConfig);
         const auth = firebase.auth();
         const db = firebase.database();
+        const googleProvider = new firebase.auth.GoogleAuthProvider();
 
-        let currentUser = null, userData = null, activePlayer = null;
+        let currentUser = null, userData = null, isRegisterMode = false, activePlayer = null;
         let currentBook = null, currentEpIdx = 0;
         let HWID = localStorage.getItem('stany_hwid') || 'SN-' + Math.random().toString(36).substr(2, 9).toUpperCase();
         localStorage.setItem('stany_hwid', HWID);
 
         window.onload = () => {
             document.getElementById('hwid-val').innerText = "DEVICE ID: " + HWID;
-            setTimeout(() => { document.getElementById('splash').style.display='none'; checkAuth(); }, 3000);
+            setTimeout(() => { document.getElementById('splash').style.display='none'; checkAuth(); }, 2500);
         };
 
         function checkAuth() {
@@ -212,17 +219,70 @@
                     currentUser = user;
                     db.ref('users/' + user.uid).on('value', snap => {
                         userData = snap.val();
-                        if(!userData) { registerDB(user); return; }
-                        if(userData.hwid && userData.hwid !== HWID) { alert("LOCKED TO ANOTHER DEVICE!"); auth.signOut(); return; }
+                        if(!userData) { 
+                            // If user exists in Auth but not DB (happens with Google)
+                            saveUserToDB(user.displayName || "User", user.email);
+                            return; 
+                        }
+                        if(userData.hwid && userData.hwid !== HWID) {
+                            alert("ACCOUNT LOCKED TO ANOTHER DEVICE!");
+                            auth.signOut(); return;
+                        }
                         document.getElementById('auth-screen').style.display = 'none';
                         document.getElementById('app-container').style.display = 'flex';
                         document.getElementById('sub-status').innerText = userData.isPremium ? 'PREMIUM ACTIVE' : 'FREE USER';
                         loadContent();
                     });
-                } else { document.getElementById('auth-screen').style.display = 'flex'; }
+                } else {
+                    document.getElementById('auth-screen').style.display = 'flex';
+                    document.getElementById('app-container').style.display = 'none';
+                }
             });
         }
 
+        // --- AUTH LOGIC ---
+        function toggleAuth() {
+            isRegisterMode = !isRegisterMode;
+            document.getElementById('auth-title').innerText = isRegisterMode ? "REGISTER" : "LOGIN";
+            document.getElementById('auth-name').style.display = isRegisterMode ? "block" : "none";
+            document.getElementById('main-auth-btn').innerText = isRegisterMode ? "Create Account" : "Enter App";
+            document.getElementById('toggle-text').innerHTML = isRegisterMode ? 
+                "Already member? <span style='color:var(--primary)'>Login</span>" : 
+                "New member? <span style='color:var(--primary)'>Create Account</span>";
+        }
+
+        function handleAuth() {
+            const email = document.getElementById('auth-email').value;
+            const pass = document.getElementById('auth-pass').value;
+            const name = document.getElementById('auth-name').value;
+
+            if(!email || !pass) return alert("Fill all fields");
+
+            if(isRegisterMode) {
+                auth.createUserWithEmailAndPassword(email, pass)
+                    .then(res => saveUserToDB(name, email))
+                    .catch(e => alert(e.message));
+            } else {
+                auth.signInWithEmailAndPassword(email, pass).catch(e => alert(e.message));
+            }
+        }
+
+        function googleLogin() {
+            auth.signInWithPopup(googleProvider).catch(e => alert(e.message));
+        }
+
+        function saveUserToDB(name, email) {
+            db.ref('users/' + auth.currentUser.uid).set({
+                name: name,
+                email: email,
+                isPremium: false,
+                hwid: "" // Will be locked when token is used
+            });
+        }
+
+        function logout() { auth.signOut().then(() => location.reload()); }
+
+        // --- CONTENT & ADS LOGIC (SAME AS BEFORE) ---
         function loadContent() {
             db.ref('channels').on('value', snap => {
                 const g = document.getElementById('chan-grid'); g.innerHTML = '';
@@ -247,7 +307,6 @@
             });
         }
 
-        // ADS ENGINE
         function handlePlay(id, type) {
             if(userData.isPremium) processPlay(id, type);
             else showRandomAd(() => processPlay(id, type));
@@ -261,31 +320,22 @@
                 const overlay = document.getElementById('ad-overlay');
                 const mediaBox = document.getElementById('ad-media-container');
                 const timer = document.getElementById('ad-timer');
-                document.getElementById('ad-header-words').innerText = ad.header || "SPONSOR AD";
-                document.getElementById('ad-footer-words').innerText = ad.footer || "Supported by Sponsor";
-                mediaBox.innerHTML = '';
-                if(ad.type === 'video') mediaBox.innerHTML = `<video src="${ad.url}" autoplay muted></video>`;
-                else if(ad.type === 'image') mediaBox.innerHTML = `<img src="${ad.url}">`;
-                else if(ad.type === 'slider') {
-                    let slides = ad.images.map(img => `<img src="${img}" style="width:100%">`).join('');
-                    mediaBox.innerHTML = `<div id="adSlider" style="display:flex; transition:0.5s;">${slides}</div>`;
-                    startSlider();
-                }
                 overlay.style.display = 'flex';
-                let sec = ad.duration || 15; timer.innerText = "AD: " + sec + "s";
+                mediaBox.innerHTML = ad.type === 'video' ? `<video src="${ad.url}" autoplay muted></video>` : `<img src="${ad.url}">`;
+                let sec = ad.duration || 10;
+                timer.innerText = "AD: " + sec + "s";
                 const countdown = setInterval(() => {
                     sec--; timer.innerText = "AD: " + sec + "s";
                     if(sec <= 0) { clearInterval(countdown); timer.style.display = 'none'; document.getElementById('ad-close').style.display = 'block'; }
                 }, 1000);
-                window.adCallback = callback; window.currentAdLink = ad.link;
+                window.adCallback = callback;
+                window.currentAdLink = ad.link;
             });
         }
 
         function closeAd() { document.getElementById('ad-overlay').style.display = 'none'; document.getElementById('ad-timer').style.display = 'block'; if(window.adCallback) window.adCallback(); }
         function visitAd() { if(window.currentAdLink) window.open(window.currentAdLink, '_blank'); }
-        function startSlider() { let i = 0; setInterval(() => { const s = document.getElementById('adSlider'); if(!s) return; i = (i + 1) % s.children.length; s.style.transform = `translateX(-${i * 100}%)`; }, 3000); }
 
-        // DRM PLAYER
         async function processPlay(id, path) {
             db.ref(path + '/' + id).once('value', async snap => {
                 const item = snap.val();
@@ -302,11 +352,10 @@
                         }
                     } else { activePlayer.configure({ drm: { servers: {} } }); }
                     await activePlayer.load(item.streamURL || item.movieURL);
-                } catch(e) { alert("Stream Error"); }
+                } catch(e) { alert("Playback Error"); }
             });
         }
 
-        // LIBRARY READER
         function openBook(id) {
             db.ref('library/' + id).once('value', snap => {
                 currentBook = snap.val(); currentEpIdx = 0;
@@ -320,12 +369,10 @@
             document.getElementById('read-body').innerText = ep.content;
             document.getElementById('prev-btn').disabled = (currentEpIdx === 0);
             document.getElementById('next-btn').disabled = (currentEpIdx === currentBook.episodes.length - 1);
-            document.getElementById('read-body').scrollTop = 0;
         }
         function changeEp(dir) { currentEpIdx += dir; showEp(); }
         function closeReader() { document.getElementById('reader-view').style.display = 'none'; }
 
-        // TOKEN SYSTEM
         function activateToken() {
             const token = document.getElementById('token-input').value;
             db.ref('tokens/' + token).once('value', snap => {
@@ -333,7 +380,7 @@
                 if(t && t.status === 'unused') {
                     db.ref('users/' + currentUser.uid).update({ isPremium: true, hwid: HWID });
                     db.ref('tokens/' + token).update({ status: 'used', usedBy: currentUser.uid });
-                    alert("PREMIUM ACTIVATED!");
+                    alert("PREMIUM ACTIVATED & DEVICE LOCKED!");
                 } else { alert("INVALID TOKEN"); }
             });
         }
@@ -344,11 +391,7 @@
             document.querySelectorAll('.tab-item').forEach(n => n.classList.remove('active'));
             el.classList.add('active');
         }
-
         function closePlayer() { if(activePlayer) activePlayer.unload(); document.getElementById('player-wrap').style.display = 'none'; }
-        function login() { auth.signInWithEmailAndPassword(document.getElementById('l-email').value, document.getElementById('l-pass').value).catch(e => alert(e.message)); }
-        function registerDB(u) { db.ref('users/' + u.uid).set({ email: u.email, isPremium: false, hwid: "" }); }
-        function toggleAuth() { /* Add Register Logic if needed */ }
     </script>
 </body>
 </html>
