@@ -2,14 +2,13 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>STANY MIN TV | iOS 26</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>STANY MIN TV 26</title>
     
-    <!-- Fonts & Icons -->
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=SF+Pro+Display:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     
-    <!-- Firebase (Original Scripts Retained) -->
+    <!-- Firebase -->
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-database-compat.js"></script>
@@ -17,260 +16,1790 @@
     <!-- Video Player -->
     <link href="https://unpkg.com/video.js@7.21.1/dist/video-js.min.css" rel="stylesheet">
     <script src="https://unpkg.com/video.js@7.21.1/dist/video.min.js"></script>
-
+    <script src="https://unpkg.com/@videojs/http-streaming@2.14.2/dist/videojs-http-streaming.min.js"></script>
+    
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
     <style>
+        /* ========== iOS 26 DESIGN SYSTEM ========== */
         :root {
-            --primary: #FF0000; /* Red */
-            --bg: #000000;      /* Black */
-            --text: #FFFFFF;    /* White */
-            --glass: rgba(255, 255, 255, 0.08);
-            --glass-border: rgba(255, 255, 255, 0.15);
-            --blur: blur(25px);
+            /* Color Palette - NYEKUNDU, NYEUSI, NYEUPE */
+            --red-primary: #ff0000;
+            --red-dark: #cc0000;
+            --red-light: #ff3333;
+            --black-bg: #000000;
+            --black-card: #0a0a0a;
+            --black-border: #1a1a1a;
+            --white-text: #ffffff;
+            --white-muted: #f0f0f0;
+            
+            /* Glassmorphism Variables */
+            --glass-bg: rgba(255, 255, 255, 0.05);
+            --glass-border: rgba(255, 255, 255, 0.1);
+            --glass-blur: blur(20px);
+            
+            /* iOS Spacing */
+            --spacing-xs: 4px;
+            --spacing-sm: 8px;
+            --spacing-md: 16px;
+            --spacing-lg: 24px;
+            --spacing-xl: 32px;
+            
+            /* Border Radius */
+            --radius-sm: 8px;
+            --radius-md: 15px;
+            --radius-lg: 25px;
+            --radius-xl: 50px;
         }
 
+        /* ========== RESET & BASE STYLES ========== */
         * {
-            margin: 0; padding: 0; box-sizing: border-box;
-            font-family: 'Outfit', sans-serif;
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
             -webkit-tap-highlight-color: transparent;
+            user-select: none;
         }
 
         body {
-            background: var(--bg);
-            color: var(--text);
-            overflow: hidden;
-            height: 100vh;
+            font-family: 'SF Pro Display', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--black-bg);
+            color: var(--white-text);
+            min-height: 100vh;
+            overflow-x: hidden;
+            padding-bottom: 80px;
+            -webkit-font-smoothing: antialiased;
         }
 
-        /* iOS 26 High-End Splash Screen */
-        #splash {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: var(--bg); z-index: 10000;
-            display: flex; flex-direction: column; justify-content: center; align-items: center;
+        /* ========== SPLASH SCREEN ========== */
+        #splashScreen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #000000, #1a0000);
+            z-index: 9999;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            animation: splashFadeOut 0.3s forwards;
+            animation-delay: 2s;
         }
+
         .splash-logo {
-            width: 100px; height: 100px;
-            border: 5px solid var(--primary);
-            border-radius: 25px;
-            animation: pulse 2s infinite ease-in-out;
-        }
-        @keyframes pulse {
-            0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(255,0,0,0.7); }
-            70% { transform: scale(1.05); box-shadow: 0 0 0 30px rgba(255,0,0,0); }
-            100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(255,0,0,0); }
+            width: 120px;
+            height: 120px;
+            background: var(--red-primary);
+            border-radius: 28px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-bottom: 30px;
+            animation: splashPulse 2s infinite;
+            transform: scale(0);
+            animation: splashScale 0.8s cubic-bezier(0.68, -0.55, 0.265, 1.55) forwards;
+            animation-delay: 0.3s;
         }
 
-        /* Ultimate Ad Engine */
-        #ad-engine {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: var(--bg); z-index: 9000; display: none; flex-direction: column;
+        .splash-logo i {
+            font-size: 60px;
+            color: white;
         }
-        .ad-marquee {
-            height: 35px; background: var(--primary); color: #000;
-            font-weight: 800; display: flex; align-items: center; overflow: hidden;
-            text-transform: uppercase; font-size: 12px;
+
+        .splash-text {
+            font-size: 28px;
+            font-weight: 700;
+            color: white;
+            margin-bottom: 10px;
+            opacity: 0;
+            animation: fadeIn 0.5s forwards;
+            animation-delay: 0.8s;
         }
-        .marquee-content {
-            display: inline-block; white-space: nowrap; animation: marquee 15s linear infinite;
+
+        .splash-subtext {
+            color: #ff6666;
+            opacity: 0;
+            animation: fadeIn 0.5s forwards;
+            animation-delay: 1s;
         }
+
+        .splash-progress {
+            width: 200px;
+            height: 3px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            margin-top: 40px;
+            overflow: hidden;
+        }
+
+        .splash-progress-bar {
+            height: 100%;
+            background: var(--red-primary);
+            width: 0%;
+            animation: progressLoad 2s ease-in-out forwards;
+        }
+
+        @keyframes splashScale {
+            0% { transform: scale(0); }
+            70% { transform: scale(1.1); }
+            100% { transform: scale(1); }
+        }
+
+        @keyframes splashPulse {
+            0%, 100% { box-shadow: 0 0 0 0 rgba(255, 0, 0, 0.7); }
+            50% { box-shadow: 0 0 0 20px rgba(255, 0, 0, 0); }
+        }
+
+        @keyframes progressLoad {
+            0% { width: 0%; }
+            100% { width: 100%; }
+        }
+
+        @keyframes splashFadeOut {
+            0% { opacity: 1; }
+            100% { opacity: 0; visibility: hidden; }
+        }
+
+        /* ========== GLASSMORPHISM UTILITIES ========== */
+        .glass {
+            background: var(--glass-bg);
+            backdrop-filter: var(--glass-blur);
+            -webkit-backdrop-filter: var(--glass-blur);
+            border: 1px solid var(--glass-border);
+        }
+
+        .glass-card {
+            background: var(--glass-bg);
+            backdrop-filter: var(--glass-blur);
+            -webkit-backdrop-filter: var(--glass-blur);
+            border: 1px solid var(--glass-border);
+            border-radius: var(--radius-md);
+        }
+
+        /* ========== AUTH SCREENS ========== */
+        .auth-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: var(--black-bg);
+            z-index: 9000;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: var(--spacing-md);
+        }
+
+        .auth-card {
+            width: 100%;
+            max-width: 400px;
+            background: var(--glass-bg);
+            backdrop-filter: var(--glass-blur);
+            border: 1px solid var(--glass-border);
+            border-radius: var(--radius-lg);
+            padding: var(--spacing-xl);
+            text-align: center;
+        }
+
+        .auth-header {
+            margin-bottom: 30px;
+        }
+
+        .auth-logo {
+            font-size: 36px;
+            color: var(--red-primary);
+            margin-bottom: 15px;
+        }
+
+        .auth-title {
+            font-size: 24px;
+            font-weight: 600;
+            color: var(--white-text);
+            margin-bottom: 8px;
+        }
+
+        .auth-subtitle {
+            color: #aaa;
+            font-size: 14px;
+        }
+
+        /* ========== INPUT STYLES ========== */
+        .input-group {
+            margin-bottom: var(--spacing-md);
+        }
+
+        .input-label {
+            display: block;
+            text-align: left;
+            color: var(--white-text);
+            margin-bottom: var(--spacing-xs);
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        .input-box {
+            width: 100%;
+            padding: 15px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: var(--radius-md);
+            color: var(--white-text);
+            font-size: 16px;
+            outline: none;
+            transition: all 0.3s;
+        }
+
+        .input-box:focus {
+            border-color: var(--red-primary);
+            background: rgba(255, 0, 0, 0.05);
+        }
+
+        /* ========== BUTTON STYLES ========== */
+        .btn {
+            width: 100%;
+            padding: 16px;
+            background: var(--red-primary);
+            color: white;
+            border: none;
+            border-radius: var(--radius-md);
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .btn:hover {
+            background: var(--red-dark);
+            transform: translateY(-1px);
+        }
+
+        .btn-secondary {
+            background: transparent;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .btn-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: var(--red-primary);
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+
+        /* ========== HEADER ========== */
+        .header {
+            padding: 15px var(--spacing-md);
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: var(--glass-blur);
+            -webkit-backdrop-filter: var(--glass-blur);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 20px;
+            font-weight: 700;
+            background: linear-gradient(45deg, var(--red-primary), #ff6666);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .header-icons {
+            display: flex;
+            gap: 20px;
+            align-items: center;
+        }
+
+        .notification-bell {
+            position: relative;
+            cursor: pointer;
+        }
+
+        .notification-dot {
+            position: absolute;
+            top: -3px;
+            right: -3px;
+            width: 8px;
+            height: 8px;
+            background: var(--red-primary);
+            border-radius: 50%;
+            display: none;
+        }
+
+        .notification-count {
+            position: absolute;
+            top: -8px;
+            right: -8px;
+            background: var(--red-primary);
+            color: white;
+            border-radius: 50%;
+            width: 18px;
+            height: 18px;
+            font-size: 11px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            display: none;
+        }
+
+        /* ========== BOTTOM NAVIGATION ========== */
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            background: rgba(0, 0, 0, 0.95);
+            backdrop-filter: var(--glass-blur);
+            -webkit-backdrop-filter: var(--glass-blur);
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            display: flex;
+            justify-content: space-around;
+            padding: 12px 0;
+            z-index: 1000;
+        }
+
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            color: #888;
+            text-decoration: none;
+            font-size: 11px;
+            font-weight: 500;
+            transition: all 0.3s;
+            position: relative;
+        }
+
+        .nav-item i {
+            font-size: 20px;
+            margin-bottom: 4px;
+        }
+
+        .nav-item.active {
+            color: var(--red-primary);
+        }
+
+        .nav-item.active::before {
+            content: '';
+            position: absolute;
+            top: -8px;
+            width: 4px;
+            height: 4px;
+            background: var(--red-primary);
+            border-radius: 50%;
+        }
+
+        /* ========== PAGES ========== */
+        .page {
+            display: none;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .page.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        /* ========== HOME PAGE ========== */
+        .hero-carousel {
+            position: relative;
+            height: 220px;
+            overflow: hidden;
+            margin: var(--spacing-md);
+            border-radius: var(--radius-lg);
+        }
+
+        .carousel-slide {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            opacity: 0;
+            transition: opacity 0.8s ease;
+            border-radius: var(--radius-lg);
+            overflow: hidden;
+        }
+
+        .carousel-slide.active {
+            opacity: 1;
+        }
+
+        .carousel-slide img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .carousel-overlay {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: linear-gradient(transparent, rgba(0, 0, 0, 0.9));
+            padding: var(--spacing-md);
+        }
+
+        .carousel-title {
+            font-size: 18px;
+            font-weight: 700;
+            color: white;
+            margin-bottom: 5px;
+        }
+
+        .carousel-description {
+            font-size: 14px;
+            color: #ccc;
+        }
+
+        /* Category Tabs */
+        .category-tabs {
+            display: flex;
+            overflow-x: auto;
+            padding: 0 var(--spacing-md) var(--spacing-md);
+            gap: 10px;
+            white-space: nowrap;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        .category-tabs::-webkit-scrollbar {
+            display: none;
+        }
+
+        .category-tab {
+            padding: 10px 20px;
+            background: var(--glass-bg);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: var(--radius-xl);
+            color: var(--white-text);
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s;
+            flex-shrink: 0;
+        }
+
+        .category-tab.active {
+            background: var(--red-primary);
+            border-color: var(--red-primary);
+        }
+
+        /* Content Grid */
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: var(--spacing-md);
+            padding-top: var(--spacing-lg);
+        }
+
+        .section-title {
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--white-text);
+        }
+
+        .see-all {
+            color: var(--red-primary);
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+        }
+
+        .content-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            padding: 0 var(--spacing-md) var(--spacing-xl);
+        }
+
+        @media (min-width: 768px) {
+            .content-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+        }
+
+        .content-card {
+            background: var(--glass-bg);
+            border-radius: var(--radius-md);
+            overflow: hidden;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            position: relative;
+            aspect-ratio: 2/3;
+            transition: all 0.3s;
+        }
+
+        .content-card:hover {
+            transform: translateY(-5px);
+            border-color: var(--red-primary);
+        }
+
+        .content-card img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .card-overlay {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: linear-gradient(transparent, rgba(0, 0, 0, 0.9));
+            padding: 12px;
+        }
+
+        .card-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: white;
+            margin-bottom: 4px;
+        }
+
+        .card-subtitle {
+            font-size: 12px;
+            color: #ccc;
+        }
+
+        .card-badge {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: var(--red-primary);
+            color: white;
+            padding: 4px 8px;
+            border-radius: var(--radius-sm);
+            font-size: 11px;
+            font-weight: 600;
+        }
+
+        .favorite-btn {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            background: rgba(0, 0, 0, 0.5);
+            color: #ccc;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            border: none;
+            font-size: 14px;
+            transition: all 0.3s;
+        }
+
+        .favorite-btn.active {
+            color: #ffd700;
+        }
+
+        /* ========== MOVIES PAGE ========== */
+        .movies-filter {
+            padding: var(--spacing-md);
+            display: flex;
+            gap: 10px;
+            overflow-x: auto;
+        }
+
+        .filter-btn {
+            padding: 10px 20px;
+            background: var(--glass-bg);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: var(--radius-xl);
+            color: var(--white-text);
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            white-space: nowrap;
+            flex-shrink: 0;
+        }
+
+        .filter-btn.active {
+            background: var(--red-primary);
+            border-color: var(--red-primary);
+        }
+
+        /* ========== ADULT PAGE (18+) ========== */
+        .age-gate {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: var(--black-bg);
+            z-index: 9998;
+            display: none;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: var(--spacing-xl);
+            text-align: center;
+        }
+
+        .age-gate-icon {
+            font-size: 80px;
+            color: var(--red-primary);
+            margin-bottom: 30px;
+            animation: pulse 2s infinite;
+        }
+
+        .age-gate-title {
+            font-size: 28px;
+            font-weight: 700;
+            margin-bottom: 15px;
+            color: white;
+        }
+
+        .age-gate-text {
+            font-size: 16px;
+            color: #aaa;
+            margin-bottom: 40px;
+            line-height: 1.5;
+            max-width: 300px;
+        }
+
+        .age-gate-buttons {
+            display: flex;
+            gap: 15px;
+            width: 100%;
+            max-width: 300px;
+        }
+
+        .age-gate-buttons .btn {
+            flex: 1;
+        }
+
+        .adult-content {
+            padding: var(--spacing-md);
+        }
+
+        .adult-warning {
+            background: rgba(255, 0, 0, 0.1);
+            border: 1px solid var(--red-primary);
+            border-radius: var(--radius-md);
+            padding: var(--spacing-md);
+            margin-bottom: var(--spacing-md);
+            text-align: center;
+        }
+
+        .adult-warning i {
+            font-size: 24px;
+            color: var(--red-primary);
+            margin-bottom: 10px;
+        }
+
+        /* ========== CHAT PAGE ========== */
+        .chat-page {
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .chat-header {
+            padding: 15px var(--spacing-md);
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: var(--glass-blur);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .back-arrow {
+            color: var(--white-text);
+            font-size: 20px;
+            cursor: pointer;
+        }
+
+        .chat-type-selector {
+            display: flex;
+            padding: 0 var(--spacing-md);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            gap: 0;
+        }
+
+        .chat-type-btn {
+            flex: 1;
+            padding: 15px;
+            background: transparent;
+            border: none;
+            color: #888;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            position: relative;
+        }
+
+        .chat-type-btn.active {
+            color: var(--red-primary);
+        }
+
+        .chat-type-btn.active::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: var(--red-primary);
+        }
+
+        .chat-container {
+            flex: 1;
+            overflow-y: auto;
+            padding: var(--spacing-md);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .chat-messages {
+            flex: 1;
+            overflow-y: auto;
+            margin-bottom: var(--spacing-md);
+        }
+
+        .message {
+            max-width: 80%;
+            margin-bottom: 15px;
+            padding: 12px 16px;
+            border-radius: 18px;
+            font-size: 14px;
+            line-height: 1.4;
+            position: relative;
+        }
+
+        .message-user {
+            align-self: flex-end;
+            background: var(--red-primary);
+            color: white;
+            border-bottom-right-radius: 5px;
+        }
+
+        .message-admin {
+            align-self: flex-start;
+            background: var(--glass-bg);
+            color: var(--white-text);
+            border-bottom-left-radius: 5px;
+        }
+
+        .message-time {
+            font-size: 11px;
+            color: rgba(255, 255, 255, 0.5);
+            margin-top: 4px;
+            text-align: right;
+        }
+
+        .typing-indicator {
+            display: none;
+            padding: 10px;
+            color: #aaa;
+            font-size: 12px;
+            font-style: italic;
+        }
+
+        .chat-input-container {
+            display: flex;
+            gap: 10px;
+            padding: var(--spacing-md);
+            background: rgba(0, 0, 0, 0.5);
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .chat-input {
+            flex: 1;
+            padding: 12px 16px;
+            background: var(--glass-bg);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            color: var(--white-text);
+            font-size: 14px;
+            outline: none;
+        }
+
+        .chat-send-btn {
+            width: 44px;
+            height: 44px;
+            background: var(--red-primary);
+            border: none;
+            border-radius: 50%;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+        }
+
+        /* ========== MORE PAGE ========== */
+        .more-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+            padding: var(--spacing-md);
+        }
+
+        .more-item {
+            background: var(--glass-bg);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: var(--radius-md);
+            padding: 25px 15px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .more-item:hover {
+            transform: translateY(-3px);
+            border-color: var(--red-primary);
+            background: rgba(255, 0, 0, 0.05);
+        }
+
+        .more-item i {
+            font-size: 28px;
+            color: var(--red-primary);
+            margin-bottom: 12px;
+        }
+
+        .more-item span {
+            display: block;
+            font-size: 12px;
+            font-weight: 500;
+            color: var(--white-text);
+        }
+
+        /* ========== STORIES PAGE ========== */
+        .story-header {
+            height: 250px;
+            background-size: cover;
+            background-position: center;
+            position: relative;
+        }
+
+        .story-header-overlay {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: linear-gradient(transparent, rgba(0, 0, 0, 0.9));
+            padding: var(--spacing-md);
+        }
+
+        .story-title {
+            font-size: 24px;
+            font-weight: 700;
+            color: white;
+            margin-bottom: 8px;
+        }
+
+        .story-meta {
+            font-size: 14px;
+            color: #ccc;
+            margin-bottom: 5px;
+        }
+
+        .story-meta i {
+            margin-right: 5px;
+            color: var(--red-primary);
+        }
+
+        .story-content {
+            padding: var(--spacing-md);
+        }
+
+        .story-description {
+            background: var(--glass-bg);
+            border-radius: var(--radius-md);
+            padding: var(--spacing-md);
+            margin-bottom: var(--spacing-lg);
+            font-size: 15px;
+            line-height: 1.6;
+        }
+
+        .story-navigation {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: var(--spacing-md);
+            background: var(--glass-bg);
+            border-radius: var(--radius-md);
+            margin-bottom: var(--spacing-md);
+        }
+
+        .part-info {
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        .part-buttons {
+            display: flex;
+            gap: 10px;
+        }
+
+        .story-body {
+            font-size: 16px;
+            line-height: 1.8;
+            color: var(--white-text);
+        }
+
+        .story-body p {
+            margin-bottom: 20px;
+        }
+
+        /* ========== TECH UPDATES PAGE ========== */
+        .updates-list {
+            padding: var(--spacing-md);
+        }
+
+        .update-card {
+            background: var(--glass-bg);
+            border-radius: var(--radius-md);
+            padding: var(--spacing-md);
+            margin-bottom: 15px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .update-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 12px;
+        }
+
+        .update-icon {
+            width: 40px;
+            height: 40px;
+            background: rgba(255, 0, 0, 0.1);
+            border-radius: var(--radius-md);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--red-primary);
+            font-size: 18px;
+        }
+
+        .update-title {
+            flex: 1;
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--white-text);
+        }
+
+        .update-date {
+            font-size: 12px;
+            color: #888;
+        }
+
+        .update-content {
+            font-size: 14px;
+            line-height: 1.6;
+            color: #ccc;
+        }
+
+        .update-tags {
+            display: flex;
+            gap: 8px;
+            margin-top: 12px;
+            flex-wrap: wrap;
+        }
+
+        .update-tag {
+            padding: 4px 10px;
+            background: rgba(255, 0, 0, 0.1);
+            border: 1px solid var(--red-primary);
+            border-radius: var(--radius-xl);
+            font-size: 11px;
+            color: var(--red-primary);
+        }
+
+        /* ========== ADVERTISEMENT SYSTEM ========== */
+        .ad-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: var(--black-bg);
+            z-index: 9997;
+            display: none;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .ad-container {
+            width: 90%;
+            max-width: 400px;
+            background: var(--black-card);
+            border-radius: var(--radius-lg);
+            overflow: hidden;
+            position: relative;
+        }
+
+        .marquee {
+            position: absolute;
+            left: 0;
+            right: 0;
+            background: rgba(255, 0, 0, 0.9);
+            color: white;
+            padding: 12px 0;
+            overflow: hidden;
+            white-space: nowrap;
+            z-index: 10;
+        }
+
+        .marquee-top {
+            top: 0;
+        }
+
+        .marquee-bottom {
+            bottom: 0;
+        }
+
+        .marquee-text {
+            display: inline-block;
+            padding-left: 100%;
+            animation: marquee 15s linear infinite;
+            font-weight: 600;
+        }
+
         @keyframes marquee {
-            0% { transform: translateX(100%); }
+            0% { transform: translateX(0); }
             100% { transform: translateX(-100%); }
         }
-        .ad-main { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 20px; position: relative;}
-        .ad-timer { position: absolute; top: 50px; right: 20px; font-weight: bold; background: var(--primary); padding: 5px 15px; border-radius: 20px;}
+
+        .ad-content {
+            padding: 60px 20px;
+            text-align: center;
+        }
+
+        .ad-sponsor {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--red-primary);
+            margin-bottom: 15px;
+        }
+
+        .ad-message {
+            color: var(--white-text);
+            font-size: 16px;
+            margin-bottom: 30px;
+        }
+
         .social-hub {
-            display: grid; grid-template-columns: repeat(5, 1fr); gap: 15px;
-            background: var(--glass); padding: 20px; border-radius: 25px; border: 1px solid var(--glass-border);
-        }
-        .social-hub i { font-size: 24px; color: var(--text); cursor: pointer; }
-
-        /* Bottom Navigation */
-        .nav-bar {
-            position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%);
-            width: 90%; height: 70px; background: var(--glass);
-            backdrop-filter: var(--blur); border: 1px solid var(--glass-border);
-            border-radius: 35px; display: flex; justify-content: space-around;
-            align-items: center; z-index: 1000; transition: 0.3s;
-        }
-        .nav-item { color: var(--text); opacity: 0.5; text-align: center; font-size: 10px; text-decoration: none;}
-        .nav-item.active { opacity: 1; color: var(--primary); }
-        .nav-item i { display: block; font-size: 22px; margin-bottom: 4px; }
-
-        /* Layout & Pages */
-        .page { 
-            display: none; height: 100vh; overflow-y: auto; 
-            padding: 20px; padding-top: 60px; padding-bottom: 110px;
-        }
-        .page.active { display: block; }
-        .header { font-size: 32px; font-weight: 700; margin-bottom: 25px; color: var(--primary); }
-
-        /* Card System (Glassmorphism) */
-        .card {
-            background: var(--glass); border: 1px solid var(--glass-border);
-            border-radius: 25px; padding: 15px; margin-bottom: 20px;
-            backdrop-filter: var(--blur); position: relative; overflow: hidden;
-        }
-        .card img { width: 100%; border-radius: 18px; margin-bottom: 12px; }
-        .card-title { font-weight: 600; font-size: 18px; }
-
-        /* Pro Reader (Stories & Tech) */
-        .reader-header { height: 200px; border-radius: 25px; position: relative; overflow: hidden; margin-bottom: 20px;}
-        .drop-image { position: absolute; width: 100%; height: 100%; object-fit: cover; opacity: 0.3; }
-        .reader-info { position: absolute; bottom: 15px; left: 15px; }
-        .btn-group { display: flex; justify-content: space-between; margin-top: 20px; }
-        .btn-ios { 
-            background: var(--primary); color: #fff; border: none; 
-            padding: 12px 30px; border-radius: 15px; font-weight: bold; cursor: pointer;
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin: 30px 0;
         }
 
-        /* Chat System */
-        #chat-back { 
-            position: fixed; top: 20px; right: 20px; background: var(--primary);
-            width: 45px; height: 45px; border-radius: 50%; display: none;
-            justify-content: center; align-items: center; z-index: 2000;
-        }
-        .chat-bubble { padding: 12px 18px; border-radius: 20px; margin-bottom: 10px; max-width: 80%; }
-        .user-msg { background: var(--primary); align-self: flex-end; margin-left: auto; }
-        .bot-msg { background: var(--glass); border: 1px solid var(--glass-border); }
-
-        /* Security Age Gate */
-        #age-gate {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: var(--bg); z-index: 11000; display: none;
-            flex-direction: column; justify-content: center; align-items: center; text-align: center;
+        .social-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 18px;
+            cursor: pointer;
+            transition: all 0.3s;
         }
 
-        /* Float WhatsApp */
-        .wa-float {
-            position: fixed; bottom: 100px; right: 20px; background: #25D366;
-            width: 55px; height: 55px; border-radius: 50%; display: flex;
-            justify-content: center; align-items: center; font-size: 28px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.3); z-index: 900;
+        .social-icon:hover {
+            background: var(--red-primary);
+            transform: scale(1.1);
         }
 
+        .ad-timer {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: rgba(0, 0, 0, 0.7);
+            color: white;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 18px;
+        }
+
+        .skip-ad-btn {
+            margin-top: 20px;
+            padding: 12px 30px;
+            background: var(--red-primary);
+            color: white;
+            border: none;
+            border-radius: var(--radius-md);
+            font-weight: 600;
+            cursor: pointer;
+            display: none;
+        }
+
+        .skip-ad-btn.premium {
+            display: inline-block;
+        }
+
+        /* ========== WHATSAPP FLOAT ========== */
+        .whatsapp-float {
+            position: fixed;
+            bottom: 90px;
+            right: 20px;
+            width: 60px;
+            height: 60px;
+            background: #25D366;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 28px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+            cursor: pointer;
+            z-index: 999;
+            transition: all 0.3s;
+            opacity: 1;
+        }
+
+        .whatsapp-float.hidden {
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        /* ========== MODALS ========== */
+        .modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.9);
+            z-index: 9995;
+            display: none;
+            justify-content: center;
+            align-items: center;
+            padding: var(--spacing-md);
+        }
+
+        .modal-content {
+            background: var(--glass-bg);
+            backdrop-filter: var(--glass-blur);
+            border: 1px solid var(--glass-border);
+            border-radius: var(--radius-lg);
+            width: 100%;
+            max-width: 400px;
+            padding: var(--spacing-xl);
+            text-align: center;
+            position: relative;
+        }
+
+        .modal-close {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            color: #888;
+            font-size: 24px;
+            cursor: pointer;
+            width: 30px;
+            height: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+        }
+
+        .modal-close:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .modal-icon {
+            font-size: 48px;
+            color: var(--red-primary);
+            margin-bottom: 20px;
+        }
+
+        .modal-title {
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--white-text);
+            margin-bottom: 10px;
+        }
+
+        .modal-text {
+            color: #aaa;
+            font-size: 14px;
+            line-height: 1.5;
+            margin-bottom: 25px;
+        }
+
+        /* ========== TOAST NOTIFICATIONS ========== */
+        .toast {
+            position: fixed;
+            top: 80px;
+            right: 20px;
+            background: var(--black-card);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-left: 4px solid var(--red-primary);
+            padding: 15px 20px;
+            border-radius: var(--radius-md);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            max-width: 320px;
+            transform: translateX(400px);
+            transition: transform 0.3s ease;
+            z-index: 9999;
+        }
+
+        .toast.show {
+            transform: translateX(0);
+        }
+
+        .toast-icon {
+            color: var(--red-primary);
+            font-size: 20px;
+        }
+
+        .toast-message {
+            color: var(--white-text);
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        /* ========== LOADING STATES ========== */
+        .loading {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 40px;
+        }
+
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 3px solid rgba(255, 255, 255, 0.1);
+            border-top: 3px solid var(--red-primary);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* ========== SCROLLBAR ========== */
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 10px;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--red-primary);
+            border-radius: 10px;
+        }
+
+        /* ========== UTILITY CLASSES ========== */
+        .hidden { display: none !important; }
+        .text-red { color: var(--red-primary); }
+        .text-white { color: var(--white-text); }
+        .text-muted { color: #888; }
+        .text-center { text-align: center; }
+        .mb-1 { margin-bottom: var(--spacing-xs); }
+        .mb-2 { margin-bottom: var(--spacing-sm); }
+        .mb-3 { margin-bottom: var(--spacing-md); }
+        .mb-4 { margin-bottom: var(--spacing-lg); }
+        .p-1 { padding: var(--spacing-xs); }
+        .p-2 { padding: var(--spacing-sm); }
+        .p-3 { padding: var(--spacing-md); }
+        .p-4 { padding: var(--spacing-lg); }
+        .glass-effect { background: var(--glass-bg); backdrop-filter: var(--glass-blur); }
+        .rounded-sm { border-radius: var(--radius-sm); }
+        .rounded-md { border-radius: var(--radius-md); }
+        .rounded-lg { border-radius: var(--radius-lg); }
+        .rounded-xl { border-radius: var(--radius-xl); }
     </style>
 </head>
 <body>
 
-    <!-- Splash Screen -->
-    <div id="splash">
-        <div class="splash-logo"></div>
-        <h1 style="margin-top: 25px; letter-spacing: 4px;">STANY MIN TV</h1>
-        <p style="font-size: 12px; opacity: 0.5;">POWERED BY iOS 26 ENGINE</p>
+    <!-- ========== SPLASH SCREEN ========== -->
+    <div id="splashScreen">
+        <div class="splash-logo">
+            <i class="fas fa-tv"></i>
+        </div>
+        <div class="splash-text">STANY MIN TV</div>
+        <div class="splash-subtext">iOS 26 Experience</div>
+        <div class="splash-progress">
+            <div class="splash-progress-bar"></div>
+        </div>
     </div>
 
-    <!-- Age Gate -->
-    <div id="age-gate">
-        <i class="fa-solid fa-circle-exclamation fa-4x" style="color:var(--primary)"></i>
-        <h1 style="margin: 20px 0;">ADULT CONTENT</h1>
-        <p style="padding: 0 40px; margin-bottom: 30px;">This section contains adult material. You must be 18 years or older to proceed.</p>
-        <button class="btn-ios" onclick="verifyAge()">I am 18 or Older</button>
-        <p style="margin-top: 20px; color: var(--primary);" onclick="nav('home')">Go Back Home</p>
+    <!-- ========== AUTHENTICATION SCREENS ========== -->
+    <div id="authScreen" class="auth-screen">
+        <!-- Login Page -->
+        <div id="loginPage" class="auth-card">
+            <div class="auth-header">
+                <div class="auth-logo">
+                    <i class="fas fa-tv"></i>
+                </div>
+                <div class="auth-title">Welcome Back</div>
+                <div class="auth-subtitle">Sign in to continue</div>
+            </div>
+            
+            <div class="input-group">
+                <input type="email" id="loginEmail" class="input-box" placeholder="Email Address">
+            </div>
+            
+            <div class="input-group">
+                <input type="password" id="loginPassword" class="input-box" placeholder="Password">
+            </div>
+            
+            <div id="loginError" class="text-red mb-3 hidden"></div>
+            
+            <button class="btn" onclick="login()">
+                <i class="fas fa-sign-in-alt"></i> Sign In
+            </button>
+            
+            <div class="mt-3 text-center">
+                <span class="text-muted">Don't have an account?</span>
+                <span class="text-red ml-2" style="cursor: pointer;" onclick="showRegister()">Sign Up</span>
+            </div>
+        </div>
+
+        <!-- Register Page -->
+        <div id="registerPage" class="auth-card hidden">
+            <div class="auth-header">
+                <div class="auth-logo">
+                    <i class="fas fa-tv"></i>
+                </div>
+                <div class="auth-title">Create Account</div>
+                <div class="auth-subtitle">Join STANY MIN TV</div>
+            </div>
+            
+            <div class="input-group">
+                <input type="text" id="registerName" class="input-box" placeholder="Full Name">
+            </div>
+            
+            <div class="input-group">
+                <input type="email" id="registerEmail" class="input-box" placeholder="Email Address">
+            </div>
+            
+            <div class="input-group">
+                <input type="password" id="registerPassword" class="input-box" placeholder="Password">
+            </div>
+            
+            <div id="registerError" class="text-red mb-3 hidden"></div>
+            
+            <button class="btn" onclick="register()">
+                <i class="fas fa-user-plus"></i> Create Account
+            </button>
+            
+            <div class="mt-3 text-center">
+                <span class="text-muted">Already have an account?</span>
+                <span class="text-red ml-2" style="cursor: pointer;" onclick="showLogin()">Sign In</span>
+            </div>
+        </div>
     </div>
 
-    <!-- Chat Back Arrow (iOS Style) -->
-    <div id="chat-back" onclick="exitChat()">
-        <i class="fa-solid fa-arrow-right"></i> <!-- Placed on top right as per instruction -->
-    </div>
-
-    <!-- Ad Engine Overlay -->
-    <div id="ad-engine">
-        <div class="ad-marquee"><div class="marquee-content" id="marquee-top"></div></div>
-        <div class="ad-main">
-            <div class="ad-timer" id="timer-label">Wait 10s</div>
-            <div id="ad-content-box" style="width: 100%; text-align: center; margin-bottom: 30px;">
-                <!-- Sponsor Ad Img or Video here -->
-                <div class="card" style="height: 250px; display: flex; align-items: center; justify-content: center;">
-                    <i class="fa-solid fa-rectangle-ad fa-5x" style="color: var(--primary);"></i>
+    <!-- ========== MAIN APP ========== -->
+    <div id="mainApp" class="hidden">
+        <!-- Header -->
+        <div class="header glass-effect">
+            <div class="logo">STANY MIN TV</div>
+            <div class="header-icons">
+                <div class="notification-bell" onclick="showNotifications()">
+                    <i class="fas fa-bell"></i>
+                    <span id="notificationDot" class="notification-dot"></span>
+                    <span id="notificationCount" class="notification-count"></span>
+                </div>
+                <div onclick="toggleSearch()" style="cursor: pointer;">
+                    <i class="fas fa-search"></i>
                 </div>
             </div>
-            <div class="social-hub" id="sponsor-socials">
-                <!-- 20+ icons dynamically generated -->
-            </div>
-            <button id="skip-btn" class="btn-ios" style="margin-top: 30px; opacity: 0.5;" disabled>Skip Ad</button>
         </div>
-        <div class="ad-marquee"><div class="marquee-content" id="marquee-bottom"></div></div>
-    </div>
 
-    <!-- Main Pages -->
-    <div id="home" class="page active">
-        <div class="header">LIVE TV</div>
-        <div id="live-grid">
-            <!-- Channels Load Here -->
+        <!-- Search Bar -->
+        <div id="searchBar" class="hidden" style="padding: 10px; background: rgba(0,0,0,0.8);">
+            <input type="text" id="searchInput" class="input-box" placeholder="Search channels, movies, stories..." 
+                   style="background: rgba(255,255,255,0.05);">
         </div>
-    </div>
 
-    <div id="movies" class="page">
-        <div class="header">CINEMA</div>
-        <div id="movie-grid"></div>
-    </div>
-
-    <div id="adult" class="page">
-        <div class="header">ADULT (18+)</div>
-        <div id="adult-grid"></div>
-    </div>
-
-    <div id="chat" class="page">
-        <div class="header">COMMUNITY</div>
-        <div id="chat-container" style="display: flex; flex-direction: column; height: 65vh;">
-            <div id="messages" style="flex:1; overflow-y: auto; padding: 10px;"></div>
-            <div style="display: flex; gap: 10px; background: var(--glass); padding: 10px; border-radius: 20px;">
-                <input type="text" id="msg-input" placeholder="Type a message..." style="flex:1; background: transparent; border: none; color: white; outline: none;">
-                <button onclick="sendMessage()" style="background: none; border: none; color: var(--primary); font-size: 20px;"><i class="fa-solid fa-paper-plane"></i></button>
-            </div>
-        </div>
-    </div>
-
-    <div id="more" class="page">
-        <div class="header">MORE</div>
-        <div class="card" onclick="openStories()">
-            <i class="fa-solid fa-book-open"></i> &nbsp; Stories (Simulizi)
-        </div>
-        <div class="card" onclick="openTech()">
-            <i class="fa-solid fa-microchip"></i> &nbsp; Tech & Cybersecurity
-        </div>
-        <div class="card" onclick="nav('profile')">
-            <i class="fa-solid fa-user-gear"></i> &nbsp; My Account
-        </div>
-    </div>
-
-    <!-- Pro Reader Page (Hidden until clicked) -->
-    <div id="reader" class="page">
-        <div id="reader-view">
-            <div class="reader-header">
-                <img src="" class="drop-image" id="book-cover">
-                <div class="reader-info">
-                    <h2 id="book-title">Story Title</h2>
-                    <p id="book-author" style="font-size: 12px; opacity: 0.7;">Author Name</p>
-                    <span id="book-genre" style="background: var(--primary); font-size: 10px; padding: 2px 8px; border-radius: 10px;">Genre</span>
+        <!-- ========== PAGES ========== -->
+        
+        <!-- Home Page -->
+        <div id="homePage" class="page active">
+            <!-- Carousel -->
+            <div class="hero-carousel glass-effect">
+                <div class="carousel-slide active">
+                    <img src="https://images.unsplash.com/photo-1598899134739-24c46f58b8c0?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80">
+                    <div class="carousel-overlay">
+                        <div class="carousel-title">Live Sports</div>
+                        <div class="carousel-description">Watch live matches in HD</div>
+                    </div>
                 </div>
             </div>
-            <div id="reader-content" style="line-height: 1.8; text-align: justify; font-size: 16px;">
-                <!-- Content here -->
+
+            <!-- Category Tabs -->
+            <div class="category-tabs">
+                <div class="category-tab active" onclick="filterContent('all')">All</div>
+                <div class="category-tab" onclick="filterContent('sports')">Sports</div>
+                <div class="category-tab" onclick="filterContent('movies')">Movies</div>
+                <div class="category-tab" onclick="filterContent('news')">News</div>
+                <div class="category-tab" onclick="filterContent('entertainment')">Entertainment</div>
             </div>
-            <div class="btn-group">
-                <button class="btn-ios" onclick="prevPage()"><i class="fa-solid fa-chevron-left"></i> Back</button>
-                <button class="btn-ios" onclick="nextPage()">Next <i class="fa-solid fa-chevron-right"></i></button>
+
+            <!-- Live Channels -->
+            <div class="section-header">
+                <div class="section-title">Live Channels</div>
+                <div class="see-all" onclick="showAllChannels()">See All</div>
             </div>
+            
+            <div class="content-grid" id="channelsGrid">
+                <!-- Channels will load here -->
+                <div class="loading">
+                    <div class="spinner"></div>
+                </div>
+            </div>
+
+            <!-- Movies -->
+            <div class="section-header">
+                <div class="section-title">Latest Movies</div>
+                <div class="see-all" onclick="showAllMovies()">See All</div>
+            </div>
+            
+            <div class="content-grid" id="moviesGrid">
+                <!-- Movies will load here -->
+                <div class="loading">
+                    <div class="spinner"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Movies Page -->
+        <div id="moviesPage" class="page">
+            <div class="movies-filter">
+                <div class="filter-btn active" onclick="filterMovies('all')">All</div>
+                <div class="filter-btn" onclick="filterMovies('action')">Action</div>
+                <div class="filter-btn" onclick="filterMovies('comedy')">Comedy</div>
+                <div class="filter-btn" onclick="filterMovies('drama')">Drama</div>
+                <div class="filter-btn" onclick="filterMovies('horror')">Horror</div>
+                <div class="filter-btn" onclick="filterMovies('romance')">Romance</div>
+            </div>
+            
+            <div class="content-grid" id="allMoviesGrid">
+                <!-- All movies load here -->
+                <div class="loading">
+                    <div class="spinner"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Adult Page (18+) -->
+        <div id="adultPage" class="page">
+            <div class="adult-content">
+                <div class="adult-warning glass-effect">
+                    <i class="fas fa-exclamation-triangle"></i>
+                    <div class="mt-2">ADULT CONTENT - 18+ ONLY</div>
+                    <div class="text-muted mt-1">You must be 18 years or older to access this content</div>
+                </div>
+                
+                <div class="content-grid" id="adultContentGrid">
+                    <!-- Adult content loads here -->
+                    <div class="text-center p-4">
+                        <i class="fas fa-lock text-red mb-3" style="font-size: 48px;"></i>
+                        <div class="text-muted">Adult content requires age verification</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Chat Page -->
+        <div id="chatPage" class="page chat-page">
+            <div class="chat-header">
+                <div class="back-arrow" onclick="goBackToHome()">
+                    <i class="fas fa-arrow-left"></i>
+                </div>
+                <div class="section-title">Chat</div>
+            </div>
+            
+            <div class="chat-type-selector">
+                <button class="chat-type-btn active" onclick="switchChat('public')">Public Chat</button>
+                <button class="chat-type-btn" onclick="switchChat('support')">Support</button>
+            </div>
+            
+            <div class="chat-container">
+                <div class="chat-messages" id="chatMessages">
+                    <div class="message message-admin">
+                        Welcome to STANY MIN TV Chat! How can we help you?
+                        <div class="message-time">Just now</div>
+                    </div>
+                </div>
+                
+                <div class="typing-indicator hidden" id="typingIndicator">
+                    Admin is typing...
+                </div>
+                
+                <div class="chat-input-container">
+                    <input type="text" class="chat-input" id="chatInput" placeholder="Type your message...">
+                    <button class="chat-send-btn" onclick="sendMessage()">
+                        <i class="fas fa-paper-plane"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- More Page -->
+        <div id="morePage" class="page">
+            <div class="more-grid">
+                <div class="more-item" onclick="openPage('library')">
+                    <i class="fas fa-book"></i>
+                    <span>Library</span>
+                </div>
+                <div class="more-item" onclick="openPage('downloads')">
+                    <i class="fas fa-download"></i>
+                    <span>Downloads</span>
+                </div>
+                <div class="more-item" onclick="openPage('stories')">
+                    <i class="fas fa-book-reader"></i>
+                    <span>Simulizi</span>
+                </div>
+                <div class="more-item" onclick="openPage('tech')">
+                    <i class="fas fa-shield-alt"></i>
+                    <span>Tech Updates</span>
+                </div>
+                <div class="more-item" onclick="openPage('favorites')">
+                    <i class="fas fa-star"></i>
+                    <span>Favorites</span>
+                </div>
+                <div class="more-item" onclick="openPage('profile')">
+                    <i class="fas fa-user"></i>
+                    <span>Profile</span>
+                </div>
+                <div class="more-item" onclick="openPage('settings')">
+                    <i class="fas fa-cog"></i>
+                    <span>Settings</span>
+                </div>
+                <div class="more-item" onclick="openPage('tokens')">
+                    <i class="fas fa-key"></i>
+                    <span>Tokens</span>
+                </div>
+                <div class="more-item" onclick="logout()">
+                    <i class="fas fa-sign-out-alt"></i>
+                    <span>Logout</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Stories Page -->
+        <div id="storiesPage" class="page">
+            <div class="story-header" style="background-image: url('https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80')">
+                <div class="story-header-overlay">
+                    <div class="story-title">The Last Warrior</div>
+                    <div class="story-meta">
+                        <i class="fas fa-user"></i> James Mwangi
+                        <i class="fas fa-book ml-3"></i> Action/Adventure
+                    </div>
+                </div>
+            </div>
+            
+            <div class="story-content">
+                <div class="story-description">
+                    A thrilling adventure story about a warrior's journey to save his kingdom from darkness.
+                </div>
+                
+                <div class="story-navigation">
+                    <div class="part-info">Part 1 of 5</div>
+                    <div class="part-buttons">
+                        <button class="btn-secondary" onclick="prevPart()">
+                            <i class="fas fa-chevron-left"></i> Back
+                        </button>
+                        <button class="btn" onclick="nextPart()">
+                            Next <i class="fas fa-chevron-right"></i>
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="story-body">
+                    <p>In a land far away, where the mountains touch the sky and rivers flow with crystal clear water, there lived a warrior named Kato. He was known throughout the kingdom for his bravery and skill with the sword.</p>
+                    <p>One day, darkness fell upon the land. The evil sorcerer Malakar had returned, seeking to conquer the kingdom and plunge it into eternal night.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tech Updates Page -->
+        <div id="techPage" class="page">
+            <div class="updates-list">
+                <div class="update-card glass-effect">
+                    <div class="update-header">
+                        <div class="update-icon">
+                            <i class="fas fa-shield-alt"></i>
+                        </div>
+                        <div class="update-title">Security Update</div>
+                        <div class="update-date">Today</div>
+                    </div>
+                    <div class="update-content">
+                        Enhanced encryption protocols have been implemented to protect your streaming data and personal information.
+                    </div>
+                    <div class="update-tags">
+                        <span class="update-tag">Security</span>
+                        <span class="update-tag">Encryption</span>
+                    </div>
+                </div>
+                
+                <div class="update-card glass-effect">
+                    <div class="update-header">
+                        <div class="update-icon">
+                            <i class="fas fa-wifi"></i>
+                        </div>
+                        <div class="update-title">Streaming Optimization</div>
+                        <div class="update-date">2 days ago</div>
+                    </div>
+                    <div class="update-content">
+                        Improved buffering algorithms for smoother playback even on slower connections.
+                    </div>
+                    <div class="update-tags">
+                        <span class="update-tag">Performance</span>
+                        <span class="update-tag">Streaming</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Bottom Navigation -->
+        <div class="bottom-nav glass-effect">
+            <a class="nav-item active" onclick="switchPage('home')">
+                <i class="fas fa-satellite-dish"></i>
+                <span>Live</span>
+            </a>
+            <a class="nav-item" onclick="switchPage('movies')">
+                <i class="fas fa-film"></i>
+                <span>Movies</span>
+            </a>
+            <a class="nav-item" onclick="showAgeGate()">
+                <i class="fas fa-user-secret"></i>
+                <span>Adult</span>
+            </a>
+            <a class="nav-item" onclick="openChatPage()">
+                <i class="fas fa-comments"></i>
+                <span>Chat</span>
+            </a>
+            <a class="nav-item" onclick="switchPage('more')">
+                <i class="fas fa-ellipsis-h"></i>
+                <span>More</span>
+            </a>
         </div>
     </div>
 
-    <!-- Bottom Nav -->
-    <nav class="nav-bar" id="main-nav">
-        <a onclick="nav('home')" class="nav-item active"><i class="fa-solid fa-house"></i>Live</a>
-        <a onclick="nav('movies')" class="nav-item"><i class="fa-solid fa-clapperboard"></i>Movies</a>
-        <a onclick="nav('adult')" class="nav-item"><i class="fa-solid fa-explicit"></i>18+</a>
-        <a onclick="nav('chat')" class="nav-item"><i class="fa-solid fa-comments"></i>Chat</a>
-        <a onclick="nav('more')" class="nav-item"><i class="fa-solid fa-grid-2"></i>More</a>
-    </nav>
+    <!-- ========== MODALS ========== -->
+    
+    <!-- Age Gate Modal -->
+    <div id="ageGateModal" class="age-gate">
+        <div class="age-gate-icon">
+            <i class="fas fa-exclamation-triangle"></i>
+        </div>
+        <div class="age-gate-title">ADULT CONTENT WARNING</div>
+        <div class="age-gate-text">
+            This section contains content intended for adults only (18+ years). By entering, you confirm that you are at least 18 years old.
+        </div>
+        <div class="age-gate-buttons">
+            <button class="btn-secondary" onclick="exitAgeGate()">EXIT</button>
+            <button class="btn" onclick="enterAdultSection()">ENTER (18+)</button>
+        </div>
+    </div>
 
-    <!-- Support Float -->
-    <a href="https://wa.me/YOUR_NUMBER" class="wa-float" id="wa-float">
-        <i class="fa-brands fa-whatsapp"></i>
-    </a>
+    <!-- Advertisement Modal -->
+    <div id="adModal" class="ad-modal">
+        <div class="ad-container glass-effect">
+            <div class="marquee marquee-top">
+                <div class="marquee-text">SPONSORED CONTENT • SPECIAL OFFER • LIMITED TIME • SPONSORED CONTENT • SPECIAL OFFER</div>
+            </div>
+            
+            <div class="ad-content">
+                <div class="ad-sponsor" id="adSponsor">SPONSOR NAME</div>
+                <div class="ad-message" id="adMessage">Watch this ad to continue</div>
+                
+                <div class="social-hub" id="socialHub">
+                    <!-- Social icons will be added here -->
+                </div>
+                
+                <div class="ad-timer" id="adTimer">10</div>
+            </div>
+            
+            <div class="marquee marquee-bottom">
+                <div class="marquee-text">DON'T MISS OUT • EXCLUSIVE DEAL • VISIT NOW • DON'T MISS OUT • EXCLUSIVE DEAL</div>
+            </div>
+            
+            <button class="skip-ad-btn" id="skipAdBtn" onclick="skipAd()">SKIP AD</button>
+        </div>
+    </div>
+
+    <!-- Channel Password Modal -->
+    <div id="passwordModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-close" onclick="closePasswordModal()">×</div>
+            <div class="modal-icon">
+                <i class="fas fa-lock"></i>
+            </div>
+            <div class="modal-title">Channel Locked</div>
+            <div class="modal-text" id="passwordChannelName">Enter password to unlock this channel</div>
+            
+            <input type="password" id="channelPassword" class="input-box mb-3" placeholder="Enter password">
+            
+            <button class="btn" onclick="unlockChannel()">Unlock</button>
+            <button class="btn-secondary mt-2" onclick="closePasswordModal()">Cancel</button>
+        </div>
+    </div>
+
+    <!-- Toast Notification -->
+    <div id="toast" class="toast">
+        <div class="toast-icon">
+            <i class="fas fa-info-circle"></i>
+        </div>
+        <div class="toast-message" id="toastMessage">Notification message</div>
+    </div>
+
+    <!-- WhatsApp Float -->
+    <div class="whatsapp-float" onclick="openWhatsApp()">
+        <i class="fab fa-whatsapp"></i>
+    </div>
 
     <script>
-        // CONFIG (As per your original code)
+        // ========== FIREBASE CONFIGURATION ==========
         const firebaseConfig = {
             apiKey: "AIzaSyABEnVaSOR5b1FL1V3-C13KoR9O7MqAoHg",
             authDomain: "studio-3650831122-2eea3.firebaseapp.com",
@@ -280,108 +1809,798 @@
             messagingSenderId: "893787872699",
             appId: "1:893787872699:web:91268a1b8fb18b7bc4f89e"
         };
-        firebase.initializeApp(firebaseConfig);
+
+        // Initialize Firebase
+        try {
+            firebase.initializeApp(firebaseConfig);
+            console.log("✅ Firebase initialized");
+        } catch (error) {
+            console.log("✅ Firebase already initialized");
+        }
+
         const auth = firebase.auth();
         const db = firebase.database();
 
-        // 1. HWID Device Lock
-        const deviceId = localStorage.getItem('did') || 'DEV-' + Math.random().toString(36).substr(2, 9).toUpperCase();
-        localStorage.setItem('did', deviceId);
+        // ========== GLOBAL VARIABLES ==========
+        let currentUser = null;
+        let userData = null;
+        let isPremium = false;
+        const deviceId = localStorage.getItem('deviceId') || 'device_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+        localStorage.setItem('deviceId', deviceId);
 
-        // 2. Navigation Engine
-        function nav(pageId) {
-            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-            document.getElementById(pageId).classList.add('active');
-            
-            // Handle Bottom Nav visibility
-            document.getElementById('main-nav').style.display = (pageId === 'chat') ? 'none' : 'flex';
-            document.getElementById('chat-back').style.display = (pageId === 'chat') ? 'flex' : 'none';
-            
-            // ad trigger logic
-            if(pageId !== 'chat') triggerAd();
+        // ========== APP INITIALIZATION ==========
+        document.addEventListener('DOMContentLoaded', function() {
+            // Show splash screen for 2 seconds
+            setTimeout(() => {
+                document.getElementById('splashScreen').style.animation = 'splashFadeOut 0.3s forwards';
+                
+                // Check auth state after splash
+                setTimeout(() => {
+                    auth.onAuthStateChanged(handleAuthState);
+                }, 300);
+            }, 2000);
+
+            // Initialize Firebase listeners
+            initializeFirebaseListeners();
+        });
+
+        // ========== AUTHENTICATION ==========
+        function handleAuthState(user) {
+            if (user) {
+                console.log("✅ User logged in:", user.email);
+                checkDeviceAuthorization(user.uid);
+            } else {
+                console.log("❌ No user logged in");
+                showAuthScreen();
+            }
         }
 
-        function exitChat() { nav('home'); }
+        function showAuthScreen() {
+            document.getElementById('authScreen').style.display = 'flex';
+            document.getElementById('mainApp').classList.add('hidden');
+            document.getElementById('loginPage').classList.remove('hidden');
+            document.getElementById('registerPage').classList.add('hidden');
+        }
 
-        // 3. Ultimate Ad Engine Logic
-        let isPremium = false; // This would be fetched from Firebase
+        function showLogin() {
+            document.getElementById('loginPage').classList.remove('hidden');
+            document.getElementById('registerPage').classList.add('hidden');
+            clearErrors();
+        }
 
-        function triggerAd() {
-            if(isPremium) return;
-            const engine = document.getElementById('ad-engine');
-            const skipBtn = document.getElementById('skip-btn');
-            const timerLabel = document.getElementById('timer-label');
+        function showRegister() {
+            document.getElementById('loginPage').classList.add('hidden');
+            document.getElementById('registerPage').classList.remove('hidden');
+            clearErrors();
+        }
+
+        function clearErrors() {
+            document.getElementById('loginError').classList.add('hidden');
+            document.getElementById('registerError').classList.add('hidden');
+        }
+
+        async function login() {
+            const email = document.getElementById('loginEmail').value;
+            const password = document.getElementById('loginPassword').value;
+            const errorEl = document.getElementById('loginError');
+
+            if (!email || !password) {
+                errorEl.textContent = 'Please enter email and password';
+                errorEl.classList.remove('hidden');
+                return;
+            }
+
+            try {
+                const userCredential = await auth.signInWithEmailAndPassword(email, password);
+                console.log("✅ Login successful");
+                showToast('Welcome back!', 'success');
+            } catch (error) {
+                console.error("❌ Login error:", error);
+                errorEl.textContent = error.message;
+                errorEl.classList.remove('hidden');
+                showToast('Login failed', 'error');
+            }
+        }
+
+        async function register() {
+            const name = document.getElementById('registerName').value;
+            const email = document.getElementById('registerEmail').value;
+            const password = document.getElementById('registerPassword').value;
+            const errorEl = document.getElementById('registerError');
+
+            if (!name || !email || !password) {
+                errorEl.textContent = 'Please fill all fields';
+                errorEl.classList.remove('hidden');
+                return;
+            }
+
+            try {
+                // Create user in Firebase Auth
+                const userCredential = await auth.createUserWithEmailAndPassword(email, password);
+                const user = userCredential.user;
+
+                // Save user data to Realtime Database
+                await db.ref('users/' + user.uid).set({
+                    name: name,
+                    email: email,
+                    deviceId: deviceId,
+                    isPremium: false,
+                    createdAt: Date.now(),
+                    lastLogin: Date.now(),
+                    favorites: {}
+                });
+
+                console.log("✅ Registration successful");
+                showToast('Account created successfully!', 'success');
+            } catch (error) {
+                console.error("❌ Registration error:", error);
+                errorEl.textContent = error.message;
+                errorEl.classList.remove('hidden');
+                showToast('Registration failed', 'error');
+            }
+        }
+
+        // ========== DEVICE AUTHORIZATION ==========
+        async function checkDeviceAuthorization(uid) {
+            try {
+                const userRef = db.ref('users/' + uid);
+                const snapshot = await userRef.once('value');
+                userData = snapshot.val();
+
+                if (!userData) {
+                    await auth.signOut();
+                    showToast('User data not found', 'error');
+                    return;
+                }
+
+                // Check if device is authorized
+                if (userData.deviceId && userData.deviceId !== deviceId) {
+                    // Device mismatch - show warning
+                    showToast('⚠️ New device detected. Please contact admin.', 'warning');
+                    
+                    // Log the unauthorized attempt
+                    await db.ref('deviceAttempts/' + uid).push({
+                        deviceId: deviceId,
+                        timestamp: Date.now(),
+                        status: 'blocked'
+                    });
+
+                    await auth.signOut();
+                    return;
+                }
+
+                // Update device ID if not set
+                if (!userData.deviceId) {
+                    await userRef.update({ deviceId: deviceId });
+                }
+
+                // Update last login
+                await userRef.update({ lastLogin: Date.now() });
+
+                // Set user data
+                currentUser = { uid: uid, ...userData };
+                isPremium = userData.isPremium || false;
+
+                // Show main app
+                document.getElementById('authScreen').style.display = 'none';
+                document.getElementById('mainApp').classList.remove('hidden');
+
+                // Load content
+                loadHomeContent();
+                
+                // Show startup ad for free users
+                if (!isPremium) {
+                    setTimeout(() => showAdvertisement('startup'), 1000);
+                }
+
+            } catch (error) {
+                console.error("❌ Device check error:", error);
+                showToast('Device verification failed', 'error');
+            }
+        }
+
+        // ========== CONTENT MANAGEMENT ==========
+        async function loadHomeContent() {
+            try {
+                // Load channels
+                const channelsSnapshot = await db.ref('channels').limitToLast(6).once('value');
+                const channelsGrid = document.getElementById('channelsGrid');
+                channelsGrid.innerHTML = '';
+
+                channelsSnapshot.forEach(child => {
+                    const channel = child.val();
+                    channel.id = child.key;
+                    channelsGrid.innerHTML += createChannelCard(channel);
+                });
+
+                // Load movies
+                const moviesSnapshot = await db.ref('movies').limitToLast(6).once('value');
+                const moviesGrid = document.getElementById('moviesGrid');
+                moviesGrid.innerHTML = '';
+
+                moviesSnapshot.forEach(child => {
+                    const movie = child.val();
+                    movie.id = child.key;
+                    moviesGrid.innerHTML += createMovieCard(movie);
+                });
+
+            } catch (error) {
+                console.error("❌ Content load error:", error);
+                showToast('Failed to load content', 'error');
+            }
+        }
+
+        function createChannelCard(channel) {
+            const isFavorite = currentUser?.favorites?.channels?.[channel.id] || false;
             
-            engine.style.display = 'flex';
+            return `
+                <div class="content-card" onclick="openChannel('${channel.id}')">
+                    <img src="${channel.thumbnail || 'https://images.unsplash.com/photo-1598899134739-24c46f58b8c0?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80'}" 
+                         alt="${channel.name}">
+                    <div class="card-overlay">
+                        <div class="card-title">${channel.name}</div>
+                        <div class="card-subtitle">${channel.category || 'Entertainment'}</div>
+                    </div>
+                    <div class="card-badge">LIVE</div>
+                    <button class="favorite-btn ${isFavorite ? 'active' : ''}" 
+                            onclick="toggleFavorite('channel', '${channel.id}', event)">
+                        <i class="fas fa-star"></i>
+                    </button>
+                </div>
+            `;
+        }
+
+        function createMovieCard(movie) {
+            const isFavorite = currentUser?.favorites?.movies?.[movie.id] || false;
             
-            // Generate Social Hub Icons (20+)
-            const hubs = document.getElementById('sponsor-socials');
-            hubs.innerHTML = '';
-            const platforms = ['whatsapp', 'telegram', 'youtube', 'facebook', 'instagram', 'twitter', 'tiktok', 'snapchat', 'linkedin', 'github', 'discord', 'twitch', 'pinterest', 'reddit', 'spotify', 'vimeo', 'dribbble', 'behance', 'slack', 'medium'];
-            platforms.forEach(p => {
-                hubs.innerHTML += `<i class="fa-brands fa-${p}" onclick="window.open('https://${p}.com')"></i>`;
-            });
+            return `
+                <div class="content-card" onclick="openMovie('${movie.id}')">
+                    <img src="${movie.poster || 'https://images.unsplash.com/photo-1536440136628-849c177e76a1?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80'}" 
+                         alt="${movie.title}">
+                    <div class="card-overlay">
+                        <div class="card-title">${movie.title}</div>
+                        <div class="card-subtitle">${movie.year || '2024'} • ${movie.genre || 'Movie'}</div>
+                    </div>
+                    <button class="favorite-btn ${isFavorite ? 'active' : ''}" 
+                            onclick="toggleFavorite('movie', '${movie.id}', event)">
+                        <i class="fas fa-star"></i>
+                    </button>
+                </div>
+            `;
+        }
 
-            // Set Marquee text
-            const mText = "Sponsor: Stany Tech Hub • Limited Premium Offer • Exclusive Movie Access • Fast Streaming • 24/7 Support • ";
-            document.getElementById('marquee-top').innerText = mText.repeat(5);
-            document.getElementById('marquee-bottom').innerText = mText.repeat(5);
+        // ========== FAVORITES SYSTEM ==========
+        async function toggleFavorite(type, id, event) {
+            event.stopPropagation();
+            
+            if (!currentUser) {
+                showToast('Please login first', 'warning');
+                return;
+            }
 
-            let timeLeft = 10;
-            const countdown = setInterval(() => {
-                timeLeft--;
-                timerLabel.innerText = `Wait ${timeLeft}s`;
-                if(timeLeft <= 0) {
-                    clearInterval(countdown);
-                    skipBtn.disabled = false;
-                    skipBtn.style.opacity = "1";
-                    skipBtn.innerText = "Close Ad";
+            try {
+                const favoritePath = `users/${currentUser.uid}/favorites/${type}s/${id}`;
+                const isCurrentlyFavorite = currentUser.favorites?.[type + 's']?.[id] || false;
+
+                if (isCurrentlyFavorite) {
+                    await db.ref(favoritePath).remove();
+                    showToast('Removed from favorites', 'info');
+                } else {
+                    await db.ref(favoritePath).set(true);
+                    showToast('Added to favorites', 'success');
+                }
+
+                // Update local state
+                if (!currentUser.favorites) currentUser.favorites = {};
+                if (!currentUser.favorites[type + 's']) currentUser.favorites[type + 's'] = {};
+                currentUser.favorites[type + 's'][id] = !isCurrentlyFavorite;
+
+                // Update UI
+                const btn = event.target.closest('.favorite-btn');
+                btn.classList.toggle('active');
+
+            } catch (error) {
+                console.error("❌ Favorite toggle error:", error);
+                showToast('Failed to update favorites', 'error');
+            }
+        }
+
+        // ========== ADVERTISEMENT SYSTEM ==========
+        const advertisements = [
+            {
+                sponsor: "Netflix",
+                message: "Watch unlimited movies and TV shows",
+                duration: 10,
+                social: [
+                    { icon: "whatsapp", url: "https://wa.me/1234567890" },
+                    { icon: "telegram", url: "https://t.me/netflix" },
+                    { icon: "youtube", url: "https://youtube.com/netflix" },
+                    { icon: "instagram", url: "https://instagram.com/netflix" },
+                    { icon: "facebook", url: "https://facebook.com/netflix" },
+                    { icon: "twitter", url: "https://twitter.com/netflix" }
+                ]
+            },
+            {
+                sponsor: "Spotify",
+                message: "Stream millions of songs for free",
+                duration: 8,
+                social: [
+                    { icon: "whatsapp", url: "https://wa.me/1234567890" },
+                    { icon: "telegram", url: "https://t.me/spotify" },
+                    { icon: "youtube", url: "https://youtube.com/spotify" },
+                    { icon: "instagram", url: "https://instagram.com/spotify" },
+                    { icon: "facebook", url: "https://facebook.com/spotify" },
+                    { icon: "twitter", url: "https://twitter.com/spotify" }
+                ]
+            }
+        ];
+
+        let adTimer = null;
+        let adSeconds = 0;
+
+        function showAdvertisement(type) {
+            if (isPremium) return; // Premium users don't see ads
+
+            const randomAd = advertisements[Math.floor(Math.random() * advertisements.length)];
+            document.getElementById('adSponsor').textContent = randomAd.sponsor;
+            document.getElementById('adMessage').textContent = randomAd.message;
+            
+            // Set social icons
+            const socialHub = document.getElementById('socialHub');
+            socialHub.innerHTML = randomAd.social.map(social => `
+                <div class="social-icon" onclick="window.open('${social.url}', '_blank')">
+                    <i class="fab fa-${social.icon}"></i>
+                </div>
+            `).join('');
+
+            // Set timer
+            adSeconds = randomAd.duration;
+            document.getElementById('adTimer').textContent = adSeconds;
+            
+            // Show skip button for premium (not shown for free users)
+            document.getElementById('skipAdBtn').classList.toggle('premium', isPremium);
+
+            // Show ad modal
+            document.getElementById('adModal').style.display = 'flex';
+
+            // Start timer
+            adTimer = setInterval(() => {
+                adSeconds--;
+                document.getElementById('adTimer').textContent = adSeconds;
+
+                if (adSeconds <= 0) {
+                    closeAd();
                 }
             }, 1000);
-
-            skipBtn.onclick = () => {
-                engine.style.display = 'none';
-                skipBtn.disabled = true;
-                skipBtn.style.opacity = "0.5";
-                timerLabel.innerText = "Wait 10s";
-            };
         }
 
-        // 4. Adult Guard
-        function verifyAge() {
-            document.getElementById('age-gate').style.display = 'none';
-            nav('adult');
+        function closeAd() {
+            clearInterval(adTimer);
+            document.getElementById('adModal').style.display = 'none';
+            showToast('Advertisement completed', 'info');
         }
 
-        // 5. Pro Reader Separation
-        function openStories() {
-            document.getElementById('reader').classList.add('active');
-            // Logic to load Stories from DB
-            document.getElementById('book-title').innerText = "Vampire's Shadow";
-            document.getElementById('book-genre').innerText = "Horror";
-            document.getElementById('reader-content').innerHTML = "Part 1: The sun began to set behind the jagged mountains of Transylvania...";
+        function skipAd() {
+            if (isPremium) {
+                closeAd();
+                showToast('Ad skipped', 'success');
+            }
         }
 
-        // Startup
-        window.onload = () => {
+        // ========== AGE GATE SYSTEM ==========
+        function showAgeGate() {
+            document.getElementById('ageGateModal').style.display = 'flex';
+        }
+
+        function exitAgeGate() {
+            document.getElementById('ageGateModal').style.display = 'none';
+            switchPage('home');
+        }
+
+        function enterAdultSection() {
+            const ageConfirmed = localStorage.getItem('ageConfirmed');
+            
+            if (!ageConfirmed) {
+                localStorage.setItem('ageConfirmed', 'true');
+            }
+            
+            document.getElementById('ageGateModal').style.display = 'none';
+            switchPage('adult');
+        }
+
+        // ========== CHAT SYSTEM ==========
+        let currentChatType = 'public';
+
+        function openChatPage() {
+            document.querySelector('.bottom-nav').classList.add('hidden');
+            switchPage('chat');
+            loadChatMessages();
+        }
+
+        function goBackToHome() {
+            document.querySelector('.bottom-nav').classList.remove('hidden');
+            switchPage('home');
+        }
+
+        function switchChat(type) {
+            currentChatType = type;
+            
+            // Update UI
+            document.querySelectorAll('.chat-type-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            event.target.classList.add('active');
+            
+            // Load messages for selected chat type
+            loadChatMessages();
+        }
+
+        async function loadChatMessages() {
+            try {
+                const chatRef = db.ref(`chats/${currentChatType}`).limitToLast(20);
+                const chatMessages = document.getElementById('chatMessages');
+                chatMessages.innerHTML = '';
+
+                const snapshot = await chatRef.once('value');
+                snapshot.forEach(child => {
+                    const message = child.val();
+                    chatMessages.innerHTML += createMessageElement(message);
+                });
+
+                chatMessages.scrollTop = chatMessages.scrollHeight;
+            } catch (error) {
+                console.error("❌ Chat load error:", error);
+            }
+        }
+
+        function createMessageElement(message) {
+            const isUser = message.senderId === currentUser?.uid;
+            const time = new Date(message.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+            
+            return `
+                <div class="message ${isUser ? 'message-user' : 'message-admin'}">
+                    ${message.text}
+                    <div class="message-time">${time}</div>
+                </div>
+            `;
+        }
+
+        async function sendMessage() {
+            const input = document.getElementById('chatInput');
+            const text = input.value.trim();
+
+            if (!text || !currentUser) return;
+
+            try {
+                const message = {
+                    text: text,
+                    senderId: currentUser.uid,
+                    senderName: currentUser.name || 'User',
+                    timestamp: Date.now(),
+                    chatType: currentChatType
+                };
+
+                await db.ref(`chats/${currentChatType}`).push(message);
+                input.value = '';
+
+                // Show typing indicator for admin (simulated)
+                if (currentChatType === 'support') {
+                    simulateAdminTyping();
+                }
+
+            } catch (error) {
+                console.error("❌ Send message error:", error);
+                showToast('Failed to send message', 'error');
+            }
+        }
+
+        function simulateAdminTyping() {
+            const typingIndicator = document.getElementById('typingIndicator');
+            typingIndicator.classList.remove('hidden');
+
             setTimeout(() => {
-                document.getElementById('splash').style.display = 'none';
-                triggerAd();
+                typingIndicator.classList.add('hidden');
+                
+                // Simulate admin reply after 2 seconds
+                setTimeout(() => {
+                    if (Math.random() > 0.3) { // 70% chance of reply
+                        sendAutoReply();
+                    }
+                }, 1000);
+            }, 2000);
+        }
+
+        async function sendAutoReply() {
+            const replies = [
+                "Thanks for your message! How can we help you?",
+                "Our support team will get back to you shortly.",
+                "Is there anything specific you need help with?",
+                "We've received your message and will respond soon."
+            ];
+
+            const randomReply = replies[Math.floor(Math.random() * replies.length)];
+
+            const message = {
+                text: randomReply,
+                senderId: 'admin',
+                senderName: 'Support',
+                timestamp: Date.now(),
+                chatType: currentChatType
+            };
+
+            await db.ref(`chats/${currentChatType}`).push(message);
+            loadChatMessages();
+        }
+
+        // ========== PAGE NAVIGATION ==========
+        function switchPage(page) {
+            // Hide all pages
+            document.querySelectorAll('.page').forEach(p => {
+                p.classList.remove('active');
+            });
+
+            // Show selected page
+            document.getElementById(page + 'Page').classList.add('active');
+
+            // Update navigation
+            document.querySelectorAll('.nav-item').forEach(item => {
+                item.classList.remove('active');
+            });
+
+            // Update active nav item (except for chat which has special handling)
+            if (page !== 'chat') {
+                const navItem = document.querySelector(`.nav-item[onclick*="${page}"]`);
+                if (navItem) navItem.classList.add('active');
+            }
+
+            // Load page content
+            switch(page) {
+                case 'home':
+                    loadHomeContent();
+                    break;
+                case 'movies':
+                    loadAllMovies();
+                    break;
+                case 'adult':
+                    if (!localStorage.getItem('ageConfirmed')) {
+                        showAgeGate();
+                        switchPage('home');
+                    }
+                    break;
+            }
+        }
+
+        function openPage(page) {
+            switchPage(page);
+        }
+
+        // ========== SEARCH FUNCTIONALITY ==========
+        function toggleSearch() {
+            const searchBar = document.getElementById('searchBar');
+            searchBar.classList.toggle('hidden');
+            
+            if (!searchBar.classList.contains('hidden')) {
+                document.getElementById('searchInput').focus();
+            }
+        }
+
+        // ========== CHANNEL PASSWORD SYSTEM ==========
+        let currentChannelToUnlock = null;
+
+        function openChannel(channelId) {
+            if (!currentUser) {
+                showToast('Please login first', 'warning');
+                return;
+            }
+
+            // Check if channel requires password
+            const channelPassword = currentUser.channelPasswords?.[channelId];
+            
+            if (channelPassword) {
+                currentChannelToUnlock = channelId;
+                document.getElementById('passwordChannelName').textContent = 'Enter password to unlock channel';
+                document.getElementById('passwordModal').style.display = 'flex';
+            } else {
+                // Play channel directly
+                playChannel(channelId);
+            }
+        }
+
+        function unlockChannel() {
+            const password = document.getElementById('channelPassword').value;
+            
+            if (!password) {
+                showToast('Please enter password', 'warning');
+                return;
+            }
+
+            const storedPassword = currentUser.channelPasswords?.[currentChannelToUnlock];
+            
+            if (password === storedPassword) {
+                closePasswordModal();
+                playChannel(currentChannelToUnlock);
+                showToast('Channel unlocked successfully!', 'success');
+            } else {
+                showToast('Incorrect password', 'error');
+            }
+        }
+
+        function closePasswordModal() {
+            document.getElementById('passwordModal').style.display = 'none';
+            document.getElementById('channelPassword').value = '';
+            currentChannelToUnlock = null;
+        }
+
+        function playChannel(channelId) {
+            // Show content ad for free users
+            if (!isPremium) {
+                showAdvertisement('content');
+            }
+            
+            // Simulate channel playback
+            showToast('Starting playback...', 'info');
+            
+            // In a real app, you would launch the video player here
+            console.log("Playing channel:", channelId);
+        }
+
+        function openMovie(movieId) {
+            // Show content ad for free users
+            if (!isPremium) {
+                showAdvertisement('content');
+            }
+            
+            // Simulate movie playback
+            showToast('Starting movie...', 'info');
+            
+            // In a real app, you would launch the video player here
+            console.log("Playing movie:", movieId);
+        }
+
+        // ========== NOTIFICATION SYSTEM ==========
+        function showNotifications() {
+            showToast('Notifications feature coming soon!', 'info');
+        }
+
+        // ========== TOAST SYSTEM ==========
+        function showToast(message, type = 'info') {
+            const toast = document.getElementById('toast');
+            const toastMessage = document.getElementById('toastMessage');
+            
+            // Set icon based on type
+            let icon = 'fas fa-info-circle';
+            if (type === 'success') icon = 'fas fa-check-circle';
+            if (type === 'error') icon = 'fas fa-exclamation-circle';
+            if (type === 'warning') icon = 'fas fa-exclamation-triangle';
+            
+            document.querySelector('.toast-icon').innerHTML = `<i class="${icon}"></i>`;
+            toastMessage.textContent = message;
+            
+            toast.classList.add('show');
+            
+            setTimeout(() => {
+                toast.classList.remove('show');
             }, 3000);
-        };
+        }
 
-        // WhatsApp Dynamic Visibility
-        window.onscroll = function() {
-            const float = document.getElementById('wa-float');
-            if (window.scrollY > 100) { float.style.display = "none"; } 
-            else { float.style.display = "flex"; }
-        };
+        // ========== WHATSAPP FLOAT ==========
+        let lastScrollTop = 0;
+        const whatsappFloat = document.querySelector('.whatsapp-float');
 
-        // RETAINED FROM ORIGINAL: Special Channel Map
-        const specialMap = {
-            "AZAM SPORTS 1":"SP1", "AZAM SPORTS 2":"SP2", "AZAM SPORTS 3":"SP3", "AZAM SPORTS 4":"SP4",
-            "AZAM ONE HD":"AZ1", "AZAM TWO HD":"AZ2", "CHEKA PLUS":"CHK", "WASAFI":"WSF"
-        };
+        window.addEventListener('scroll', function() {
+            const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+            
+            if (scrollTop > lastScrollTop) {
+                // Scrolling down - hide
+                whatsappFloat.classList.add('hidden');
+            } else {
+                // Scrolling up - show
+                whatsappFloat.classList.remove('hidden');
+            }
+            
+            lastScrollTop = scrollTop;
+        });
+
+        function openWhatsApp() {
+            window.open('https://wa.me/255123456789', '_blank');
+        }
+
+        // ========== UTILITY FUNCTIONS ==========
+        async function logout() {
+            try {
+                await auth.signOut();
+                showToast('Logged out successfully', 'info');
+                showAuthScreen();
+            } catch (error) {
+                console.error("❌ Logout error:", error);
+                showToast('Logout failed', 'error');
+            }
+        }
+
+        function filterContent(category) {
+            // Update active tab
+            document.querySelectorAll('.category-tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            event.target.classList.add('active');
+            
+            // In a real app, you would filter content here
+            showToast(`Showing ${category} content`, 'info');
+        }
+
+        function filterMovies(genre) {
+            // Update active filter
+            document.querySelectorAll('.filter-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            event.target.classList.add('active');
+            
+            // In a real app, you would filter movies here
+            showToast(`Filtering movies: ${genre}`, 'info');
+        }
+
+        function showAllChannels() {
+            switchPage('more');
+            showToast('All channels feature coming soon!', 'info');
+        }
+
+        function showAllMovies() {
+            switchPage('movies');
+        }
+
+        async function loadAllMovies() {
+            try {
+                const moviesSnapshot = await db.ref('movies').once('value');
+                const moviesGrid = document.getElementById('allMoviesGrid');
+                moviesGrid.innerHTML = '';
+
+                moviesSnapshot.forEach(child => {
+                    const movie = child.val();
+                    movie.id = child.key;
+                    moviesGrid.innerHTML += createMovieCard(movie);
+                });
+
+            } catch (error) {
+                console.error("❌ Movies load error:", error);
+                showToast('Failed to load movies', 'error');
+            }
+        }
+
+        function prevPart() {
+            showToast('Previous part', 'info');
+        }
+
+        function nextPart() {
+            showToast('Next part', 'info');
+        }
+
+        // ========== FIREBASE LISTENERS ==========
+        function initializeFirebaseListeners() {
+            // Listen for auth state changes
+            auth.onAuthStateChanged(handleAuthState);
+
+            // Listen for user data updates
+            if (currentUser) {
+                db.ref('users/' + currentUser.uid).on('value', snapshot => {
+                    userData = snapshot.val();
+                    if (userData) {
+                        currentUser = { uid: currentUser.uid, ...userData };
+                        isPremium = userData.isPremium || false;
+                    }
+                });
+            }
+
+            // Listen for new messages in current chat
+            if (currentUser) {
+                db.ref(`chats/${currentChatType}`).on('child_added', snapshot => {
+                    const message = snapshot.val();
+                    if (message.senderId !== currentUser.uid) {
+                        // New message from others
+                        showToast('New message received', 'info');
+                    }
+                });
+            }
+        }
     </script>
 </body>
 </html>
