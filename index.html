@@ -3,17 +3,17 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>STANY MIN TV | iOS 26 PRO</title>
+    <title>STANY MIN TV | iOS 26 PRO MAX</title>
     
-    <!-- Icons & Fonts -->
+    <!-- Icons: FontAwesome (No Emojis) -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=SF+Pro+Display:wght@300;400;600;700&display=swap" rel="stylesheet">
     
-    <!-- Video Player -->
+    <!-- Video Player (EME/DRM) -->
     <link href="https://vjs.zencdn.net/7.20.3/video-js.css" rel="stylesheet" />
     <script src="https://vjs.zencdn.net/7.20.3/video.min.js"></script>
     
-    <!-- Firebase -->
+    <!-- Firebase SDKs -->
     <script src="https://www.gstatic.com/firebasejs/9.10.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.10.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.10.0/firebase-database-compat.js"></script>
@@ -26,18 +26,18 @@
             --glass: rgba(255, 255, 255, 0.08);
             --blur: blur(35px);
             --sent: #FF0000;
-            --received: #222222;
+            --received: #1C1C1E;
         }
 
         * {
             margin: 0; padding: 0; box-sizing: border-box;
-            font-family: 'SF Pro Display', sans-serif;
+            font-family: 'SF Pro Display', -apple-system, sans-serif;
             -webkit-tap-highlight-color: transparent;
         }
 
         body { background-color: var(--black); color: var(--white); overflow: hidden; height: 100vh; }
 
-        /* --- Auth & Splash --- */
+        /* --- Auth System --- */
         #auth-screen {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: var(--black); z-index: 10000;
@@ -54,44 +54,29 @@
             border-radius: 15px; color: white; outline: none;
         }
 
-        /* --- Ads --- */
+        /* --- Ad Engine --- */
         #ad-overlay {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: var(--black); z-index: 9500; display: none; flex-direction: column;
         }
-        .marquee-top { background: var(--red); color: white; padding: 8px; font-weight: bold; overflow: hidden; font-size: 13px; }
-        .marquee-top span { display: inline-block; white-space: nowrap; animation: marquee 15s linear infinite; }
+        .marquee-ad { background: var(--red); color: white; padding: 8px; font-weight: bold; font-size: 13px; overflow: hidden; }
+        .marquee-ad span { display: inline-block; white-space: nowrap; animation: marquee 15s linear infinite; }
         @keyframes marquee { from { transform: translateX(100%); } to { transform: translateX(-100%); } }
-        .ad-timer-ios { position: absolute; top: 40px; right: 25px; border: 2px solid var(--red); width: 48px; height: 48px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 700; background: rgba(0,0,0,0.85); }
+        .ad-timer { position: absolute; top: 40px; right: 25px; border: 2px solid var(--red); width: 48px; height: 48px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; background: rgba(0,0,0,0.85); }
 
-        /* --- Layout --- */
+        /* --- Header & Navigation --- */
         header {
             padding: 55px 20px 15px; background: rgba(0,0,0,0.8);
             backdrop-filter: var(--blur); position: sticky; top: 0; z-index: 800;
             display: flex; justify-content: space-between; align-items: center;
         }
-        .logo-txt { font-size: 26px; font-weight: 800; }
+        .logo-text { font-size: 26px; font-weight: 800; }
         .red-txt { color: var(--red); }
 
-        .page { display: none; padding: 20px; padding-bottom: 120px; overflow-y: auto; height: 100vh; }
-        .active-page { display: block; animation: ios-zoom 0.4s ease; }
-        @keyframes ios-zoom { from { opacity: 0; transform: scale(0.95); } to { opacity: 1; transform: scale(1); } }
-
-        /* Carousel Rounded */
-        .carousel { display: flex; overflow-x: auto; scroll-snap-type: x mandatory; gap: 15px; padding-bottom: 20px; scrollbar-width: none; }
-        .carousel::-webkit-scrollbar { display: none; }
-        .slide {
-            min-width: 85%; height: 210px; border-radius: 30px; 
-            scroll-snap-align: center; position: relative; overflow: hidden;
-            border: 1px solid rgba(255,255,255,0.1);
-        }
-        .slide img { width: 100%; height: 100%; object-fit: cover; }
-
-        /* Floating Nav (iOS 26) */
         .bottom-nav {
             position: fixed; bottom: 25px; left: 20px; right: 20px;
             height: 75px; background: rgba(18, 18, 18, 0.85);
-            backdrop-filter: var(--blur); border-radius: 38px;
+            backdrop-filter: var(--blur); border-radius: 40px;
             display: flex; justify-content: space-around; align-items: center;
             border: 1px solid rgba(255,255,255,0.12); z-index: 1000;
         }
@@ -99,42 +84,55 @@
         .nav-item i { font-size: 22px; display: block; margin-bottom: 5px; }
         .nav-item.active { color: var(--red); }
 
-        /* --- Chat Advanced --- */
+        /* --- Chat Advanced (Bottom-Up Layout) --- */
         #chat-header {
-            position: fixed; top: 0; left: 0; width: 100%; padding: 55px 20px 15px;
-            background: var(--black); display: none; align-items: center; z-index: 1100;
+            position: fixed; top: 0; right: 0; width: 100%; padding: 55px 25px 15px;
+            background: var(--black); display: none; justify-content: flex-end; z-index: 1100;
             border-bottom: 1px solid var(--glass);
         }
+        #chat-container {
+            height: calc(100vh - 80px); /* Space for input */
+            display: flex; flex-direction: column; justify-content: flex-end;
+            padding-bottom: 90px;
+        }
         #chat-messages {
-            height: 65vh; overflow-y: auto; padding: 20px; 
-            display: flex; flex-direction: column; gap: 10px;
-            scroll-behavior: smooth;
+            overflow-y: auto; padding: 20px;
+            display: flex; flex-direction: column; /* Normal order to stack bubbles */
+            gap: 12px;
         }
         .msg-bubble { 
-            padding: 12px 16px; border-radius: 20px; max-width: 80%; 
-            position: relative; font-size: 15px; line-height: 1.4;
+            padding: 12px 18px; border-radius: 22px; max-width: 80%; 
+            font-size: 15px; line-height: 1.4; position: relative;
         }
-        .msg-sent { background: var(--sent); align-self: flex-end; border-bottom-right-radius: 4px; }
-        .msg-received { background: var(--received); align-self: flex-start; border-bottom-left-radius: 4px; }
-        
-        .reply-preview {
-            background: rgba(255,255,255,0.1); border-left: 3px solid var(--red);
-            padding: 5px 10px; border-radius: 8px; font-size: 12px; margin-bottom: 5px;
+        .msg-sent { background: var(--sent); align-self: flex-end; color: white; border-bottom-right-radius: 4px; }
+        .msg-received { background: var(--received); align-self: flex-start; color: white; border-bottom-left-radius: 4px; }
+        .msg-name { font-size: 10px; opacity: 0.5; margin-bottom: 4px; font-weight: 800; }
+
+        .chat-input-area {
+            position: fixed; bottom: 0; left: 0; width: 100%;
+            background: var(--black); padding: 15px 20px 35px;
+            border-top: 1px solid var(--glass); display: flex; gap: 10px;
         }
-        #reply-bar {
-            background: var(--received); padding: 10px 20px; display: none;
-            justify-content: space-between; align-items: center;
-            border-top-left-radius: 20px; border-top-right-radius: 20px;
+        .chat-input {
+            flex: 1; background: var(--received); border: none;
+            padding: 14px 20px; border-radius: 30px; color: white; outline: none;
         }
 
-        /* --- More Service Sub-pages --- */
-        .sub-page { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--black); z-index: 2000; display: none; padding: 60px 20px; overflow-y: auto; }
+        /* --- Sub-pages --- */
+        .page { display: none; padding: 20px; padding-bottom: 120px; overflow-y: auto; height: 100vh; }
+        .active-page { display: block; animation: ios-zoom 0.4s ease; }
+        @keyframes ios-zoom { from { opacity: 0; transform: scale(0.95); } to { opacity: 1; transform: scale(1); } }
 
-        /* Reader Drop Image */
+        .card { background: var(--glass); backdrop-filter: var(--blur); border-radius: 25px; border: 1px solid rgba(255,255,255,0.06); padding: 15px; margin-bottom: 15px; }
+        .carousel { display: flex; overflow-x: auto; scroll-snap-type: x mandatory; gap: 15px; padding-bottom: 20px; scrollbar-width: none; }
+        .slide { min-width: 85%; height: 210px; border-radius: 30px; scroll-snap-align: center; position: relative; overflow: hidden; border: 1px solid var(--glass); }
+        .slide img { width: 100%; height: 100%; object-fit: cover; }
+
+        /* Simulizi Reader */
+        #reader-view { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--black); z-index: 2500; display: none; }
         .drop-image-bg { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background-size: cover; background-position: center; filter: blur(50px) brightness(0.2); z-index: -1; }
 
-        .card { background: var(--glass); backdrop-filter: var(--blur); border-radius: 25px; border: 1px solid rgba(255,255,255,0.06); padding: 15px; margin-bottom: 15px; position: relative; }
-        .btn-red { background: var(--red); color: white; border: none; padding: 16px; border-radius: 30px; font-weight: 700; width: 100%; cursor: pointer; margin-top: 10px; }
+        .btn-red { background: var(--red); color: white; border: none; padding: 16px; border-radius: 30px; font-weight: 700; width: 100%; cursor: pointer; }
         .hidden { display: none !important; }
     </style>
 </head>
@@ -143,132 +141,118 @@
     <!-- Auth -->
     <div id="auth-screen">
         <div class="auth-card" id="login-box">
-            <div style="width: 80px; height: 80px; border: 4px solid var(--red); border-radius: 20px; margin: 0 auto 20px;"></div>
+            <div style="width: 80px; height: 80px; border: 4px solid var(--red); border-radius: 20px; margin: 0 auto 20px; animation: pulse 2s infinite;"></div>
             <h1 style="font-weight: 800;">STANY <span class="red-txt">MIN TV</span></h1>
             <input type="email" id="auth-email" class="ios-input" placeholder="Email">
             <input type="password" id="auth-pass" class="ios-input" placeholder="Password">
-            <button class="btn-red" onclick="emailAuth('login')">Sign In</button>
-            <p onclick="toggleAuth('register')" style="margin-top:20px; font-size:12px; opacity:0.6">No account? Register</p>
+            <button class="btn-red" style="margin-top:20px" onclick="emailAuth('login')">Sign In</button>
+            <button class="btn-red" style="background:transparent; border:1px solid var(--red);" onclick="toggleAuth('register')">Register</button>
             <button class="btn-red" style="background:white; color:black; margin-top:20px;" onclick="googleAuth()">
-                <i class="fa-brands fa-google"></i> Google Sign In
+                <i class="fa-brands fa-google"></i> Sign in with Google
             </button>
         </div>
         <div class="auth-card hidden" id="register-box">
             <h2>Create Account</h2>
-            <input type="text" id="reg-name" class="ios-input" placeholder="Full Name">
+            <input type="text" id="reg-name" class="ios-input" placeholder="Name">
             <input type="email" id="reg-email" class="ios-input" placeholder="Email">
             <input type="password" id="reg-pass" class="ios-input" placeholder="Password">
-            <button class="btn-red" onclick="emailAuth('register')">Sign Up</button>
-            <p onclick="toggleAuth('login')" style="margin-top:20px; font-size:12px;">Back to Login</p>
+            <button class="btn-red" style="margin-top:20px" onclick="emailAuth('register')">Sign Up</button>
+            <p onclick="toggleAuth('login')" style="margin-top:20px; font-size:12px; opacity:0.6">Back to Login</p>
         </div>
     </div>
 
-    <!-- Ad Overlay -->
+    <!-- Ad Engine -->
     <div id="ad-overlay">
-        <div class="marquee-top"><span>• VISIT STANYMINTV.COM • OFFICIAL AD • UNSKIPPABLE • SPONSORED CONTENT •</span></div>
+        <div class="marquee-ad"><span>• ADVERTISEMENT • VISIT STANYMINTV.COM • OFFICIAL SPONSOR • WATCH TO UNLOCK ACCESS •</span></div>
         <div style="flex:1; display:flex; align-items:center; justify-content:center; position:relative;">
-            <div class="ad-timer-ios" id="ad-timer">15</div>
+            <div class="ad-timer" id="ad-timer">15</div>
             <img id="ad-img" style="width:100%; max-height:70vh; object-fit:contain;">
         </div>
-        <div id="ad-social-hub" style="display:grid; grid-template-columns:repeat(6,1fr); padding:20px; background:var(--glass);"></div>
+        <div id="ad-social-hub" style="display:grid; grid-template-columns:repeat(6, 1fr); gap:15px; padding:25px; background:var(--glass);"></div>
+        <div class="marquee-ad"><span>• UNSKIPPABLE • SPONSORED CONTENT • STANY MIN TV OFFICIAL •</span></div>
     </div>
 
     <!-- Header -->
     <header id="main-header">
-        <div class="logo-txt">STANY <span class="red-txt">MIN</span></div>
-        <i class="fa-solid fa-magnifying-glass"></i>
+        <div class="logo-text">STANY <span class="red-txt">MIN</span></div>
+        <i class="fa-solid fa-magnifying-glass" style="font-size: 22px;"></i>
     </header>
 
-    <!-- Chat Header -->
+    <!-- Chat Back Arrow (Top Right) -->
     <div id="chat-header">
-        <i class="fa-solid fa-chevron-left" style="font-size: 24px; color: var(--red);" onclick="closeChat()"></i>
-        <span style="margin-left: 15px; font-weight: 800; font-size: 18px;">MESSAGES</span>
+        <i class="fa-solid fa-arrow-right-from-bracket" style="font-size: 26px; color: var(--red);" onclick="closeChat()"></i>
     </div>
 
     <main>
-        <!-- Home / Live -->
+        <!-- Home -->
         <section id="live" class="page active-page">
-            <h3 style="margin-bottom:20px;">Live <span class="red-txt">Stream</span></h3>
-            <div id="live-list" style="display:grid; grid-template-columns:repeat(3,1fr); gap:12px;"></div>
+            <h3 style="margin-bottom:20px;"><i class="fa-solid fa-satellite-dish red-txt"></i> &nbsp; Live Channels</h3>
+            <div id="live-list" style="display:grid; grid-template-columns:repeat(3, 1fr); gap:12px;"></div>
         </section>
 
         <!-- Movies -->
         <section id="movies" class="page">
             <div class="carousel" id="movie-carousel"></div>
-            <h3 style="margin:25px 0 15px;">Cinema <span class="red-txt">Library</span></h3>
-            <div id="movie-list" style="display:grid; grid-template-columns:repeat(2,1fr); gap:15px;"></div>
+            <h3 style="margin:25px 0 15px;"><i class="fa-solid fa-clapperboard red-txt"></i> &nbsp; Cinema Library</h3>
+            <div id="movie-list" style="display:grid; grid-template-columns:repeat(2, 1fr); gap:15px;"></div>
         </section>
 
         <!-- Adult 18+ -->
         <section id="adult" class="page">
-            <div id="age-gate" class="card" style="text-align:center; padding:50px 20px;">
-                <i class="fa-solid fa-hand" style="font-size:50px; color:var(--red);"></i>
-                <h2>Age Verification</h2>
-                <p style="margin-top:15px; opacity:0.7;">This content is 18+. Are you of legal age?</p>
-                <button class="btn-red" onclick="unlockAdult()">Yes, I am 18+</button>
+            <div id="age-gate" class="card" style="text-align:center; padding:60px 20px;">
+                <i class="fa-solid fa-circle-exclamation" style="font-size:55px; color:var(--red);"></i>
+                <h2>Adult Access</h2>
+                <p style="margin-top:15px; opacity:0.7;">Confirm you are 18 or older to enter.</p>
+                <button class="btn-red" style="margin-top:30px" onclick="unlockAdult()">Confirm 18+</button>
             </div>
             <div id="adult-content" class="hidden">
                 <div class="carousel" id="adult-carousel"></div>
-                <div id="adult-list" style="display:grid; grid-template-columns:repeat(2,1fr); gap:15px;"></div>
+                <div id="adult-list" style="display:grid; grid-template-columns:repeat(2, 1fr); gap:15px;"></div>
             </div>
         </section>
 
-        <!-- Chat Advanced -->
-        <section id="chat" class="page" style="padding-top:100px; padding-bottom:150px;">
-            <div style="display:flex; background:var(--glass); border-radius:20px; padding:5px; margin-bottom:15px;">
-                <div class="switch-btn" id="btn-public" style="flex:1; text-align:center; padding:10px; border-radius:15px; font-size:12px; font-weight:800; cursor:pointer;" onclick="toggleChat('public')">PUBLIC GROUP</div>
-                <div class="switch-btn" id="btn-bot" style="flex:1; text-align:center; padding:10px; border-radius:15px; font-size:12px; font-weight:800; cursor:pointer;" onclick="toggleChat('bot')">STANY BOT</div>
-            </div>
-            <div id="chat-messages"></div>
-            
-            <!-- Message Input Fixed at Bottom -->
-            <div style="position:fixed; bottom:0; left:0; width:100%; z-index:1200;">
-                <div id="reply-bar">
-                    <span id="reply-text" style="font-size:12px; opacity:0.7;">Replying to...</span>
-                    <i class="fa-solid fa-circle-xmark" onclick="cancelReply()"></i>
+        <!-- Chat (Fixed to bottom) -->
+        <section id="chat" class="page" style="padding:0; overflow:hidden;">
+            <div id="chat-container">
+                <div style="display:flex; background:var(--glass); border-radius:20px; padding:5px; margin: 100px 20px 10px;">
+                    <div class="nav-item" id="btn-public" style="flex:1; padding:10px; border-radius:15px; cursor:pointer;" onclick="toggleChat('public')">PUBLIC</div>
+                    <div class="nav-item" id="btn-bot" style="flex:1; padding:10px; border-radius:15px; cursor:pointer;" onclick="toggleChat('bot')">STANY BOT</div>
                 </div>
-                <div style="display:flex; gap:10px; padding:15px; background:var(--black); border-top:1px solid var(--glass);">
-                    <input type="text" id="msg-input" placeholder="Type a message..." style="flex:1; background:var(--glass); border:none; border-radius:25px; padding:15px; color:white; outline:none;">
-                    <button onclick="sendMsg()" style="background:var(--red); border:none; width:50px; height:50px; border-radius:50%; color:white;"><i class="fa-solid fa-paper-plane"></i></button>
+                <div id="chat-messages"></div>
+                <div class="chat-input-area">
+                    <input type="text" id="msg-input" class="chat-input" placeholder="Aa...">
+                    <button onclick="sendMsg()" style="background:var(--red); border:none; width:48px; height:48px; border-radius:50%; color:white;"><i class="fa-solid fa-paper-plane"></i></button>
                 </div>
             </div>
         </section>
 
-        <!-- More Services -->
+        <!-- More -->
         <section id="more" class="page">
-            <h3 style="margin-bottom:25px;">Services & <span class="red-txt">Library</span></h3>
-            <div class="card" onclick="openSub('simulizi-list')"><i class="fa-solid fa-book red-txt"></i> &nbsp; Simulizi (Stories)</div>
-            <div class="card" onclick="openSub('tech-list')"><i class="fa-solid fa-user-shield red-txt"></i> &nbsp; Tech Updates</div>
-            <div class="card" onclick="openSub('betting-list')"><i class="fa-solid fa-chart-line red-txt"></i> &nbsp; Betting Tips</div>
-            <div class="card" onclick="openSub('download-list')"><i class="fa-solid fa-download red-txt"></i> &nbsp; Downloads</div>
+            <h3>More <span class="red-txt">Services</span></h3>
+            <div class="card" onclick="openSimulizi()"><i class="fa-solid fa-book red-txt"></i> &nbsp; Stories (Simulizi)</div>
+            <div class="card"><i class="fa-solid fa-shield-halved red-txt"></i> &nbsp; Tech Updates</div>
+            <div class="card"><i class="fa-solid fa-chart-line red-txt"></i> &nbsp; Betting Tips</div>
             <div class="card" onclick="logout()"><i class="fa-solid fa-power-off"></i> &nbsp; Sign Out</div>
+            <div id="story-list" class="hidden"></div>
         </section>
     </main>
 
-    <!-- Sub Pages (More Service) -->
-    <div id="simulizi-list" class="sub-page">
-        <i class="fa-solid fa-chevron-left" onclick="closeSub('simulizi-list')" style="font-size:24px; margin-bottom:20px;"></i>
-        <div id="story-render"></div>
-    </div>
-    <div id="tech-list" class="sub-page">
-        <i class="fa-solid fa-chevron-left" onclick="closeSub('tech-list')" style="font-size:24px; margin-bottom:20px;"></i>
-        <div id="tech-render"></div>
-    </div>
-
     <!-- Reader -->
-    <div id="reader-view" class="sub-page" style="z-index:3000;">
+    <div id="reader-view">
         <div class="drop-image-bg" id="read-bg"></div>
-        <i class="fa-solid fa-chevron-down" onclick="exitReader()" style="font-size:30px; margin-bottom:30px;"></i>
-        <h1 id="read-title" class="red-txt" style="text-align:center; margin-bottom:10px;"></h1>
-        <p id="read-author" style="text-align:center; opacity:0.6; margin-bottom:30px;"></p>
-        <div class="card" style="background:rgba(0,0,0,0.6);" id="read-body"></div>
-        <div style="display:flex; justify-content:space-between; margin-top:30px;">
-            <button class="btn-red" style="width:45%; background:#222;" onclick="turnPage(-1)">BACK</button>
-            <button class="btn-red" style="width:45%;" onclick="turnPage(1)">NEXT</button>
+        <div style="flex:1; overflow-y:auto; padding:50px 25px;">
+            <i class="fa-solid fa-chevron-down" onclick="exitReader()" style="font-size:30px; margin-bottom:30px;"></i>
+            <h1 id="read-title" class="red-txt" style="text-align:center;"></h1>
+            <p id="read-author" style="text-align:center; opacity:0.6; margin-bottom:30px;"></p>
+            <div class="card" style="background:rgba(0,0,0,0.6);" id="read-body"></div>
+            <div style="display:flex; justify-content:space-between; margin-top:30px;">
+                <button class="btn-red" style="width:45%; background:#222;" onclick="turnPage(-1)">BACK</button>
+                <button class="btn-red" style="width:45%;" onclick="turnPage(1)">NEXT</button>
+            </div>
         </div>
     </div>
 
-    <!-- Floating Nav -->
+    <!-- Nav -->
     <div class="bottom-nav" id="bottom-nav">
         <a href="javascript:void(0)" class="nav-item active" onclick="navTo('live', this)"><i class="fa-solid fa-tv"></i>Live</a>
         <a href="javascript:void(0)" class="nav-item" onclick="navTo('movies', this)"><i class="fa-solid fa-film"></i>Movies</a>
@@ -279,12 +263,12 @@
 
     <!-- Player -->
     <div id="player-view" class="hidden" style="position:fixed; top:0; left:0; width:100%; height:100%; background:#000; z-index:9000;">
-        <i class="fa-solid fa-xmark" onclick="stopPlayer()" style="position:absolute; top:45px; right:25px; z-index:9100; font-size:35px;"></i>
+        <i class="fa-solid fa-circle-xmark" onclick="stopPlayer()" style="position:absolute; top:50px; right:25px; z-index:9100; font-size:35px;"></i>
         <video id="stany-player" class="video-js vjs-big-play-centered" controls style="width:100%; height:100%;"></video>
     </div>
 
     <script>
-        // --- FIREBASE CONFIG ---
+        // --- NEW FIREBASE CONFIG ---
         const firebaseConfig = {
             apiKey: "AIzaSyDiexD5WK9GLhQldr6zNmC8iYWc4em5eyM",
             authDomain: "stany-min-tv.firebaseapp.com",
@@ -299,8 +283,7 @@
         const db = firebase.database();
         const auth = firebase.auth();
 
-        let isPremium = false, activeChat = 'public', replyData = null;
-        let myHWID = localStorage.getItem('hwid') || 'STANY-'+Math.random().toString(36).substr(2,9);
+        let isPremium = false, activeChat = 'public', myHWID = localStorage.getItem('hwid') || 'STANY-'+Math.random().toString(36).substr(2,9);
         localStorage.setItem('hwid', myHWID);
 
         // --- AUTH ---
@@ -319,7 +302,7 @@
         function checkHWID(user) {
             db.ref('users/'+user.uid).once('value', snap => {
                 const u = snap.val();
-                if(u && u.hwid && u.hwid !== myHWID) { alert("Locked to another device."); auth.signOut(); location.reload(); }
+                if(u && u.hwid && u.hwid !== myHWID) { alert("Device Lock: Use your original device."); auth.signOut(); location.reload(); }
                 else {
                     if(!u || !u.hwid) db.ref('users/'+user.uid).update({hwid: myHWID, email: user.email, name: user.displayName || 'User'});
                     isPremium = u ? u.isPremium : false;
@@ -330,7 +313,7 @@
         }
         auth.onAuthStateChanged(u => { if(u) checkHWID(u); });
 
-        // --- ADS ---
+        // --- AD ENGINE ---
         function triggerAd(cb) {
             if(isPremium) return cb();
             const ov = document.getElementById('ad-overlay'); ov.style.display = 'flex';
@@ -346,11 +329,11 @@
             });
         }
 
-        // --- CORE ---
+        // --- CORE LOADERS ---
         function initApp() {
             db.ref('channels').on('value', snap => {
                 const l = document.getElementById('live-list'); l.innerHTML = '';
-                snap.forEach(c => { const ch = c.val(); l.innerHTML += `<div class="card" onclick="openPlayer('${ch.url}', '${ch.licUrl}', '${ch.token}')" style="text-align:center; padding:5px;"><img src="${ch.logo}" style="width:100%; border-radius:15px;"><p style="font-size:10px; font-weight:700; margin-top:5px;">${ch.name}</p></div>`; });
+                snap.forEach(c => { const ch = c.val(); l.innerHTML += `<div class="card" onclick="openPlayer('${ch.url}', '${ch.licUrl}', '${ch.token}')" style="text-align:center;"><img src="${ch.logo}" style="width:100%; border-radius:15px;"><p style="font-size:10px; font-weight:700; margin-top:5px;">${ch.name}</p></div>`; });
             });
             db.ref('movies').on('value', snap => {
                 const l = document.getElementById('movie-list'), s = document.getElementById('movie-carousel'); l.innerHTML = ''; s.innerHTML = '';
@@ -362,82 +345,69 @@
             });
         }
 
-        // --- CHAT WITH REPLY ---
+        // --- CHAT SYSTEM (BOTTOM ALIGNED) ---
         function toggleChat(t) {
             activeChat = t;
-            document.getElementById('btn-public').style.background = t==='public' ? 'var(--red)' : 'transparent';
-            document.getElementById('btn-bot').style.background = t==='bot' ? 'var(--red)' : 'transparent';
-            listenMessages();
+            document.getElementById('btn-public').classList.toggle('active', t==='public');
+            document.getElementById('btn-bot').classList.toggle('active', t==='bot');
+            listenChat();
         }
-
-        function listenMessages() {
-            const path = activeChat === 'public' ? 'public_chat' : 'bot_chat/'+auth.currentUser.uid;
-            db.ref(path).limitToLast(30).on('value', snap => {
+        function listenChat() {
+            const path = activeChat==='public' ? 'public_chat' : 'bot_chat/'+auth.currentUser.uid;
+            db.ref(path).limitToLast(25).on('value', snap => {
                 const box = document.getElementById('chat-messages'); box.innerHTML = '';
                 snap.forEach(m => {
                     const d = m.val(); const isMe = d.uid === auth.currentUser.uid;
-                    let replyHtml = d.replyTo ? `<div class="reply-preview">Replying to ${d.replyTo.name}: ${d.replyTo.text.substring(0,20)}...</div>` : '';
-                    box.innerHTML += `
-                        <div class="msg-bubble ${isMe ? 'msg-sent' : 'msg-received'}" onclick="setReply('${d.name}', '${d.text}')">
-                            ${!isMe && activeChat==='public' ? `<div style="font-size:10px; font-weight:800; opacity:0.6; margin-bottom:4px;">${d.name}</div>` : ''}
-                            ${replyHtml}
-                            ${d.text}
-                        </div>`;
+                    box.innerHTML += `<div class="msg-bubble ${isMe ? 'msg-sent' : 'msg-received'}">${!isMe && activeChat==='public' ? `<div class="msg-name">${d.name}</div>`:''}${d.text}</div>`;
                 });
                 box.scrollTop = box.scrollHeight;
             });
         }
-
-        function setReply(name, text) {
-            replyData = { name, text };
-            document.getElementById('reply-bar').style.display = 'flex';
-            document.getElementById('reply-text').innerText = "Replying to " + name;
-            document.getElementById('msg-input').focus();
-        }
-        function cancelReply() { replyData = null; document.getElementById('reply-bar').style.display = 'none'; }
-
         function sendMsg() {
             const input = document.getElementById('msg-input'); if(!input.value) return;
-            const path = activeChat === 'public' ? 'public_chat' : 'bot_chat/'+auth.currentUser.uid;
-            db.ref(path).push({
-                uid: auth.currentUser.uid, name: auth.currentUser.displayName || 'User',
-                text: input.value, replyTo: replyData, timestamp: Date.now()
-            });
-            input.value = ''; cancelReply();
+            const path = activeChat==='public' ? 'public_chat' : 'bot_chat/'+auth.currentUser.uid;
+            db.ref(path).push({ uid: auth.currentUser.uid, name: auth.currentUser.displayName || 'User', text: input.value, timestamp: Date.now() });
+            input.value = '';
         }
 
-        // --- NAV & MORE ---
+        // --- NAV ---
         function navTo(id, el) {
             document.querySelectorAll('.page').forEach(p => p.classList.remove('active-page'));
             document.getElementById(id).classList.add('active-page');
             document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
             if(el) el.classList.add('active');
-            const isC = id === 'chat';
-            document.getElementById('bottom-nav').style.display = isC ? 'none' : 'flex';
-            document.getElementById('main-header').style.display = isC ? 'none' : 'flex';
-            document.getElementById('chat-header').style.display = isC ? 'flex' : 'none';
-            if(isC) toggleChat('public');
+            const isChat = id === 'chat';
+            document.getElementById('bottom-nav').style.display = isChat ? 'none' : 'flex';
+            document.getElementById('main-header').style.display = isChat ? 'none' : 'flex';
+            document.getElementById('chat-header').style.display = isChat ? 'flex' : 'none';
+            if(isChat) toggleChat('public');
         }
         function closeChat() { navTo('live', document.querySelector('.nav-item')); }
 
-        function openSub(id) {
-            document.getElementById(id).style.display = 'block';
-            if(id === 'simulizi-list') renderStories();
+        // --- PLAYER ---
+        let player = videojs('stany-player');
+        function openPlayer(u, l, t) {
+            triggerAd(() => {
+                document.getElementById('player-view').classList.remove('hidden');
+                let conf = { src: u, type: u.includes('.mpd') ? 'application/dash+xml' : 'application/x-mpegURL' };
+                if(l) conf.keySystems = { 'com.widevine.alpha': { url: l, headers: { 'Authorization': t ? 'Bearer '+t : '' } } };
+                player.src(conf); player.play();
+            });
         }
-        function closeSub(id) { document.getElementById(id).style.display = 'none'; }
+        function stopPlayer() { player.pause(); document.getElementById('player-view').classList.add('hidden'); }
 
-        function renderStories() {
+        // --- SIMULIZI ---
+        let sData, sPart=0;
+        function openSimulizi() {
+            const cont = document.getElementById('story-list'); cont.classList.toggle('hidden');
             db.ref('simulizi').once('value', snap => {
-                const r = document.getElementById('story-render'); r.innerHTML = '';
+                cont.innerHTML = '';
                 snap.forEach(s => {
                     const st = s.val();
-                    r.innerHTML += `<div class="card" onclick="readStory('${s.key}')" style="display:flex; gap:15px; align-items:center;"><img src="${st.cover}" style="width:70px; height:100px; border-radius:12px; object-fit:cover;"><div><h4>${st.title}</h4><p style="font-size:12px; opacity:0.6;">By ${st.author}</p></div></div>`;
+                    cont.innerHTML += `<div class="card" onclick="readStory('${s.key}')" style="display:flex; gap:15px; align-items:center;"><img src="${st.cover}" style="width:65px; height:90px; border-radius:12px; object-fit:cover;"><div><h4>${st.title}</h4><p style="font-size:11px; opacity:0.6;">By ${st.author}</p></div></div>`;
                 });
             });
         }
-
-        // --- READER ---
-        let sData, sPart=0;
         function readStory(id) {
             db.ref('simulizi/'+id).once('value', snap => {
                 sData = snap.val(); sPart = 0;
@@ -451,18 +421,6 @@
         function updateReader() { document.getElementById('read-body').innerText = sData.parts[sPart].content; }
         function turnPage(d) { if(d>0 && sPart<sData.parts.length-1) sPart++; else if(d<0 && sPart>0) sPart--; updateReader(); }
         function exitReader() { document.getElementById('reader-view').style.display = 'none'; }
-
-        // --- PLAYER ---
-        let vjs = videojs('stany-player');
-        function openPlayer(u, l, t) {
-            triggerAd(() => {
-                document.getElementById('player-view').classList.remove('hidden');
-                let conf = { src: u, type: u.includes('.mpd') ? 'application/dash+xml' : 'application/x-mpegURL' };
-                if(l) conf.keySystems = { 'com.widevine.alpha': { url: l, headers: { 'Authorization': t ? 'Bearer '+t : '' } } };
-                vjs.src(conf); vjs.play();
-            });
-        }
-        function stopPlayer() { vjs.pause(); document.getElementById('player-view').classList.add('hidden'); }
 
         function unlockAdult() {
             document.getElementById('age-gate').classList.add('hidden');
