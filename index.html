@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>STANY MIN TV 26</title>
+    <title>STANY MIN TV | iOS 26</title>
     
     <!-- Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=SF+Pro+Display:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -1263,6 +1263,50 @@
             margin-bottom: 25px;
         }
 
+        /* ========== TOKEN MODAL ========== */
+        .token-input-container {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .token-input {
+            flex: 1;
+            padding: 12px 16px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: var(--radius-md);
+            color: var(--white-text);
+            font-size: 16px;
+            outline: none;
+        }
+
+        .token-status {
+            padding: 10px;
+            border-radius: var(--radius-md);
+            margin-bottom: 15px;
+            text-align: center;
+            font-weight: 600;
+        }
+
+        .token-valid {
+            background: rgba(0, 255, 0, 0.1);
+            border: 1px solid #00ff00;
+            color: #00ff00;
+        }
+
+        .token-invalid {
+            background: rgba(255, 0, 0, 0.1);
+            border: 1px solid var(--red-primary);
+            color: var(--red-primary);
+        }
+
+        .token-expiry {
+            font-size: 12px;
+            color: #aaa;
+            margin-top: 5px;
+        }
+
         /* ========== TOAST NOTIFICATIONS ========== */
         .toast {
             position: fixed;
@@ -1549,17 +1593,12 @@
         </div>
 
         <!-- Chat Page -->
-        <div id="chatPage" class="page chat-page">
+        <div id="chatPage" class="page">
             <div class="chat-header">
                 <div class="back-arrow" onclick="goBackToHome()">
                     <i class="fas fa-arrow-left"></i>
                 </div>
                 <div class="section-title">Chat</div>
-            </div>
-            
-            <div class="chat-type-selector">
-                <button class="chat-type-btn active" onclick="switchChat('public')">Public Chat</button>
-                <button class="chat-type-btn" onclick="switchChat('support')">Support</button>
             </div>
             
             <div class="chat-container">
@@ -1614,9 +1653,9 @@
                     <i class="fas fa-cog"></i>
                     <span>Settings</span>
                 </div>
-                <div class="more-item" onclick="openPage('tokens')">
+                <div class="more-item" onclick="enterPremiumToken()">
                     <i class="fas fa-key"></i>
-                    <span>Tokens</span>
+                    <span>Premium Token</span>
                 </div>
                 <div class="more-item" onclick="logout()">
                     <i class="fas fa-sign-out-alt"></i>
@@ -1746,12 +1785,17 @@
     <div id="adModal" class="ad-modal">
         <div class="ad-container glass-effect">
             <div class="marquee marquee-top">
-                <div class="marquee-text">SPONSORED CONTENT • SPECIAL OFFER • LIMITED TIME • SPONSORED CONTENT • SPECIAL OFFER</div>
+                <div class="marquee-text" id="marqueeTopText">SPONSORED CONTENT • SPECIAL OFFER • LIMITED TIME</div>
             </div>
             
             <div class="ad-content">
                 <div class="ad-sponsor" id="adSponsor">SPONSOR NAME</div>
                 <div class="ad-message" id="adMessage">Watch this ad to continue</div>
+                
+                <!-- Video/Image Container -->
+                <div id="adMediaContainer" style="margin: 20px 0;">
+                    <!-- Media will be loaded here -->
+                </div>
                 
                 <div class="social-hub" id="socialHub">
                     <!-- Social icons will be added here -->
@@ -1761,7 +1805,7 @@
             </div>
             
             <div class="marquee marquee-bottom">
-                <div class="marquee-text">DON'T MISS OUT • EXCLUSIVE DEAL • VISIT NOW • DON'T MISS OUT • EXCLUSIVE DEAL</div>
+                <div class="marquee-text" id="marqueeBottomText">DON'T MISS OUT • EXCLUSIVE DEAL • VISIT NOW</div>
             </div>
             
             <button class="skip-ad-btn" id="skipAdBtn" onclick="skipAd()">SKIP AD</button>
@@ -1785,6 +1829,37 @@
         </div>
     </div>
 
+    <!-- Premium Token Modal -->
+    <div id="tokenModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-close" onclick="closeTokenModal()">×</div>
+            <div class="modal-icon">
+                <i class="fas fa-crown"></i>
+            </div>
+            <div class="modal-title">Premium Token</div>
+            <div class="modal-text">Enter your premium token to access premium features</div>
+            
+            <div class="token-input-container">
+                <input type="text" id="tokenInput" class="token-input" placeholder="Enter premium token">
+                <button class="btn-icon" onclick="validateToken()">
+                    <i class="fas fa-check"></i>
+                </button>
+            </div>
+            
+            <div id="tokenStatus" class="token-status hidden">
+                <!-- Token status will be shown here -->
+            </div>
+            
+            <div class="modal-text">
+                <small class="text-muted">Without a valid token, you must watch ads to access content.</small>
+            </div>
+            
+            <button class="btn" onclick="requestTokenFromAdmin()">
+                <i class="fas fa-question-circle"></i> Request Token from Admin
+            </button>
+        </div>
+    </div>
+
     <!-- Toast Notification -->
     <div id="toast" class="toast">
         <div class="toast-icon">
@@ -1801,13 +1876,14 @@
     <script>
         // ========== FIREBASE CONFIGURATION ==========
         const firebaseConfig = {
-            apiKey: "AIzaSyABEnVaSOR5b1FL1V3-C13KoR9O7MqAoHg",
-            authDomain: "studio-3650831122-2eea3.firebaseapp.com",
-            databaseURL: "https://studio-3650831122-2eea3-default-rtdb.asia-southeast1.firebasedatabase.app",
-            projectId: "studio-3650831122-2eea3",
-            storageBucket: "studio-3650831122-2eea3.firebasestorage.app",
-            messagingSenderId: "893787872699",
-            appId: "1:893787872699:web:91268a1b8fb18b7bc4f89e"
+            apiKey: "AIzaSyDiexD5WK9GLhQldr6zNmC8iYWc4em5eyM",
+            authDomain: "stany-min-tv.firebaseapp.com",
+            databaseURL: "https://stany-min-tv-default-rtdb.firebaseio.com",
+            projectId: "stany-min-tv",
+            storageBucket: "stany-min-tv.firebasestorage.app",
+            messagingSenderId: "16513327552",
+            appId: "1:16513327552:web:b4b2247053f83aa0b8e825",
+            measurementId: "G-JM25LJXL5C"
         };
 
         // Initialize Firebase
@@ -1825,6 +1901,9 @@
         let currentUser = null;
         let userData = null;
         let isPremium = false;
+        let premiumExpiry = null;
+        let adsToday = 0;
+        let lastAdDate = null;
         const deviceId = localStorage.getItem('deviceId') || 'device_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
         localStorage.setItem('deviceId', deviceId);
 
@@ -1925,9 +2004,15 @@
                     email: email,
                     deviceId: deviceId,
                     isPremium: false,
+                    premiumToken: null,
+                    premiumExpiry: null,
+                    adsWatchedToday: 0,
+                    lastAdDate: null,
+                    freeAccessUntil: null,
                     createdAt: Date.now(),
                     lastLogin: Date.now(),
-                    favorites: {}
+                    favorites: {},
+                    channelPasswords: {}
                 });
 
                 console.log("✅ Registration successful");
@@ -1979,7 +2064,12 @@
 
                 // Set user data
                 currentUser = { uid: uid, ...userData };
-                isPremium = userData.isPremium || false;
+                
+                // Check premium status
+                checkPremiumStatus();
+                
+                // Check ad stats
+                checkAdStats();
 
                 // Show main app
                 document.getElementById('authScreen').style.display = 'none';
@@ -1988,15 +2078,474 @@
                 // Load content
                 loadHomeContent();
                 
-                // Show startup ad for free users
-                if (!isPremium) {
-                    setTimeout(() => showAdvertisement('startup'), 1000);
-                }
+                // Show startup ad for free users (if required)
+                setTimeout(() => {
+                    showStartupAdIfRequired();
+                }, 1000);
 
             } catch (error) {
                 console.error("❌ Device check error:", error);
                 showToast('Device verification failed', 'error');
             }
+        }
+
+        // ========== PREMIUM TOKEN SYSTEM ==========
+        function checkPremiumStatus() {
+            if (currentUser.premiumToken && currentUser.premiumExpiry) {
+                const now = Date.now();
+                if (now < currentUser.premiumExpiry) {
+                    isPremium = true;
+                    premiumExpiry = currentUser.premiumExpiry;
+                    console.log("✅ Premium token valid until:", new Date(premiumExpiry).toLocaleString());
+                } else {
+                    // Token expired
+                    isPremium = false;
+                    db.ref('users/' + currentUser.uid).update({
+                        premiumToken: null,
+                        premiumExpiry: null,
+                        isPremium: false
+                    });
+                    showToast('Premium token expired', 'warning');
+                }
+            } else {
+                isPremium = false;
+            }
+        }
+
+        async function validateToken() {
+            const tokenInput = document.getElementById('tokenInput').value.trim();
+            const tokenStatus = document.getElementById('tokenStatus');
+            
+            if (!tokenInput) {
+                showToast('Please enter a token', 'warning');
+                return;
+            }
+
+            try {
+                // Check if token exists in database
+                const tokenRef = db.ref('tokens/' + tokenInput);
+                const snapshot = await tokenRef.once('value');
+                
+                if (!snapshot.exists()) {
+                    tokenStatus.innerHTML = `
+                        <div class="token-invalid">
+                            <i class="fas fa-times-circle"></i> Invalid Token
+                        </div>
+                    `;
+                    tokenStatus.classList.remove('hidden');
+                    showToast('Invalid token', 'error');
+                    return;
+                }
+
+                const tokenData = snapshot.val();
+                
+                // Check if token is already used
+                if (tokenData.used) {
+                    tokenStatus.innerHTML = `
+                        <div class="token-invalid">
+                            <i class="fas fa-times-circle"></i> Token already used
+                        </div>
+                    `;
+                    tokenStatus.classList.remove('hidden');
+                    showToast('Token already used', 'error');
+                    return;
+                }
+
+                // Check if token is expired
+                if (tokenData.expiry && Date.now() > tokenData.expiry) {
+                    tokenStatus.innerHTML = `
+                        <div class="token-invalid">
+                            <i class="fas fa-times-circle"></i> Token expired
+                        </div>
+                    `;
+                    tokenStatus.classList.remove('hidden');
+                    showToast('Token expired', 'error');
+                    return;
+                }
+
+                // Token is valid - activate premium
+                const expiryTime = tokenData.expiry || (Date.now() + (tokenData.duration || 2592000000)); // Default 30 days
+                
+                await db.ref('users/' + currentUser.uid).update({
+                    premiumToken: tokenInput,
+                    premiumExpiry: expiryTime,
+                    isPremium: true
+                });
+
+                // Mark token as used
+                await tokenRef.update({
+                    used: true,
+                    usedBy: currentUser.uid,
+                    usedAt: Date.now()
+                });
+
+                // Update local variables
+                isPremium = true;
+                premiumExpiry = expiryTime;
+                currentUser.premiumToken = tokenInput;
+                currentUser.premiumExpiry = expiryTime;
+                currentUser.isPremium = true;
+
+                tokenStatus.innerHTML = `
+                    <div class="token-valid">
+                        <i class="fas fa-check-circle"></i> Premium Activated!
+                        <div class="token-expiry">
+                            Expires: ${new Date(expiryTime).toLocaleDateString()}
+                        </div>
+                    </div>
+                `;
+                tokenStatus.classList.remove('hidden');
+
+                showToast('🎉 Premium activated successfully!', 'success');
+                
+                // Close modal after 2 seconds
+                setTimeout(() => {
+                    closeTokenModal();
+                }, 2000);
+
+            } catch (error) {
+                console.error("❌ Token validation error:", error);
+                showToast('Token validation failed', 'error');
+            }
+        }
+
+        function enterPremiumToken() {
+            document.getElementById('tokenModal').style.display = 'flex';
+            document.getElementById('tokenInput').value = '';
+            document.getElementById('tokenStatus').classList.add('hidden');
+        }
+
+        function closeTokenModal() {
+            document.getElementById('tokenModal').style.display = 'none';
+        }
+
+        function requestTokenFromAdmin() {
+            const message = `Hello Admin, I need a premium token for STANY MIN TV.\n\nUser: ${currentUser.name || currentUser.email}\nDevice: ${deviceId}`;
+            window.open(`https://wa.me/255123456789?text=${encodeURIComponent(message)}`, '_blank');
+            showToast('WhatsApp opened to request token', 'info');
+        }
+
+        // ========== ADVERTISEMENT SYSTEM ==========
+        let adTimer = null;
+        let adSeconds = 0;
+        let currentAdId = null;
+        let adCallback = null;
+
+        async function showStartupAdIfRequired() {
+            if (isPremium) return;
+            
+            // Check if user has free access
+            if (currentUser.freeAccessUntil && Date.now() < currentUser.freeAccessUntil) {
+                console.log("✅ Free access active until:", new Date(currentUser.freeAccessUntil).toLocaleString());
+                return;
+            }
+
+            // Check ads per day limit
+            const today = new Date().toDateString();
+            if (currentUser.lastAdDate === today && currentUser.adsWatchedToday >= 3) {
+                showToast('Daily ad limit reached. Please wait until tomorrow.', 'warning');
+                return;
+            }
+
+            // Show startup ad
+            await showAdvertisement('startup');
+        }
+
+        async function showAdvertisement(type, callback = null) {
+            if (isPremium && type !== 'startup') {
+                // Premium users don't see content ads
+                if (callback) callback();
+                return;
+            }
+
+            try {
+                // Get random ad from database
+                const adsRef = db.ref('ads');
+                const snapshot = await adsRef.once('value');
+                
+                if (!snapshot.exists()) {
+                    showToast('No ads configured', 'warning');
+                    if (callback) callback();
+                    return;
+                }
+
+                const ads = [];
+                snapshot.forEach(child => {
+                    const ad = child.val();
+                    ad.id = child.key;
+                    ads.push(ad);
+                });
+
+                if (ads.length === 0) {
+                    if (callback) callback();
+                    return;
+                }
+
+                // Select random ad
+                const randomAd = ads[Math.floor(Math.random() * ads.length)];
+                currentAdId = randomAd.id;
+                adCallback = callback;
+
+                // Update ad modal content
+                document.getElementById('adSponsor').textContent = randomAd.sponsor || 'Sponsor';
+                document.getElementById('adMessage').textContent = randomAd.message || 'Watch this ad to continue';
+                
+                // Set marquee texts
+                document.getElementById('marqueeTopText').textContent = randomAd.marqueeTop || 'SPONSORED CONTENT • SPECIAL OFFER • LIMITED TIME';
+                document.getElementById('marqueeBottomText').textContent = randomAd.marqueeBottom || 'DON\'T MISS OUT • EXCLUSIVE DEAL • VISIT NOW';
+
+                // Load media
+                const mediaContainer = document.getElementById('adMediaContainer');
+                mediaContainer.innerHTML = '';
+                
+                if (randomAd.mediaType === 'video' && randomAd.mediaURL) {
+                    mediaContainer.innerHTML = `
+                        <video id="adVideo" style="width: 100%; max-height: 200px; border-radius: 10px;" autoplay muted controls>
+                            <source src="${randomAd.mediaURL}" type="video/mp4">
+                            Your browser does not support the video tag.
+                        </video>
+                    `;
+                } else if (randomAd.mediaType === 'image' && randomAd.mediaURL) {
+                    mediaContainer.innerHTML = `
+                        <img src="${randomAd.mediaURL}" style="width: 100%; max-height: 200px; object-fit: cover; border-radius: 10px;">
+                    `;
+                }
+
+                // Set social icons
+                const socialHub = document.getElementById('socialHub');
+                socialHub.innerHTML = '';
+                
+                if (randomAd.socialLinks && Array.isArray(randomAd.socialLinks)) {
+                    randomAd.socialLinks.forEach(link => {
+                        const iconClass = getSocialIconClass(link.platform);
+                        if (iconClass) {
+                            socialHub.innerHTML += `
+                                <div class="social-icon" onclick="window.open('${link.url}', '_blank')" title="${link.platform}">
+                                    <i class="${iconClass}"></i>
+                                </div>
+                            `;
+                        }
+                    });
+                }
+
+                // Add channel links if available
+                if (randomAd.channelLinks && Array.isArray(randomAd.channelLinks)) {
+                    randomAd.channelLinks.forEach(channel => {
+                        socialHub.innerHTML += `
+                            <div class="social-icon" onclick="window.open('${channel.url}', '_blank')" title="${channel.name}">
+                                <i class="fas fa-tv"></i>
+                            </div>
+                        `;
+                    });
+                }
+
+                // Set timer
+                adSeconds = randomAd.duration || 10;
+                document.getElementById('adTimer').textContent = adSeconds;
+                
+                // Show/hide skip button
+                const skipBtn = document.getElementById('skipAdBtn');
+                skipBtn.classList.toggle('premium', isPremium);
+                skipBtn.style.display = isPremium ? 'inline-block' : 'none';
+
+                // Show ad modal
+                document.getElementById('adModal').style.display = 'flex';
+
+                // Start timer
+                adTimer = setInterval(() => {
+                    adSeconds--;
+                    document.getElementById('adTimer').textContent = adSeconds;
+
+                    if (adSeconds <= 0) {
+                        finishAd();
+                    }
+                }, 1000);
+
+            } catch (error) {
+                console.error("❌ Ad load error:", error);
+                if (callback) callback();
+            }
+        }
+
+        function getSocialIconClass(platform) {
+            const icons = {
+                'whatsapp': 'fab fa-whatsapp',
+                'telegram': 'fab fa-telegram',
+                'youtube': 'fab fa-youtube',
+                'instagram': 'fab fa-instagram',
+                'facebook': 'fab fa-facebook',
+                'twitter': 'fab fa-twitter',
+                'tiktok': 'fab fa-tiktok',
+                'snapchat': 'fab fa-snapchat',
+                'linkedin': 'fab fa-linkedin',
+                'pinterest': 'fab fa-pinterest',
+                'reddit': 'fab fa-reddit',
+                'discord': 'fab fa-discord',
+                'twitch': 'fab fa-twitch',
+                'spotify': 'fab fa-spotify',
+                'apple': 'fab fa-apple',
+                'android': 'fab fa-android',
+                'windows': 'fab fa-windows',
+                'github': 'fab fa-github',
+                'dribbble': 'fab fa-dribbble',
+                'behance': 'fab fa-behance'
+            };
+            return icons[platform.toLowerCase()] || 'fas fa-link';
+        }
+
+        function finishAd() {
+            clearInterval(adTimer);
+            document.getElementById('adModal').style.display = 'none';
+            
+            // Record ad watch
+            recordAdWatch();
+            
+            // Grant 24 hours free access
+            const freeAccessUntil = Date.now() + (24 * 60 * 60 * 1000);
+            db.ref('users/' + currentUser.uid).update({
+                freeAccessUntil: freeAccessUntil
+            });
+            
+            currentUser.freeAccessUntil = freeAccessUntil;
+            
+            showToast('Ad completed! 24 hours free access granted.', 'success');
+            
+            // Execute callback if exists
+            if (adCallback) {
+                adCallback();
+                adCallback = null;
+            }
+        }
+
+        function skipAd() {
+            if (isPremium) {
+                clearInterval(adTimer);
+                document.getElementById('adModal').style.display = 'none';
+                showToast('Ad skipped', 'success');
+                
+                if (adCallback) {
+                    adCallback();
+                    adCallback = null;
+                }
+            }
+        }
+
+        async function recordAdWatch() {
+            try {
+                const today = new Date().toDateString();
+                const adsWatchedToday = currentUser.lastAdDate === today ? currentUser.adsWatchedToday + 1 : 1;
+                
+                await db.ref('users/' + currentUser.uid).update({
+                    adsWatchedToday: adsWatchedToday,
+                    lastAdDate: today
+                });
+                
+                // Update local data
+                currentUser.adsWatchedToday = adsWatchedToday;
+                currentUser.lastAdDate = today;
+                
+                // Record ad impression
+                await db.ref('adImpressions').push({
+                    adId: currentAdId,
+                    userId: currentUser.uid,
+                    timestamp: Date.now(),
+                    deviceId: deviceId
+                });
+                
+            } catch (error) {
+                console.error("❌ Ad recording error:", error);
+            }
+        }
+
+        function checkAdStats() {
+            const today = new Date().toDateString();
+            if (currentUser.lastAdDate !== today) {
+                // Reset daily count
+                db.ref('users/' + currentUser.uid).update({
+                    adsWatchedToday: 0,
+                    lastAdDate: today
+                });
+                currentUser.adsWatchedToday = 0;
+                currentUser.lastAdDate = today;
+            }
+            
+            adsToday = currentUser.adsWatchedToday || 0;
+        }
+
+        // ========== CONTENT ACCESS WITH AD CHECK ==========
+        async function openChannel(channelId) {
+            if (!currentUser) {
+                showToast('Please login first', 'warning');
+                return;
+            }
+
+            // Check premium first
+            if (isPremium) {
+                playChannel(channelId);
+                return;
+            }
+
+            // Check free access
+            if (currentUser.freeAccessUntil && Date.now() < currentUser.freeAccessUntil) {
+                playChannel(channelId);
+                return;
+            }
+
+            // Check daily ad limit
+            if (adsToday >= 3) {
+                showTokenRequiredModal();
+                return;
+            }
+
+            // Show ad before content
+            await showAdvertisement('content', () => {
+                playChannel(channelId);
+            });
+        }
+
+        async function openMovie(movieId) {
+            if (!currentUser) {
+                showToast('Please login first', 'warning');
+                return;
+            }
+
+            // Check premium first
+            if (isPremium) {
+                playMovie(movieId);
+                return;
+            }
+
+            // Check free access
+            if (currentUser.freeAccessUntil && Date.now() < currentUser.freeAccessUntil) {
+                playMovie(movieId);
+                return;
+            }
+
+            // Check daily ad limit
+            if (adsToday >= 3) {
+                showTokenRequiredModal();
+                return;
+            }
+
+            // Show ad before content
+            await showAdvertisement('content', () => {
+                playMovie(movieId);
+            });
+        }
+
+        function showTokenRequiredModal() {
+            document.getElementById('tokenModal').style.display = 'flex';
+            document.getElementById('tokenInput').value = '';
+            document.getElementById('tokenStatus').innerHTML = `
+                <div class="token-invalid">
+                    <i class="fas fa-exclamation-triangle"></i> Daily ad limit reached
+                    <div class="token-expiry">
+                        Enter premium token or wait until tomorrow
+                    </div>
+                </div>
+            `;
+            document.getElementById('tokenStatus').classList.remove('hidden');
+            showToast('Daily ad limit reached. Enter premium token.', 'warning');
         }
 
         // ========== CONTENT MANAGEMENT ==========
@@ -2069,122 +2618,14 @@
             `;
         }
 
-        // ========== FAVORITES SYSTEM ==========
-        async function toggleFavorite(type, id, event) {
-            event.stopPropagation();
-            
-            if (!currentUser) {
-                showToast('Please login first', 'warning');
-                return;
-            }
-
-            try {
-                const favoritePath = `users/${currentUser.uid}/favorites/${type}s/${id}`;
-                const isCurrentlyFavorite = currentUser.favorites?.[type + 's']?.[id] || false;
-
-                if (isCurrentlyFavorite) {
-                    await db.ref(favoritePath).remove();
-                    showToast('Removed from favorites', 'info');
-                } else {
-                    await db.ref(favoritePath).set(true);
-                    showToast('Added to favorites', 'success');
-                }
-
-                // Update local state
-                if (!currentUser.favorites) currentUser.favorites = {};
-                if (!currentUser.favorites[type + 's']) currentUser.favorites[type + 's'] = {};
-                currentUser.favorites[type + 's'][id] = !isCurrentlyFavorite;
-
-                // Update UI
-                const btn = event.target.closest('.favorite-btn');
-                btn.classList.toggle('active');
-
-            } catch (error) {
-                console.error("❌ Favorite toggle error:", error);
-                showToast('Failed to update favorites', 'error');
-            }
+        function playChannel(channelId) {
+            showToast('Starting channel...', 'info');
+            console.log("Playing channel:", channelId);
         }
 
-        // ========== ADVERTISEMENT SYSTEM ==========
-        const advertisements = [
-            {
-                sponsor: "Netflix",
-                message: "Watch unlimited movies and TV shows",
-                duration: 10,
-                social: [
-                    { icon: "whatsapp", url: "https://wa.me/1234567890" },
-                    { icon: "telegram", url: "https://t.me/netflix" },
-                    { icon: "youtube", url: "https://youtube.com/netflix" },
-                    { icon: "instagram", url: "https://instagram.com/netflix" },
-                    { icon: "facebook", url: "https://facebook.com/netflix" },
-                    { icon: "twitter", url: "https://twitter.com/netflix" }
-                ]
-            },
-            {
-                sponsor: "Spotify",
-                message: "Stream millions of songs for free",
-                duration: 8,
-                social: [
-                    { icon: "whatsapp", url: "https://wa.me/1234567890" },
-                    { icon: "telegram", url: "https://t.me/spotify" },
-                    { icon: "youtube", url: "https://youtube.com/spotify" },
-                    { icon: "instagram", url: "https://instagram.com/spotify" },
-                    { icon: "facebook", url: "https://facebook.com/spotify" },
-                    { icon: "twitter", url: "https://twitter.com/spotify" }
-                ]
-            }
-        ];
-
-        let adTimer = null;
-        let adSeconds = 0;
-
-        function showAdvertisement(type) {
-            if (isPremium) return; // Premium users don't see ads
-
-            const randomAd = advertisements[Math.floor(Math.random() * advertisements.length)];
-            document.getElementById('adSponsor').textContent = randomAd.sponsor;
-            document.getElementById('adMessage').textContent = randomAd.message;
-            
-            // Set social icons
-            const socialHub = document.getElementById('socialHub');
-            socialHub.innerHTML = randomAd.social.map(social => `
-                <div class="social-icon" onclick="window.open('${social.url}', '_blank')">
-                    <i class="fab fa-${social.icon}"></i>
-                </div>
-            `).join('');
-
-            // Set timer
-            adSeconds = randomAd.duration;
-            document.getElementById('adTimer').textContent = adSeconds;
-            
-            // Show skip button for premium (not shown for free users)
-            document.getElementById('skipAdBtn').classList.toggle('premium', isPremium);
-
-            // Show ad modal
-            document.getElementById('adModal').style.display = 'flex';
-
-            // Start timer
-            adTimer = setInterval(() => {
-                adSeconds--;
-                document.getElementById('adTimer').textContent = adSeconds;
-
-                if (adSeconds <= 0) {
-                    closeAd();
-                }
-            }, 1000);
-        }
-
-        function closeAd() {
-            clearInterval(adTimer);
-            document.getElementById('adModal').style.display = 'none';
-            showToast('Advertisement completed', 'info');
-        }
-
-        function skipAd() {
-            if (isPremium) {
-                closeAd();
-                showToast('Ad skipped', 'success');
-            }
+        function playMovie(movieId) {
+            showToast('Starting movie...', 'info');
+            console.log("Playing movie:", movieId);
         }
 
         // ========== AGE GATE SYSTEM ==========
@@ -2209,8 +2650,6 @@
         }
 
         // ========== CHAT SYSTEM ==========
-        let currentChatType = 'public';
-
         function openChatPage() {
             document.querySelector('.bottom-nav').classList.add('hidden');
             switchPage('chat');
@@ -2220,49 +2659,6 @@
         function goBackToHome() {
             document.querySelector('.bottom-nav').classList.remove('hidden');
             switchPage('home');
-        }
-
-        function switchChat(type) {
-            currentChatType = type;
-            
-            // Update UI
-            document.querySelectorAll('.chat-type-btn').forEach(btn => {
-                btn.classList.remove('active');
-            });
-            event.target.classList.add('active');
-            
-            // Load messages for selected chat type
-            loadChatMessages();
-        }
-
-        async function loadChatMessages() {
-            try {
-                const chatRef = db.ref(`chats/${currentChatType}`).limitToLast(20);
-                const chatMessages = document.getElementById('chatMessages');
-                chatMessages.innerHTML = '';
-
-                const snapshot = await chatRef.once('value');
-                snapshot.forEach(child => {
-                    const message = child.val();
-                    chatMessages.innerHTML += createMessageElement(message);
-                });
-
-                chatMessages.scrollTop = chatMessages.scrollHeight;
-            } catch (error) {
-                console.error("❌ Chat load error:", error);
-            }
-        }
-
-        function createMessageElement(message) {
-            const isUser = message.senderId === currentUser?.uid;
-            const time = new Date(message.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-            
-            return `
-                <div class="message ${isUser ? 'message-user' : 'message-admin'}">
-                    ${message.text}
-                    <div class="message-time">${time}</div>
-                </div>
-            `;
         }
 
         async function sendMessage() {
@@ -2277,59 +2673,16 @@
                     senderId: currentUser.uid,
                     senderName: currentUser.name || 'User',
                     timestamp: Date.now(),
-                    chatType: currentChatType
+                    chatType: 'user'
                 };
 
-                await db.ref(`chats/${currentChatType}`).push(message);
+                await db.ref('chats/public').push(message);
                 input.value = '';
-
-                // Show typing indicator for admin (simulated)
-                if (currentChatType === 'support') {
-                    simulateAdminTyping();
-                }
 
             } catch (error) {
                 console.error("❌ Send message error:", error);
                 showToast('Failed to send message', 'error');
             }
-        }
-
-        function simulateAdminTyping() {
-            const typingIndicator = document.getElementById('typingIndicator');
-            typingIndicator.classList.remove('hidden');
-
-            setTimeout(() => {
-                typingIndicator.classList.add('hidden');
-                
-                // Simulate admin reply after 2 seconds
-                setTimeout(() => {
-                    if (Math.random() > 0.3) { // 70% chance of reply
-                        sendAutoReply();
-                    }
-                }, 1000);
-            }, 2000);
-        }
-
-        async function sendAutoReply() {
-            const replies = [
-                "Thanks for your message! How can we help you?",
-                "Our support team will get back to you shortly.",
-                "Is there anything specific you need help with?",
-                "We've received your message and will respond soon."
-            ];
-
-            const randomReply = replies[Math.floor(Math.random() * replies.length)];
-
-            const message = {
-                text: randomReply,
-                senderId: 'admin',
-                senderName: 'Support',
-                timestamp: Date.now(),
-                chatType: currentChatType
-            };
-
-            await db.ref(`chats/${currentChatType}`).push(message);
-            loadChatMessages();
         }
 
         // ========== PAGE NAVIGATION ==========
@@ -2374,95 +2727,54 @@
             switchPage(page);
         }
 
-        // ========== SEARCH FUNCTIONALITY ==========
-        function toggleSearch() {
-            const searchBar = document.getElementById('searchBar');
-            searchBar.classList.toggle('hidden');
+        // ========== FAVORITES SYSTEM ==========
+        async function toggleFavorite(type, id, event) {
+            event.stopPropagation();
             
-            if (!searchBar.classList.contains('hidden')) {
-                document.getElementById('searchInput').focus();
-            }
-        }
-
-        // ========== CHANNEL PASSWORD SYSTEM ==========
-        let currentChannelToUnlock = null;
-
-        function openChannel(channelId) {
             if (!currentUser) {
                 showToast('Please login first', 'warning');
                 return;
             }
 
-            // Check if channel requires password
-            const channelPassword = currentUser.channelPasswords?.[channelId];
-            
-            if (channelPassword) {
-                currentChannelToUnlock = channelId;
-                document.getElementById('passwordChannelName').textContent = 'Enter password to unlock channel';
-                document.getElementById('passwordModal').style.display = 'flex';
-            } else {
-                // Play channel directly
-                playChannel(channelId);
+            try {
+                const favoritePath = `users/${currentUser.uid}/favorites/${type}s/${id}`;
+                const isCurrentlyFavorite = currentUser.favorites?.[type + 's']?.[id] || false;
+
+                if (isCurrentlyFavorite) {
+                    await db.ref(favoritePath).remove();
+                    showToast('Removed from favorites', 'info');
+                } else {
+                    await db.ref(favoritePath).set(true);
+                    showToast('Added to favorites', 'success');
+                }
+
+                // Update local state
+                if (!currentUser.favorites) currentUser.favorites = {};
+                if (!currentUser.favorites[type + 's']) currentUser.favorites[type + 's'] = {};
+                currentUser.favorites[type + 's'][id] = !isCurrentlyFavorite;
+
+                // Update UI
+                const btn = event.target.closest('.favorite-btn');
+                btn.classList.toggle('active');
+
+            } catch (error) {
+                console.error("❌ Favorite toggle error:", error);
+                showToast('Failed to update favorites', 'error');
             }
         }
 
-        function unlockChannel() {
-            const password = document.getElementById('channelPassword').value;
-            
-            if (!password) {
-                showToast('Please enter password', 'warning');
-                return;
-            }
-
-            const storedPassword = currentUser.channelPasswords?.[currentChannelToUnlock];
-            
-            if (password === storedPassword) {
-                closePasswordModal();
-                playChannel(currentChannelToUnlock);
-                showToast('Channel unlocked successfully!', 'success');
-            } else {
-                showToast('Incorrect password', 'error');
+        // ========== UTILITY FUNCTIONS ==========
+        async function logout() {
+            try {
+                await auth.signOut();
+                showToast('Logged out successfully', 'info');
+                showAuthScreen();
+            } catch (error) {
+                console.error("❌ Logout error:", error);
+                showToast('Logout failed', 'error');
             }
         }
 
-        function closePasswordModal() {
-            document.getElementById('passwordModal').style.display = 'none';
-            document.getElementById('channelPassword').value = '';
-            currentChannelToUnlock = null;
-        }
-
-        function playChannel(channelId) {
-            // Show content ad for free users
-            if (!isPremium) {
-                showAdvertisement('content');
-            }
-            
-            // Simulate channel playback
-            showToast('Starting playback...', 'info');
-            
-            // In a real app, you would launch the video player here
-            console.log("Playing channel:", channelId);
-        }
-
-        function openMovie(movieId) {
-            // Show content ad for free users
-            if (!isPremium) {
-                showAdvertisement('content');
-            }
-            
-            // Simulate movie playback
-            showToast('Starting movie...', 'info');
-            
-            // In a real app, you would launch the video player here
-            console.log("Playing movie:", movieId);
-        }
-
-        // ========== NOTIFICATION SYSTEM ==========
-        function showNotifications() {
-            showToast('Notifications feature coming soon!', 'info');
-        }
-
-        // ========== TOAST SYSTEM ==========
         function showToast(message, type = 'info') {
             const toast = document.getElementById('toast');
             const toastMessage = document.getElementById('toastMessage');
@@ -2483,37 +2795,35 @@
             }, 3000);
         }
 
-        // ========== WHATSAPP FLOAT ==========
-        let lastScrollTop = 0;
-        const whatsappFloat = document.querySelector('.whatsapp-float');
-
-        window.addEventListener('scroll', function() {
-            const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
-            
-            if (scrollTop > lastScrollTop) {
-                // Scrolling down - hide
-                whatsappFloat.classList.add('hidden');
-            } else {
-                // Scrolling up - show
-                whatsappFloat.classList.remove('hidden');
-            }
-            
-            lastScrollTop = scrollTop;
-        });
-
         function openWhatsApp() {
             window.open('https://wa.me/255123456789', '_blank');
         }
 
-        // ========== UTILITY FUNCTIONS ==========
-        async function logout() {
-            try {
-                await auth.signOut();
-                showToast('Logged out successfully', 'info');
-                showAuthScreen();
-            } catch (error) {
-                console.error("❌ Logout error:", error);
-                showToast('Logout failed', 'error');
+        // ========== FIREBASE LISTENERS ==========
+        function initializeFirebaseListeners() {
+            // Listen for auth state changes
+            auth.onAuthStateChanged(handleAuthState);
+
+            // Listen for user data updates
+            if (currentUser) {
+                db.ref('users/' + currentUser.uid).on('value', snapshot => {
+                    const newData = snapshot.val();
+                    if (newData) {
+                        currentUser = { ...currentUser, ...newData };
+                        checkPremiumStatus();
+                        checkAdStats();
+                    }
+                });
+            }
+        }
+
+        // ========== OTHER FUNCTIONS ==========
+        function toggleSearch() {
+            const searchBar = document.getElementById('searchBar');
+            searchBar.classList.toggle('hidden');
+            
+            if (!searchBar.classList.contains('hidden')) {
+                document.getElementById('searchInput').focus();
             }
         }
 
@@ -2524,7 +2834,6 @@
             });
             event.target.classList.add('active');
             
-            // In a real app, you would filter content here
             showToast(`Showing ${category} content`, 'info');
         }
 
@@ -2535,12 +2844,10 @@
             });
             event.target.classList.add('active');
             
-            // In a real app, you would filter movies here
             showToast(`Filtering movies: ${genre}`, 'info');
         }
 
         function showAllChannels() {
-            switchPage('more');
             showToast('All channels feature coming soon!', 'info');
         }
 
@@ -2574,32 +2881,8 @@
             showToast('Next part', 'info');
         }
 
-        // ========== FIREBASE LISTENERS ==========
-        function initializeFirebaseListeners() {
-            // Listen for auth state changes
-            auth.onAuthStateChanged(handleAuthState);
-
-            // Listen for user data updates
-            if (currentUser) {
-                db.ref('users/' + currentUser.uid).on('value', snapshot => {
-                    userData = snapshot.val();
-                    if (userData) {
-                        currentUser = { uid: currentUser.uid, ...userData };
-                        isPremium = userData.isPremium || false;
-                    }
-                });
-            }
-
-            // Listen for new messages in current chat
-            if (currentUser) {
-                db.ref(`chats/${currentChatType}`).on('child_added', snapshot => {
-                    const message = snapshot.val();
-                    if (message.senderId !== currentUser.uid) {
-                        // New message from others
-                        showToast('New message received', 'info');
-                    }
-                });
-            }
+        function showNotifications() {
+            showToast('Notifications feature coming soon!', 'info');
         }
     </script>
 </body>
