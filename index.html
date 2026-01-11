@@ -2,1333 +2,262 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>STANY MIN TV</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>STANY MIN TV | iOS 26 HIGH-END</title>
     
-    <!-- Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&family=Orbitron:wght@400;700&family=SF+Pro+Display:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    
-    <!-- Firebase -->
-    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-database-compat.js"></script>
-    
-    <!-- Video Player -->
-    <link href="https://unpkg.com/video.js@7.21.1/dist/video-js.min.css" rel="stylesheet">
-    <script src="https://unpkg.com/video.js@7.21.1/dist/video.min.js"></script>
-    <script src="https://unpkg.com/@videojs/http-streaming@2.14.2/dist/videojs-http-streaming.min.js"></script>
-    
-    <!-- Font Awesome Icons -->
+    <!-- Fonts & Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=SF+Pro+Display:wght@300;400;600;700&display=swap" rel="stylesheet">
     
+    <!-- Video Player (Video.js with EME for DRM) -->
+    <link href="https://vjs.zencdn.net/7.20.3/video-js.css" rel="stylesheet" />
+    <script src="https://vjs.zencdn.net/7.20.3/video.min.js"></script>
+    
+    <!-- Firebase SDKs -->
+    <script src="https://www.gstatic.com/firebasejs/9.10.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.10.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.10.0/firebase-database-compat.js"></script>
+
     <style>
-        /* iOS 26 Style */
         :root {
-            --ios-red: #FF3B30;
-            --ios-black: #000000;
-            --ios-white: #FFFFFF;
-            --ios-gray: #8E8E93;
-            --ios-light-gray: #F2F2F7;
-            --ios-card-bg: rgba(255, 255, 255, 0.08);
-            --ios-glass: rgba(255, 255, 255, 0.15);
-            --ios-glass-border: rgba(255, 255, 255, 0.3);
-            --ios-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
-            --ios-blur: blur(20px);
+            --red: #FF0000;
+            --black: #000000;
+            --white: #FFFFFF;
+            --glass: rgba(255, 255, 255, 0.08);
+            --blur: blur(25px);
         }
 
         * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Helvetica Neue', sans-serif;
-            -webkit-font-smoothing: antialiased;
+            margin: 0; padding: 0; box-sizing: border-box;
+            font-family: 'SF Pro Display', -apple-system, sans-serif;
+            -webkit-tap-highlight-color: transparent;
         }
 
         body {
-            background: linear-gradient(180deg, #000000 0%, #1C1C1E 100%);
-            color: var(--ios-white);
-            min-height: 100vh;
+            background-color: var(--black);
+            color: var(--white);
             overflow-x: hidden;
+            height: 100vh;
         }
 
-        /* iOS 26 Glassmorphism */
-        .ios-glass {
-            background: var(--ios-glass);
-            backdrop-filter: var(--ios-blur);
-            -webkit-backdrop-filter: var(--ios-blur);
-            border: 1px solid var(--ios-glass-border);
-            border-radius: 24px;
+        /* --- Splash Screen & Loader --- */
+        #splash-screen {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: var(--black); z-index: 10000;
+            display: flex; flex-direction: column; justify-content: center; align-items: center;
         }
+        .logo-box {
+            width: 80px; height: 80px; border: 4px solid var(--red);
+            border-radius: 20px; animation: ios-pulse 2s infinite;
+        }
+        @keyframes ios-pulse { 0% { transform: scale(1); opacity: 1; } 50% { transform: scale(1.1); opacity: 0.7; box-shadow: 0 0 40px var(--red); } 100% { transform: scale(1); opacity: 1; } }
 
-        .ios-card {
-            background: var(--ios-card-bg);
-            backdrop-filter: var(--ios-blur);
-            -webkit-backdrop-filter: var(--ios-blur);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 20px;
-            box-shadow: var(--ios-shadow);
+        /* --- Ultimate Ad Engine UI --- */
+        #ad-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: var(--black); z-index: 9000; display: none; flex-direction: column;
         }
-
-        /* iOS Rounded Corners */
-        .rounded-ios {
-            border-radius: 20px;
-        }
+        .marquee-ad { background: var(--red); color: white; padding: 6px 0; font-weight: 700; font-size: 13px; overflow: hidden; }
+        .marquee-ad span { display: inline-block; white-space: nowrap; animation: marquee 15s linear infinite; }
+        @keyframes marquee { 0% { transform: translateX(100%); } 100% { transform: translateX(-100%); } }
         
-        .rounded-ios-lg {
-            border-radius: 28px;
-        }
-
-        .rounded-ios-xl {
-            border-radius: 32px;
-        }
-
-        /* Loader - iOS Style */
-        #loader {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: #000000;
-            z-index: 9999;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            flex-direction: column;
-        }
-
-        .ios-spinner {
-            width: 60px;
-            height: 60px;
-            border: 3px solid transparent;
-            border-top: 3px solid var(--ios-red);
-            border-radius: 50%;
-            animation: iosSpin 1s linear infinite;
-        }
-
-        .ios-spinner-logo {
-            font-family: 'SF Pro Display';
-            font-weight: 700;
-            font-size: 32px;
-            color: var(--ios-white);
-            margin-bottom: 20px;
-            letter-spacing: -0.5px;
-        }
-
-        @keyframes iosSpin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-
-        /* iOS Bottom Navigation */
-        .ios-tab-bar {
-            position: fixed;
-            bottom: 0;
-            left: 0;
-            width: 100%;
-            height: 83px;
-            background: rgba(0, 0, 0, 0.8);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
-            border-top: 1px solid rgba(255, 255, 255, 0.1);
-            display: flex;
-            justify-content: space-around;
-            align-items: center;
-            padding-bottom: 20px;
-            z-index: 1000;
-        }
-
-        .ios-tab-item {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            flex: 1;
-            height: 100%;
-            color: var(--ios-gray);
-            text-decoration: none;
-            position: relative;
-            transition: all 0.3s ease;
-        }
-
-        .ios-tab-item i {
-            font-size: 22px;
-            margin-bottom: 4px;
-            transition: all 0.3s ease;
-        }
-
-        .ios-tab-item span {
-            font-size: 10px;
-            font-weight: 500;
-            letter-spacing: -0.2px;
-        }
-
-        .ios-tab-item.active {
-            color: var(--ios-red);
-        }
-
-        .ios-tab-item.active i {
-            transform: translateY(-2px);
-        }
-
-        /* iOS Header */
-        .ios-header {
-            padding: 60px 20px 20px;
-            background: transparent;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            position: sticky;
-            top: 0;
-            z-index: 100;
-            background: rgba(0, 0, 0, 0.8);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
-        }
-
-        .ios-header-title {
-            font-family: 'SF Pro Display';
-            font-weight: 700;
-            font-size: 34px;
-            color: var(--ios-white);
-            letter-spacing: -0.5px;
-        }
-
-        .ios-header-actions {
-            display: flex;
-            gap: 20px;
-            align-items: center;
-        }
-
-        .ios-header-icon {
-            width: 40px;
-            height: 40px;
-            background: var(--ios-card-bg);
-            border-radius: 12px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: var(--ios-white);
-            font-size: 18px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
-
-        .ios-header-icon:hover {
-            background: var(--ios-red);
-            transform: scale(1.05);
-        }
-
-        /* iOS Page Content */
-        .ios-page {
-            padding: 20px;
-            padding-bottom: 100px;
-            display: none;
-        }
-
-        .ios-page.active {
-            display: block;
-            animation: iosFadeIn 0.3s ease;
-        }
-
-        @keyframes iosFadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        /* iOS Carousel */
-        .ios-carousel {
-            width: 100%;
-            height: 200px;
-            border-radius: 24px;
-            overflow: hidden;
-            position: relative;
-            margin-bottom: 24px;
-            box-shadow: var(--ios-shadow);
-        }
-
-        .ios-carousel-slide {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            opacity: 0;
-            transition: opacity 0.5s ease;
-        }
-
-        .ios-carousel-slide.active {
-            opacity: 1;
-        }
-
-        .ios-carousel-slide img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
-
-        .ios-carousel-caption {
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            padding: 20px;
-            background: linear-gradient(transparent, rgba(0,0,0,0.8));
-            color: var(--ios-white);
-        }
-
-        .ios-carousel-title {
-            font-size: 20px;
-            font-weight: 700;
-            margin-bottom: 4px;
-        }
-
-        .ios-carousel-description {
-            font-size: 14px;
-            color: rgba(255,255,255,0.8);
-        }
-
-        /* iOS Grid */
-        .ios-grid {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 16px;
-            margin-bottom: 32px;
-        }
-
-        @media (min-width: 768px) {
-            .ios-grid {
-                grid-template-columns: repeat(4, 1fr);
-            }
-        }
-
-        .ios-grid-item {
-            background: var(--ios-card-bg);
-            border-radius: 20px;
-            overflow: hidden;
-            aspect-ratio: 3/4;
-            position: relative;
-            transition: all 0.3s ease;
-            cursor: pointer;
-            border: 1px solid rgba(255, 255, 255, 0.05);
-        }
-
-        .ios-grid-item:hover {
-            transform: scale(1.02);
-            box-shadow: 0 10px 30px rgba(255, 59, 48, 0.2);
-        }
-
-        .ios-grid-item img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
-
-        .ios-grid-item-label {
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            padding: 12px;
-            background: linear-gradient(transparent, rgba(0,0,0,0.9));
-            color: var(--ios-white);
-            font-weight: 600;
-            font-size: 14px;
-        }
-
-        /* iOS Modal */
-        .ios-modal {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0,0,0,0.8);
-            z-index: 10000;
-            display: none;
-            justify-content: center;
-            align-items: center;
-            padding: 20px;
-        }
-
-        .ios-modal-content {
-            background: var(--ios-card-bg);
-            backdrop-filter: var(--ios-blur);
-            border-radius: 28px;
-            max-width: 400px;
-            width: 100%;
-            overflow: hidden;
-            animation: iosModalAppear 0.3s ease;
-        }
-
-        @keyframes iosModalAppear {
-            from { opacity: 0; transform: scale(0.9); }
-            to { opacity: 1; transform: scale(1); }
-        }
-
-        .ios-modal-header {
-            padding: 24px;
-            border-bottom: 1px solid rgba(255,255,255,0.1);
-        }
-
-        .ios-modal-title {
-            font-size: 22px;
-            font-weight: 700;
-            color: var(--ios-white);
-            margin-bottom: 4px;
-        }
-
-        .ios-modal-subtitle {
-            font-size: 14px;
-            color: var(--ios-gray);
-        }
-
-        .ios-modal-body {
-            padding: 24px;
-        }
-
-        .ios-modal-footer {
-            padding: 20px 24px;
-            border-top: 1px solid rgba(255,255,255,0.1);
-            display: flex;
-            gap: 12px;
-        }
-
-        /* iOS Buttons */
-        .ios-btn {
-            padding: 14px 24px;
-            border-radius: 12px;
-            border: none;
-            font-size: 16px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-        }
-
-        .ios-btn-primary {
-            background: var(--ios-red);
-            color: var(--ios-white);
-            flex: 1;
-        }
-
-        .ios-btn-primary:hover {
-            background: #FF1C1C;
-            transform: scale(1.02);
-        }
-
-        .ios-btn-secondary {
-            background: rgba(255,255,255,0.1);
-            color: var(--ios-white);
-            flex: 1;
-        }
-
-        .ios-btn-secondary:hover {
-            background: rgba(255,255,255,0.2);
-        }
-
-        .ios-btn-outline {
-            background: transparent;
-            border: 1px solid var(--ios-red);
-            color: var(--ios-red);
-        }
-
-        /* iOS Inputs */
-        .ios-input {
-            width: 100%;
-            padding: 16px;
-            background: rgba(255,255,255,0.08);
-            border: 1px solid rgba(255,255,255,0.1);
-            border-radius: 12px;
-            color: var(--ios-white);
-            font-size: 16px;
-            margin-bottom: 16px;
-            outline: none;
-            transition: all 0.3s ease;
-        }
-
-        .ios-input:focus {
-            border-color: var(--ios-red);
-            background: rgba(255,59,48,0.1);
-        }
-
-        /* Premium Token Modal */
-        .token-options {
-            display: flex;
-            gap: 12px;
-            margin-top: 16px;
-        }
-
-        .token-option {
-            flex: 1;
-            padding: 16px;
-            background: rgba(255,255,255,0.05);
-            border-radius: 12px;
-            text-align: center;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            border: 1px solid transparent;
-        }
-
-        .token-option:hover {
-            background: rgba(255,59,48,0.1);
-            border-color: var(--ios-red);
-        }
-
-        .token-option i {
-            font-size: 24px;
-            margin-bottom: 8px;
-            color: var(--ios-red);
-        }
-
-        .token-option-label {
-            font-size: 14px;
-            font-weight: 600;
-            color: var(--ios-white);
-        }
-
-        .token-option-desc {
-            font-size: 12px;
-            color: var(--ios-gray);
-            margin-top: 4px;
-        }
-
-        /* Ad Modal */
-        .ad-modal-content {
-            max-width: 320px;
-            border: 2px solid var(--ios-red);
-        }
-
-        .ad-header {
-            background: rgba(255,59,48,0.1);
-            padding: 16px;
-            text-align: center;
-            border-bottom: 1px solid rgba(255,59,48,0.3);
-        }
-
-        .ad-sponsor {
-            font-size: 14px;
-            color: var(--ios-red);
-            font-weight: 600;
-            margin-bottom: 4px;
-        }
-
-        .ad-title {
-            font-size: 18px;
-            font-weight: 700;
-            color: var(--ios-white);
-        }
-
-        .ad-media {
-            height: 180px;
-            background: #000;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            overflow: hidden;
-        }
-
-        .ad-media img,
-        .ad-media video {
-            max-width: 100%;
-            max-height: 100%;
-        }
-
-        .ad-social-grid {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 8px;
-            padding: 16px;
-            background: rgba(0,0,0,0.5);
-        }
-
-        .ad-social-icon {
-            background: rgba(255,255,255,0.1);
-            border-radius: 8px;
-            padding: 10px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            color: var(--ios-white);
-            text-decoration: none;
-            font-size: 12px;
-            transition: all 0.3s ease;
-        }
-
-        .ad-social-icon:hover {
-            background: var(--ios-red);
-            transform: scale(1.05);
-        }
-
-        .ad-social-icon i {
-            font-size: 18px;
-            margin-bottom: 4px;
-        }
-
-        .ad-controls {
-            padding: 16px;
-            background: rgba(0,0,0,0.8);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
+        .ad-main { flex: 1; position: relative; display: flex; align-items: center; justify-content: center; background: #050505; }
+        .ad-media { width: 100%; max-height: 80vh; object-fit: contain; }
         .ad-timer {
-            font-size: 24px;
-            font-weight: 700;
-            color: var(--ios-red);
+            position: absolute; top: 40px; right: 20px;
+            background: rgba(0,0,0,0.8); width: 45px; height: 45px;
+            border-radius: 50%; border: 2px solid var(--red);
+            display: flex; align-items: center; justify-content: center; font-weight: bold;
+        }
+        .social-hub {
+            display: grid; grid-template-columns: repeat(6, 1fr); gap: 15px;
+            padding: 20px; background: var(--glass); backdrop-filter: var(--blur); border-top: 1px solid rgba(255,255,255,0.1);
+        }
+        .social-hub i { font-size: 22px; color: var(--white); text-align: center; }
+
+        /* --- Layout & Glassmorphism --- */
+        header {
+            padding: 50px 20px 15px; background: rgba(0,0,0,0.7);
+            backdrop-filter: var(--blur); position: sticky; top: 0; z-index: 800;
+            display: flex; justify-content: space-between; align-items: center;
+        }
+        .ios-title { font-size: 26px; font-weight: 800; letter-spacing: -1px; }
+        .red-text { color: var(--red); }
+
+        .page { display: none; padding: 15px; padding-bottom: 100px; }
+        .active-page { display: block; animation: ios-slide 0.4s ease-out; }
+        @keyframes ios-slide { from { opacity: 0; transform: scale(0.95); } to { opacity: 1; transform: scale(1); } }
+
+        .card {
+            background: var(--glass); backdrop-filter: var(--blur);
+            border-radius: 18px; padding: 12px; margin-bottom: 15px;
+            border: 1px solid rgba(255,255,255,0.05); position: relative;
+            overflow: hidden;
+        }
+        .rounded-btn {
+            background: var(--red); color: white; border: none;
+            padding: 14px; border-radius: 30px; font-weight: 600; width: 100%;
+            cursor: pointer; transition: 0.3s;
         }
 
-        .ad-skip-btn {
-            background: var(--ios-red);
-            color: var(--ios-white);
-            border: none;
-            padding: 10px 20px;
-            border-radius: 20px;
-            font-weight: 600;
-            cursor: pointer;
-            display: none;
+        /* --- Navigation --- */
+        .bottom-nav {
+            position: fixed; bottom: 0; width: 100%; height: 85px;
+            background: rgba(0,0,0,0.85); backdrop-filter: var(--blur);
+            display: flex; justify-content: space-around; padding-top: 10px;
+            border-top: 0.5px solid rgba(255,255,255,0.1); z-index: 1000;
+        }
+        .nav-item { text-align: center; color: #666; text-decoration: none; font-size: 10px; font-weight: 500; }
+        .nav-item i { font-size: 22px; display: block; margin-bottom: 5px; }
+        .nav-item.active { color: var(--red); }
+
+        /* --- Chat Navigation Logic --- */
+        .chat-header {
+            position: fixed; top: 0; left: 0; width: 100%; padding: 50px 20px 10px;
+            background: var(--black); display: none; justify-content: flex-end; z-index: 1100;
         }
 
-        .ad-skip-btn.active {
-            display: block;
+        /* --- Simulizi Reader Mode --- */
+        .book-container { padding: 10px; line-height: 1.8; font-size: 17px; }
+        .drop-image {
+            width: 100%; height: 280px; object-fit: cover;
+            border-radius: 20px; filter: brightness(0.5); margin-bottom: -100px;
+        }
+        .book-content {
+            position: relative; background: var(--black); padding: 25px;
+            border-top-left-radius: 30px; border-top-right-radius: 30px;
         }
 
-        /* WhatsApp Float - iOS Style */
-        .whatsapp-float {
-            position: fixed;
-            bottom: 100px;
-            right: 20px;
-            width: 56px;
-            height: 56px;
-            background: #25D366;
-            border-radius: 28px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: var(--ios-white);
-            font-size: 24px;
-            cursor: pointer;
-            z-index: 999;
-            box-shadow: 0 4px 20px rgba(37, 211, 102, 0.4);
-            transition: all 0.3s ease;
-            opacity: 1;
+        /* --- Security & HWID --- */
+        #lock-screen {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: var(--black); z-index: 12000; display: none;
+            justify-content: center; align-items: center; text-align: center;
         }
 
-        .whatsapp-float.hidden {
-            opacity: 0;
-            transform: translateY(20px);
-            pointer-events: none;
-        }
-
-        /* Chat Styles */
-        .chat-container {
-            height: calc(100vh - 200px);
-            display: flex;
-            flex-direction: column;
-        }
-
-        .chat-messages {
-            flex: 1;
-            overflow-y: auto;
-            padding: 20px;
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
-        }
-
-        .chat-message {
-            max-width: 80%;
-            padding: 12px 16px;
-            border-radius: 18px;
-            position: relative;
-            animation: messageAppear 0.3s ease;
-        }
-
-        @keyframes messageAppear {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        .message-sent {
-            background: var(--ios-red);
-            color: var(--ios-white);
-            align-self: flex-end;
-            border-bottom-right-radius: 4px;
-        }
-
-        .message-received {
-            background: rgba(255,255,255,0.1);
-            color: var(--ios-white);
-            align-self: flex-start;
-            border-bottom-left-radius: 4px;
-        }
-
-        .message-sender {
-            font-size: 12px;
-            color: rgba(255,255,255,0.7);
-            margin-bottom: 4px;
-        }
-
-        .message-time {
-            font-size: 11px;
-            color: rgba(255,255,255,0.5);
-            text-align: right;
-            margin-top: 4px;
-        }
-
-        .chat-input-container {
-            padding: 16px;
-            background: rgba(0,0,0,0.5);
-            border-top: 1px solid rgba(255,255,255,0.1);
-            display: flex;
-            gap: 12px;
-        }
-
-        .chat-input {
-            flex: 1;
-            padding: 12px 16px;
-            background: rgba(255,255,255,0.08);
-            border: 1px solid rgba(255,255,255,0.1);
-            border-radius: 20px;
-            color: var(--ios-white);
-            font-size: 16px;
-            outline: none;
-        }
-
-        .chat-send-btn {
-            width: 48px;
-            height: 48px;
-            background: var(--ios-red);
-            border-radius: 24px;
-            border: none;
-            color: var(--ios-white);
-            font-size: 18px;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        /* Story Reader */
-        .story-reader {
-            padding: 24px;
-        }
-
-        .story-header {
-            margin-bottom: 24px;
-        }
-
-        .story-title {
-            font-size: 28px;
-            font-weight: 700;
-            color: var(--ios-white);
-            margin-bottom: 8px;
-        }
-
-        .story-meta {
-            display: flex;
-            gap: 16px;
-            color: var(--ios-gray);
-            font-size: 14px;
-        }
-
-        .story-content {
-            line-height: 1.8;
-            font-size: 16px;
-            color: rgba(255,255,255,0.9);
-            margin-bottom: 32px;
-        }
-
-        .story-navigation {
-            display: flex;
-            justify-content: space-between;
-            margin-top: 32px;
-        }
-
-        /* Toast Notifications */
-        #iosToast {
-            position: fixed;
-            top: 100px;
-            left: 50%;
-            transform: translateX(-50%) translateY(-20px);
-            background: rgba(0,0,0,0.9);
-            backdrop-filter: blur(20px);
-            border: 1px solid rgba(255,255,255,0.1);
-            border-radius: 14px;
-            padding: 16px 24px;
-            color: var(--ios-white);
-            font-weight: 500;
-            z-index: 10001;
-            opacity: 0;
-            transition: all 0.3s ease;
-            max-width: 90%;
-            text-align: center;
-        }
-
-        #iosToast.show {
-            opacity: 1;
-            transform: translateX(-50%) translateY(0);
-        }
-
-        /* Loading States */
-        .ios-loading {
-            text-align: center;
-            padding: 40px;
-            color: var(--ios-gray);
-        }
-
-        .ios-loading i {
-            font-size: 32px;
-            margin-bottom: 16px;
-            color: var(--ios-red);
-        }
-
-        /* Age Gate */
-        .age-gate-content {
-            max-width: 320px;
-            text-align: center;
-        }
-
-        .age-warning-icon {
-            font-size: 48px;
-            color: var(--ios-red);
-            margin-bottom: 16px;
-        }
-
-        /* Search Bar */
-        .ios-search-bar {
-            padding: 16px 20px;
-            background: rgba(255,255,255,0.08);
-            border-radius: 12px;
-            margin-bottom: 20px;
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
-
-        .ios-search-input {
-            flex: 1;
-            background: transparent;
-            border: none;
-            color: var(--ios-white);
-            font-size: 16px;
-            outline: none;
-        }
-
-        .ios-search-input::placeholder {
-            color: var(--ios-gray);
-        }
-
-        /* Public Chat Indicator */
-        .public-chat-indicator {
-            position: absolute;
-            top: -8px;
-            right: -8px;
-            background: var(--ios-red);
-            color: var(--ios-white);
-            width: 20px;
-            height: 20px;
-            border-radius: 10px;
-            font-size: 11px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: 600;
-        }
+        .hidden { display: none !important; }
     </style>
 </head>
 <body>
 
-    <!-- iOS Splash Screen -->
-    <div id="loader">
-        <div class="ios-spinner-logo">STANY TV</div>
-        <div class="ios-spinner"></div>
-        <div style="margin-top: 20px; color: var(--ios-gray); font-size: 14px;">Loading iOS 26 Experience...</div>
+    <!-- Splash Screen -->
+    <div id="splash-screen">
+        <div class="logo-box"></div>
+        <h1 style="margin-top: 25px; font-weight: 700; letter-spacing: 1px;">STANY <span class="red-text">MIN TV</span></h1>
+        <p style="font-size: 12px; color: #555; margin-top: 10px;">VERSION 26.0 HIGH-END</p>
     </div>
 
-    <!-- Toast Notification -->
-    <div id="iosToast"></div>
-
-    <!-- WhatsApp Float Button -->
-    <div class="whatsapp-float" id="whatsappFloat">
-        <i class="fab fa-whatsapp"></i>
-    </div>
-
-    <!-- Main App -->
-    <div id="iosApp" style="display: none;">
-
-        <!-- iOS Header -->
-        <div class="ios-header">
-            <div class="ios-header-title" id="pageTitle">Live TV</div>
-            <div class="ios-header-actions">
-                <div class="ios-header-icon" onclick="iosSearch()">
-                    <i class="fas fa-search"></i>
-                </div>
-                <div class="ios-header-icon" onclick="iosRefresh()">
-                    <i class="fas fa-sync-alt"></i>
-                </div>
-                <div class="ios-header-icon" onclick="showNotifications()">
-                    <i class="fas fa-bell"></i>
-                </div>
-            </div>
-        </div>
-
-        <!-- Search Bar (Hidden by default) -->
-        <div id="iosSearchBar" class="ios-search-bar" style="display: none; margin: 20px;">
-            <i class="fas fa-search" style="color: var(--ios-gray);"></i>
-            <input type="text" id="searchInput" class="ios-search-input" placeholder="Search channels, movies, stories..." onkeyup="iosSearchContent()">
-            <i class="fas fa-times" onclick="iosHideSearch()" style="color: var(--ios-gray); cursor: pointer;"></i>
-        </div>
-
-        <!-- HOME PAGE -->
-        <div id="homePage" class="ios-page active">
-            <!-- Carousel -->
-            <div class="ios-carousel" id="iosCarousel">
-                <div class="ios-loading">
-                    <i class="fas fa-tv"></i>
-                    <div>Loading featured content...</div>
-                </div>
-            </div>
-
-            <!-- Live Channels -->
-            <h3 style="font-size: 22px; font-weight: 700; margin: 0 0 16px 0; color: var(--ios-white);">Live Channels</h3>
-            <div class="ios-grid" id="channelsGrid">
-                <div class="ios-loading">
-                    <i class="fas fa-satellite-dish"></i>
-                    <div>Loading channels...</div>
-                </div>
-            </div>
-
-            <!-- Movies -->
-            <h3 style="font-size: 22px; font-weight: 700; margin: 32px 0 16px 0; color: var(--ios-white);">Movies</h3>
-            <div class="ios-grid" id="moviesGrid">
-                <div class="ios-loading">
-                    <i class="fas fa-film"></i>
-                    <div>Loading movies...</div>
-                </div>
-            </div>
-        </div>
-
-        <!-- MOVIES PAGE -->
-        <div id="moviesPage" class="ios-page">
-            <div class="ios-grid" id="allMoviesGrid">
-                <div class="ios-loading">
-                    <i class="fas fa-film"></i>
-                    <div>Loading all movies...</div>
-                </div>
-            </div>
-        </div>
-
-        <!-- ADULT PAGE -->
-        <div id="adultPage" class="ios-page">
-            <div class="ios-grid" id="adultContentGrid">
-                <div class="ios-loading">
-                    <i class="fas fa-user-secret"></i>
-                    <div>Loading adult content...</div>
-                </div>
-            </div>
-        </div>
-
-        <!-- PUBLIC CHAT PAGE -->
-        <div id="chatPage" class="ios-page">
-            <div class="chat-container">
-                <div class="chat-messages" id="publicChatMessages">
-                    <div class="chat-message message-received">
-                        <div class="message-sender">Stany Bot</div>
-                        Welcome to Public Chat! Be respectful to others.
-                        <div class="message-time">Just now</div>
-                    </div>
-                </div>
-                <div class="chat-input-container">
-                    <input type="text" id="publicChatInput" class="chat-input" placeholder="Type a message..." onkeypress="if(event.key==='Enter') sendPublicChat()">
-                    <button class="chat-send-btn" onclick="sendPublicChat()">
-                        <i class="fas fa-paper-plane"></i>
-                    </button>
-                </div>
-            </div>
-        </div>
-
-        <!-- MORE PAGE -->
-        <div id="morePage" class="ios-page">
-            <div style="padding: 20px;">
-                <!-- User Profile Card -->
-                <div class="ios-card" style="padding: 20px; margin-bottom: 20px;">
-                    <div style="display: flex; align-items: center; gap: 16px; margin-bottom: 20px;">
-                        <div style="width: 60px; height: 60px; background: var(--ios-red); border-radius: 30px; display: flex; align-items: center; justify-content: center; color: white; font-size: 24px;">
-                            <i class="fas fa-user"></i>
-                        </div>
-                        <div>
-                            <div id="userName" style="font-size: 20px; font-weight: 700; color: var(--ios-white);">Guest User</div>
-                            <div id="userStatus" style="font-size: 14px; color: var(--ios-gray);">Free User</div>
-                        </div>
-                    </div>
-                    <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px;">
-                        <div style="text-align: center;">
-                            <div style="font-size: 18px; font-weight: 700; color: var(--ios-white);" id="favoritesCount">0</div>
-                            <div style="font-size: 12px; color: var(--ios-gray);">Favorites</div>
-                        </div>
-                        <div style="text-align: center;">
-                            <div style="font-size: 18px; font-weight: 700; color: var(--ios-white);" id="watchTime">0h</div>
-                            <div style="font-size: 12px; color: var(--ios-gray);">Watched</div>
-                        </div>
-                        <div style="text-align: center;">
-                            <div style="font-size: 18px; font-weight: 700; color: var(--ios-white);" id="freeTime">0h</div>
-                            <div style="font-size: 12px; color: var(--ios-gray);">Free Left</div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- More Options Grid -->
-                <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-bottom: 32px;">
-                    <div class="ios-card" style="padding: 20px; text-align: center; cursor: pointer;" onclick="nav('stories')">
-                        <i class="fas fa-book-open" style="font-size: 24px; color: var(--ios-red); margin-bottom: 12px;"></i>
-                        <div style="font-size: 14px; font-weight: 600; color: var(--ios-white);">Stories</div>
-                    </div>
-                    <div class="ios-card" style="padding: 20px; text-align: center; cursor: pointer;" onclick="nav('tech')">
-                        <i class="fas fa-laptop-code" style="font-size: 24px; color: var(--ios-red); margin-bottom: 12px;"></i>
-                        <div style="font-size: 14px; font-weight: 600; color: var(--ios-white);">Tech News</div>
-                    </div>
-                    <div class="ios-card" style="padding: 20px; text-align: center; cursor: pointer;" onclick="nav('tips')">
-                        <i class="fas fa-futbol" style="font-size: 24px; color: var(--ios-red); margin-bottom: 12px;"></i>
-                        <div style="font-size: 14px; font-weight: 600; color: var(--ios-white);">Betting Tips</div>
-                    </div>
-                    <div class="ios-card" style="padding: 20px; text-align: center; cursor: pointer;" onclick="nav('downloads')">
-                        <i class="fas fa-download" style="font-size: 24px; color: var(--ios-red); margin-bottom: 12px;"></i>
-                        <div style="font-size: 14px; font-weight: 600; color: var(--ios-white);">Downloads</div>
-                    </div>
-                    <div class="ios-card" style="padding: 20px; text-align: center; cursor: pointer;" onclick="nav('settings')">
-                        <i class="fas fa-cog" style="font-size: 24px; color: var(--ios-red); margin-bottom: 12px;"></i>
-                        <div style="font-size: 14px; font-weight: 600; color: var(--ios-white);">Settings</div>
-                    </div>
-                    <div class="ios-card" style="padding: 20px; text-align: center; cursor: pointer;" onclick="iosLogout()">
-                        <i class="fas fa-sign-out-alt" style="font-size: 24px; color: var(--ios-red); margin-bottom: 12px;"></i>
-                        <div style="font-size: 14px; font-weight: 600; color: var(--ios-white);">Logout</div>
-                    </div>
-                </div>
-
-                <!-- Premium Upgrade -->
-                <div class="ios-card" style="padding: 24px; margin-bottom: 20px; background: linear-gradient(135deg, rgba(255,59,48,0.2), rgba(255,59,48,0.1)); border: 1px solid rgba(255,59,48,0.3);">
-                    <div style="font-size: 18px; font-weight: 700; color: var(--ios-white); margin-bottom: 12px;">
-                        <i class="fas fa-crown" style="color: #FFD700; margin-right: 8px;"></i>
-                        Upgrade to Premium
-                    </div>
-                    <div style="font-size: 14px; color: rgba(255,255,255,0.8); margin-bottom: 20px;">
-                        Enjoy ad-free experience, premium content, and more features
-                    </div>
-                    <button class="ios-btn ios-btn-primary" onclick="showTokenModal()">
-                        <i class="fas fa-key"></i>
-                        Enter Premium Token
-                    </button>
-                </div>
-            </div>
-        </div>
-
-        <!-- STORIES PAGE -->
-        <div id="storiesPage" class="ios-page">
-            <div class="ios-grid" id="storiesGrid">
-                <div class="ios-loading">
-                    <i class="fas fa-book-open"></i>
-                    <div>Loading stories...</div>
-                </div>
-            </div>
-        </div>
-
-        <!-- TECH NEWS PAGE -->
-        <div id="techPage" class="ios-page">
-            <div id="techContent">
-                <div class="ios-loading">
-                    <i class="fas fa-laptop-code"></i>
-                    <div>Loading tech news...</div>
-                </div>
-            </div>
-        </div>
-
-        <!-- BETTING TIPS PAGE -->
-        <div id="tipsPage" class="ios-page">
-            <div id="tipsContent">
-                <div class="ios-loading">
-                    <i class="fas fa-futbol"></i>
-                    <div>Loading betting tips...</div>
-                </div>
-            </div>
-        </div>
-
-        <!-- DOWNLOADS PAGE -->
-        <div id="downloadsPage" class="ios-page">
-            <div id="downloadsContent">
-                <div class="ios-loading">
-                    <i class="fas fa-download"></i>
-                    <div>Loading downloads...</div>
-                </div>
-            </div>
-        </div>
-
-        <!-- SETTINGS PAGE -->
-        <div id="settingsPage" class="ios-page">
-            <div style="padding: 20px;">
-                <div class="ios-card" style="padding: 20px; margin-bottom: 16px;">
-                    <div style="font-size: 18px; font-weight: 700; color: var(--ios-white); margin-bottom: 20px;">App Settings</div>
-                    
-                    <div style="margin-bottom: 16px;">
-                        <div style="font-size: 14px; color: var(--ios-gray); margin-bottom: 8px;">Video Quality</div>
-                        <div style="display: flex; gap: 8px;">
-                            <button class="ios-btn ios-btn-secondary" style="flex: 1;" onclick="setVideoQuality('low')">Low</button>
-                            <button class="ios-btn ios-btn-primary" style="flex: 1;" onclick="setVideoQuality('medium')">Medium</button>
-                            <button class="ios-btn ios-btn-secondary" style="flex: 1;" onclick="setVideoQuality('high')">High</button>
-                        </div>
-                    </div>
-
-                    <div style="margin-bottom: 16px;">
-                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
-                            <div style="font-size: 14px; color: var(--ios-white);">Auto-play videos</div>
-                            <label class="ios-switch">
-                                <input type="checkbox" id="autoPlayToggle" checked>
-                                <span class="ios-slider"></span>
-                            </label>
-                        </div>
-                    </div>
-
-                    <div style="margin-bottom: 16px;">
-                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
-                            <div style="font-size: 14px; color: var(--ios-white);">Notifications</div>
-                            <label class="ios-switch">
-                                <input type="checkbox" id="notificationsToggle" checked>
-                                <span class="ios-slider"></span>
-                            </label>
-                        </div>
-                    </div>
-
-                    <div style="margin-bottom: 16px;">
-                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
-                            <div style="font-size: 14px; color: var(--ios-white);">Data Saver</div>
-                            <label class="ios-switch">
-                                <input type="checkbox" id="dataSaverToggle">
-                                <span class="ios-slider"></span>
-                            </label>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="ios-card" style="padding: 20px; margin-bottom: 16px;">
-                    <div style="font-size: 18px; font-weight: 700; color: var(--ios-white); margin-bottom: 20px;">About</div>
-                    <div style="font-size: 14px; color: var(--ios-gray); line-height: 1.6;">
-                        STANY TV v2.0<br>
-                        iOS 26 Experience<br>
-                        © 2024 Stany Media Group<br>
-                        All rights reserved
-                    </div>
-                </div>
-
-                <button class="ios-btn ios-btn-outline" style="width: 100%;" onclick="clearCache()">
-                    <i class="fas fa-trash"></i>
-                    Clear Cache & Data
-                </button>
-            </div>
-        </div>
-
-        <!-- STORY READER -->
-        <div id="storyReader" class="ios-page">
-            <div class="story-reader" id="storyReaderContent">
-                <div class="ios-loading">
-                    <i class="fas fa-book"></i>
-                    <div>Loading story...</div>
-                </div>
-            </div>
-        </div>
-
-        <!-- iOS Bottom Navigation -->
-        <div class="ios-tab-bar">
-            <a class="ios-tab-item active" onclick="nav('home', this)">
-                <i class="fas fa-tv"></i>
-                <span>Live</span>
-            </a>
-            <a class="ios-tab-item" onclick="nav('movies', this)">
-                <i class="fas fa-film"></i>
-                <span>Movies</span>
-            </a>
-            <a class="ios-tab-item" onclick="showAgeGate()">
-                <i class="fas fa-user-secret"></i>
-                <span>18+</span>
-            </a>
-            <a class="ios-tab-item" onclick="nav('chat', this)" style="position: relative;">
-                <i class="fas fa-comments"></i>
-                <span>Chat</span>
-                <span id="chatBadge" class="public-chat-indicator" style="display: none;">0</span>
-            </a>
-            <a class="ios-tab-item" onclick="nav('more', this)">
-                <i class="fas fa-ellipsis-h"></i>
-                <span>More</span>
-            </a>
-        </div>
-
-    </div>
-
-    <!-- MODALS -->
-
-    <!-- Premium Token Modal -->
-    <div id="tokenModal" class="ios-modal">
-        <div class="ios-modal-content">
-            <div class="ios-modal-header">
-                <div class="ios-modal-title">
-                    <i class="fas fa-crown" style="color: #FFD700; margin-right: 8px;"></i>
-                    Premium Access
-                </div>
-                <div class="ios-modal-subtitle">Enter your premium token or watch ads for free access</div>
-            </div>
-            <div class="ios-modal-body">
-                <input type="text" id="tokenInput" class="ios-input" placeholder="Enter premium token">
-                
-                <div class="token-options">
-                    <div class="token-option" onclick="redeemToken()">
-                        <i class="fas fa-key"></i>
-                        <div class="token-option-label">Redeem Token</div>
-                        <div class="token-option-desc">Enter premium code</div>
-                    </div>
-                    <div class="token-option" onclick="showAdModal()">
-                        <i class="fas fa-ad"></i>
-                        <div class="token-option-label">Watch Ad</div>
-                        <div class="token-option-desc">Get 30 mins free</div>
-                    </div>
-                </div>
-            </div>
-            <div class="ios-modal-footer">
-                <button class="ios-btn ios-btn-secondary" onclick="closeTokenModal()">Cancel</button>
-                <button class="ios-btn ios-btn-primary" onclick="redeemToken()">Activate</button>
-            </div>
+    <!-- HWID Lock Screen -->
+    <div id="lock-screen">
+        <div class="card" style="width: 85%;">
+            <i class="fa-solid fa-mobile-screen-button" style="font-size: 50px; color: var(--red);"></i>
+            <h2 style="margin: 20px 0;">DEVICE LOCKED</h2>
+            <p style="color: #888;">Akaunti hii imefungwa kwenye kifaa kingine. Wasiliana na Admin kuhamisha kifaa.</p>
+            <p id="my-hwid" style="font-size: 10px; color: var(--red); margin: 15px 0;"></p>
         </div>
     </div>
 
-    <!-- Ad Modal -->
-    <div id="adModal" class="ios-modal">
-        <div class="ios-modal-content ad-modal-content">
-            <div class="ad-header">
-                <div class="ad-sponsor">SPONSORED ADVERTISEMENT</div>
-                <div class="ad-title" id="adTitle">Watch for Free Access</div>
-            </div>
-            
-            <div class="ad-media" id="adMedia">
-                <div style="color: var(--ios-gray);">Loading ad...</div>
-            </div>
-            
-            <div class="ad-social-grid" id="adSocialGrid">
-                <!-- Social icons will be added here -->
-            </div>
-            
-            <div class="ad-controls">
-                <div class="ad-timer" id="adTimer">30</div>
-                <button class="ad-skip-btn" id="skipAdBtn" onclick="skipAd()">
-                    <i class="fas fa-forward"></i> Skip
-                </button>
-            </div>
+    <!-- Ad Engine Overlay -->
+    <div id="ad-overlay">
+        <div class="marquee-ad"><span>• SPONSOR AD • GUSA ICON ZA CHINI KUTEMBELEA PLATFORMS ZA SPONSOR •</span></div>
+        <div class="ad-main">
+            <div class="ad-timer" id="ad-timer">15</div>
+            <img id="ad-img" class="ad-media">
+            <video id="ad-vid" class="ad-media hidden" playsinline></video>
         </div>
+        <div class="social-hub" id="social-hub"></div>
+        <div class="marquee-ad"><span>• OFFICIAL PARTNER • BELEIVE IN QUALITY • STANY MIN TV •</span></div>
+        <button id="skip-ad-btn" class="rounded-btn hidden" style="margin: 10px; width: calc(100% - 20px);">SKIP AD (PREMIUM ONLY)</button>
     </div>
 
-    <!-- Age Gate Modal -->
-    <div id="ageGateModal" class="ios-modal">
-        <div class="ios-modal-content age-gate-content">
-            <div class="ios-modal-header">
-                <div class="age-warning-icon">
-                    <i class="fas fa-exclamation-triangle"></i>
-                </div>
-                <div class="ios-modal-title">Adult Content</div>
-                <div class="ios-modal-subtitle">You must be 18+ to access this section</div>
-            </div>
-            <div class="ios-modal-body">
-                <div style="font-size: 14px; color: var(--ios-gray); margin-bottom: 24px;">
-                    This section contains content suitable for adults only. Please confirm your age.
-                </div>
-            </div>
-            <div class="ios-modal-footer">
-                <button class="ios-btn ios-btn-secondary" onclick="closeAgeGate()">I'm under 18</button>
-                <button class="ios-btn ios-btn-primary" onclick="confirmAge()">I'm 18 or older</button>
-            </div>
+    <!-- App Header -->
+    <header id="main-header">
+        <div class="ios-title">STANY <span class="red-text">MIN</span></div>
+        <div style="display: flex; gap: 15px;">
+            <i class="fa-solid fa-magnifying-glass"></i>
+            <i class="fa-solid fa-circle-user" onclick="showPage('profile')"></i>
         </div>
+    </header>
+
+    <!-- Chat Page Back Arrow -->
+    <div class="chat-header" id="chat-header">
+        <i class="fa-solid fa-arrow-left" style="font-size: 24px; color: var(--red);" onclick="exitChat()"></i>
     </div>
 
-    <!-- Content Detail Modal -->
-    <div id="detailModal" class="ios-modal">
-        <div class="ios-modal-content">
-            <div class="ios-modal-header">
-                <div class="ios-modal-title" id="detailTitle"></div>
-                <div class="ios-modal-subtitle" id="detailSubtitle"></div>
+    <!-- Content Sections -->
+    <main>
+        <!-- Home / Live -->
+        <section id="live" class="page active-page">
+            <div id="slideshow" class="card" style="height: 180px; padding: 0;">
+                <!-- Slideshow via JS -->
             </div>
-            <div class="ios-modal-body">
-                <div style="text-align: center; margin-bottom: 20px;">
-                    <img id="detailImage" src="" style="width: 100%; border-radius: 16px; margin-bottom: 16px;">
-                    <div style="font-size: 14px; color: var(--ios-white); line-height: 1.6;" id="detailDescription"></div>
-                </div>
+            <h3 style="margin: 15px 0;">Live <span class="red-text">Channels</span></h3>
+            <div id="live-list" style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px;"></div>
+        </section>
+
+        <!-- Movies -->
+        <section id="movies" class="page">
+            <h3 style="margin-bottom: 15px;">Latest <span class="red-text">Movies</span></h3>
+            <div id="movie-list" style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px;"></div>
+        </section>
+
+        <!-- Adult 18+ -->
+        <section id="adult" class="page">
+            <div id="adult-gate" class="card" style="text-align: center; padding: 40px 10px;">
+                <i class="fa-solid fa-hand" style="font-size: 40px; color: var(--red);"></i>
+                <h2 style="margin: 15px 0;">ONYO LA UMRI</h2>
+                <p>Maudhui haya ni kwa watu wenye umri wa miaka 18+ pekee.</p>
+                <button class="rounded-btn" style="margin-top: 20px;" onclick="unlockAdult()">NIMETIMIZA 18+</button>
             </div>
-            <div class="ios-modal-footer">
-                <button class="ios-btn ios-btn-secondary" onclick="closeDetailModal()">Cancel</button>
-                <button class="ios-btn ios-btn-primary" id="detailActionBtn">Watch Now</button>
+            <div id="adult-list" class="hidden"></div>
+        </section>
+
+        <!-- Chat Section -->
+        <section id="chat" class="page">
+            <div id="chat-box" style="height: 65vh; overflow-y: auto; padding: 10px; display: flex; flex-direction: column; gap: 10px;"></div>
+            <div style="display: flex; gap: 10px; padding: 10px;">
+                <input type="text" id="chat-input" placeholder="Aa..." style="flex: 1; background: var(--glass); border: none; padding: 15px; border-radius: 25px; color: white;">
+                <button onclick="sendMsg()" class="rounded-btn" style="width: 55px; border-radius: 50%;"><i class="fa-solid fa-paper-plane"></i></button>
             </div>
-        </div>
+        </section>
+
+        <!-- Simulizi Section -->
+        <section id="simulizi" class="page">
+            <div id="story-list"></div>
+        </section>
+
+        <!-- Tech Updates -->
+        <section id="tech" class="page">
+            <div id="tech-list"></div>
+        </section>
+        
+        <!-- More / Library -->
+        <section id="more" class="page">
+            <div class="card" onclick="showPage('simulizi')"><i class="fa-solid fa-book-open red-text"></i> &nbsp; Simulizi na Hadithi</div>
+            <div class="card" onclick="showPage('tech')"><i class="fa-solid fa-shield-halved red-text"></i> &nbsp; Tech & Cybersecurity</div>
+            <div class="card" onclick="showPage('downloads')"><i class="fa-solid fa-download red-text"></i> &nbsp; Downloads</div>
+            <div class="card" onclick="showPage('betting')"><i class="fa-solid fa-chart-line red-text"></i> &nbsp; Betting Tips</div>
+            <div class="card" onclick="logout()"><i class="fa-solid fa-right-from-bracket"></i> &nbsp; Logout</div>
+        </section>
+    </main>
+
+    <!-- Bottom Navigation -->
+    <div class="bottom-nav" id="bottom-nav">
+        <a href="javascript:void(0)" class="nav-item active" onclick="showPage('live')"><i class="fa-solid fa-house"></i>Live</a>
+        <a href="javascript:void(0)" class="nav-item" onclick="showPage('movies')"><i class="fa-solid fa-play"></i>Movies</a>
+        <a href="javascript:void(0)" class="nav-item" onclick="showPage('adult')"><i class="fa-solid fa-pepper-hot"></i>Adult</a>
+        <a href="javascript:void(0)" class="nav-item" onclick="showPage('chat')"><i class="fa-solid fa-comment-dots"></i>Chat</a>
+        <a href="javascript:void(0)" class="nav-item" onclick="showPage('more')"><i class="fa-solid fa-grip-vertical"></i>More</a>
     </div>
 
-    <!-- Player Modal -->
-    <div id="playerModal" class="ios-modal">
-        <div style="width: 100%; height: 100%; background: #000;">
-            <div style="position: absolute; top: 60px; left: 20px; z-index: 10001;">
-                <div class="ios-header-icon" onclick="closePlayer()">
-                    <i class="fas fa-times"></i>
-                </div>
-            </div>
-            <video id="videoPlayer" style="width: 100%; height: 100%;" controls></video>
-        </div>
-    </div>
-
-    <!-- Login Modal -->
-    <div id="loginModal" class="ios-modal" style="display: flex;">
-        <div class="ios-modal-content">
-            <div class="ios-modal-header">
-                <div class="ios-modal-title">Welcome to STANY TV</div>
-                <div class="ios-modal-subtitle">Sign in to continue</div>
-            </div>
-            <div class="ios-modal-body">
-                <input type="email" id="loginEmail" class="ios-input" placeholder="Email address">
-                <input type="password" id="loginPassword" class="ios-input" placeholder="Password">
-                
-                <div style="text-align: center; margin: 20px 0;">
-                    <div style="font-size: 12px; color: var(--ios-gray);">Don't have an account?</div>
-                    <div style="font-size: 14px; color: var(--ios-red); cursor: pointer; margin-top: 4px;" onclick="showRegister()">Create Account</div>
-                </div>
-            </div>
-            <div class="ios-modal-footer">
-                <button class="ios-btn ios-btn-primary" onclick="iosLogin()">Sign In</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- Register Modal -->
-    <div id="registerModal" class="ios-modal">
-        <div class="ios-modal-content">
-            <div class="ios-modal-header">
-                <div class="ios-modal-title">Create Account</div>
-                <div class="ios-modal-subtitle">Join STANY TV community</div>
-            </div>
-            <div class="ios-modal-body">
-                <input type="text" id="registerName" class="ios-input" placeholder="Full name">
-                <input type="email" id="registerEmail" class="ios-input" placeholder="Email address">
-                <input type="password" id="registerPassword" class="ios-input" placeholder="Create password">
-                
-                <div style="font-size: 12px; color: var(--ios-gray); margin-top: 16px;">
-                    By creating an account, you agree to our Terms of Service and Privacy Policy
-                </div>
-            </div>
-            <div class="ios-modal-footer">
-                <button class="ios-btn ios-btn-secondary" onclick="showLogin()">Back to Login</button>
-                <button class="ios-btn ios-btn-primary" onclick="iosRegister()">Create Account</button>
-            </div>
-        </div>
+    <!-- Video Player Modal -->
+    <div id="video-modal" class="hidden" style="position:fixed; top:0; left:0; width:100%; height:100%; background:#000; z-index:5000;">
+        <i class="fa-solid fa-circle-xmark" onclick="closePlayer()" style="position:absolute; top:40px; right:20px; z-index:5100; font-size: 35px; color: white;"></i>
+        <video id="main-player" class="video-js vjs-big-play-centered" style="width:100%; height:100%;"></video>
     </div>
 
     <script>
-        // Firebase Configuration
+        // --- CONFIGURATION ---
         const firebaseConfig = {
             apiKey: "AIzaSyDiexD5WK9GLhQldr6zNmC8iYWc4em5eyM",
             authDomain: "stany-min-tv.firebaseapp.com",
@@ -1336,1047 +265,228 @@
             projectId: "stany-min-tv",
             storageBucket: "stany-min-tv.firebasestorage.app",
             messagingSenderId: "16513327552",
-            appId: "1:16513327552:web:b4b2247053f83aa0b8e825",
-            measurementId: "G-JM25LJXL5C"
+            appId: "1:16513327552:web:b4b2247053f83aa0b8e825"
         };
-
-        // Initialize Firebase
         firebase.initializeApp(firebaseConfig);
-        const auth = firebase.auth();
         const db = firebase.database();
+        const auth = firebase.auth();
 
-        // Global Variables
         let currentUser = null;
-        let userIsPremium = false;
-        let freeAccessUntil = 0;
-        let allData = {
-            channels: [],
-            movies: [],
-            adult: [],
-            stories: [],
-            tech: [],
-            tips: [],
-            downloads: []
-        };
-        let pendingContent = null;
-        let adTimerInterval = null;
-        let adTimeLeft = 30;
-        let isAdPlaying = false;
-        let unreadChatMessages = 0;
-        let lastScrollPosition = 0;
-        let whatsappFloatVisible = true;
+        let isPremium = false;
+        let myHWID = localStorage.getItem('hwid') || 'STANY-' + Math.random().toString(36).substr(2, 9);
+        localStorage.setItem('hwid', myHWID);
 
-        // Initialize App
-        document.addEventListener('DOMContentLoaded', function() {
-            // Check if user is logged in
+        // --- CORE INITIALIZATION ---
+        window.onload = () => {
             setTimeout(() => {
-                auth.onAuthStateChanged(user => {
-                    if (user) {
-                        // User is signed in
-                        currentUser = user;
-                        loadUserData();
-                        initApp();
-                    } else {
-                        // No user is signed in
-                        document.getElementById('loader').style.display = 'none';
-                        document.getElementById('loginModal').style.display = 'flex';
-                    }
-                });
-            }, 2000);
+                document.getElementById('splash-screen').style.display = 'none';
+                checkAuth();
+            }, 3000);
+            renderSocialHub();
+        };
 
-            // Initialize WhatsApp float behavior
-            initWhatsAppFloat();
-        });
-
-        // Initialize App
-        function initApp() {
-            document.getElementById('loader').style.display = 'none';
-            document.getElementById('iosApp').style.display = 'block';
-            document.getElementById('loginModal').style.display = 'none';
-            
-            // Update user info
-            updateUserInfo();
-            
-            // Load data
-            loadAllData();
-            
-            // Start carousel
-            startCarousel();
-            
-            // Load public chat
-            loadPublicChat();
-            
-            // Show toast
-            showToast('Welcome to STANY TV iOS 26!', 'success');
-        }
-
-        // Load All Data
-        function loadAllData() {
-            // Load channels
-            db.ref('channels').on('value', snapshot => {
-                allData.channels = [];
-                snapshot.forEach(child => {
-                    allData.channels.push({id: child.key, ...child.val()});
-                });
-                displayChannels();
-            });
-
-            // Load movies
-            db.ref('movies').on('value', snapshot => {
-                allData.movies = [];
-                snapshot.forEach(child => {
-                    allData.movies.push({id: child.key, ...child.val()});
-                });
-                displayMovies();
-            });
-
-            // Load adult content
-            db.ref('adultContent').on('value', snapshot => {
-                allData.adult = [];
-                snapshot.forEach(child => {
-                    allData.adult.push({id: child.key, ...child.val()});
-                });
-            });
-
-            // Load stories
-            db.ref('stories').on('value', snapshot => {
-                allData.stories = [];
-                snapshot.forEach(child => {
-                    allData.stories.push({id: child.key, ...child.val()});
-                });
-                displayStories();
-            });
-
-            // Load tech news
-            db.ref('techUpdates').on('value', snapshot => {
-                allData.tech = [];
-                snapshot.forEach(child => {
-                    allData.tech.push({id: child.key, ...child.val()});
-                });
-                displayTechNews();
-            });
-
-            // Load betting tips
-            db.ref('bettingTips').on('value', snapshot => {
-                allData.tips = [];
-                snapshot.forEach(child => {
-                    allData.tips.push({id: child.key, ...child.val()});
-                });
-                displayBettingTips();
-            });
-
-            // Load downloads
-            db.ref('downloads').on('value', snapshot => {
-                allData.downloads = [];
-                snapshot.forEach(child => {
-                    allData.downloads.push({id: child.key, ...child.val()});
-                });
-                displayDownloads();
-            });
-        }
-
-        // Display Channels
-        function displayChannels() {
-            const grid = document.getElementById('channelsGrid');
-            let html = '';
-            
-            allData.channels.slice(0, 8).forEach(channel => {
-                html += `
-                    <div class="ios-grid-item" onclick="showContentDetail('channel', '${channel.id}')">
-                        <img src="${channel.posterURL || 'https://via.placeholder.com/300x400?text=Channel'}" 
-                             onerror="this.src='https://via.placeholder.com/300x400?text=Channel'">
-                        <div class="ios-grid-item-label">${channel.name || 'Channel'}</div>
-                    </div>
-                `;
-            });
-            
-            grid.innerHTML = html;
-        }
-
-        // Display Movies
-        function displayMovies() {
-            const grid = document.getElementById('moviesGrid');
-            let html = '';
-            
-            allData.movies.slice(0, 8).forEach(movie => {
-                html += `
-                    <div class="ios-grid-item" onclick="showContentDetail('movie', '${movie.id}')">
-                        <img src="${movie.posterURL || 'https://via.placeholder.com/300x400?text=Movie'}" 
-                             onerror="this.src='https://via.placeholder.com/300x400?text=Movie'">
-                        <div class="ios-grid-item-label">${movie.title || 'Movie'}</div>
-                    </div>
-                `;
-            });
-            
-            grid.innerHTML = html;
-        }
-
-        // Display Stories
-        function displayStories() {
-            const grid = document.getElementById('storiesGrid');
-            if (!grid) return;
-            
-            let html = '';
-            allData.stories.forEach(story => {
-                html += `
-                    <div class="ios-grid-item" onclick="readStory('${story.id}')">
-                        <img src="${story.coverImage || 'https://via.placeholder.com/300x400?text=Story'}" 
-                             onerror="this.src='https://via.placeholder.com/300x400?text=Story'">
-                        <div class="ios-grid-item-label">${story.title || 'Story'}</div>
-                    </div>
-                `;
-            });
-            
-            grid.innerHTML = html;
-        }
-
-        // Display Tech News
-        function displayTechNews() {
-            const container = document.getElementById('techContent');
-            if (!container) return;
-            
-            let html = '';
-            allData.tech.forEach(news => {
-                html += `
-                    <div class="ios-card" style="padding: 20px; margin-bottom: 16px;">
-                        <div style="font-size: 18px; font-weight: 700; color: var(--ios-white); margin-bottom: 8px;">
-                            ${news.title || 'Tech Update'}
-                        </div>
-                        <div style="font-size: 12px; color: var(--ios-red); margin-bottom: 12px;">
-                            <i class="far fa-calendar"></i> ${news.date || 'Recent'}
-                        </div>
-                        <div style="font-size: 14px; color: rgba(255,255,255,0.8); line-height: 1.6;">
-                            ${news.content || 'No content available.'}
-                        </div>
-                    </div>
-                `;
-            });
-            
-            container.innerHTML = html;
-        }
-
-        // Display Betting Tips
-        function displayBettingTips() {
-            const container = document.getElementById('tipsContent');
-            if (!container) return;
-            
-            let html = '';
-            allData.tips.forEach(tip => {
-                html += `
-                    <div class="ios-card" style="padding: 20px; margin-bottom: 16px;">
-                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
-                            <div style="font-size: 16px; font-weight: 700; color: var(--ios-white);">
-                                ${tip.match || 'Match'}
-                            </div>
-                            <div style="padding: 4px 12px; background: ${tip.status === 'won' ? '#4CAF50' : tip.status === 'lost' ? '#FF3B30' : '#FF9500'}; border-radius: 12px; font-size: 12px; color: white;">
-                                ${tip.status || 'pending'}
-                            </div>
-                        </div>
-                        <div style="font-size: 14px; color: rgba(255,255,255,0.8); margin-bottom: 8px;">
-                            Prediction: ${tip.prediction || 'N/A'}
-                        </div>
-                        <div style="font-size: 14px; color: rgba(255,255,255,0.8);">
-                            Odds: ${tip.odds || 'N/A'} • Stake: ${tip.stake || 'N/A'}
-                        </div>
-                    </div>
-                `;
-            });
-            
-            container.innerHTML = html;
-        }
-
-        // Display Downloads
-        function displayDownloads() {
-            const container = document.getElementById('downloadsContent');
-            if (!container) return;
-            
-            let html = '';
-            allData.downloads.forEach(download => {
-                html += `
-                    <div class="ios-card" style="padding: 20px; margin-bottom: 16px; display: flex; align-items: center; gap: 16px;">
-                        <div style="width: 60px; height: 60px; background: var(--ios-red); border-radius: 12px; display: flex; align-items: center; justify-content: center; color: white; font-size: 24px;">
-                            <i class="fas fa-download"></i>
-                        </div>
-                        <div style="flex: 1;">
-                            <div style="font-size: 16px; font-weight: 700; color: var(--ios-white); margin-bottom: 4px;">
-                                ${download.title || 'Download'}
-                            </div>
-                            <div style="font-size: 12px; color: var(--ios-gray);">
-                                ${download.size || 'Unknown size'} • ${download.type || 'File'}
-                            </div>
-                        </div>
-                        <button class="ios-btn ios-btn-primary" onclick="window.open('${download.url || '#'}', '_blank')">
-                            Download
-                        </button>
-                    </div>
-                `;
-            });
-            
-            container.innerHTML = html;
-        }
-
-        // Navigation
-        function nav(page, element) {
-            // Update page title
-            const titles = {
-                'home': 'Live TV',
-                'movies': 'Movies',
-                'chat': 'Public Chat',
-                'more': 'More',
-                'stories': 'Stories',
-                'tech': 'Tech News',
-                'tips': 'Betting Tips',
-                'downloads': 'Downloads',
-                'settings': 'Settings'
-            };
-            
-            document.getElementById('pageTitle').textContent = titles[page] || page;
-            
-            // Hide all pages
-            document.querySelectorAll('.ios-page').forEach(p => p.classList.remove('active'));
-            
-            // Show selected page
-            document.getElementById(page + 'Page').classList.add('active');
-            
-            // Update active tab
-            if (element) {
-                document.querySelectorAll('.ios-tab-item').forEach(tab => tab.classList.remove('active'));
-                element.classList.add('active');
-            }
-            
-            // Hide search bar
-            document.getElementById('iosSearchBar').style.display = 'none';
-            
-            // Show/hide WhatsApp float
-            if (page === 'chat') {
-                hideWhatsAppFloat();
-            } else {
-                showWhatsAppFloat();
-            }
-            
-            // Clear chat badge if entering chat
-            if (page === 'chat') {
-                clearChatBadge();
-            }
-        }
-
-        // Show Content Detail
-        function showContentDetail(type, id) {
-            let content;
-            if (type === 'channel') {
-                content = allData.channels.find(c => c.id === id);
-            } else if (type === 'movie') {
-                content = allData.movies.find(m => m.id === id);
-            }
-            
-            if (!content) return;
-            
-            pendingContent = {type, id, ...content};
-            
-            document.getElementById('detailTitle').textContent = content.name || content.title;
-            document.getElementById('detailSubtitle').textContent = type === 'channel' ? 'Live Channel' : 'Movie';
-            document.getElementById('detailDescription').textContent = content.description || 'No description available.';
-            document.getElementById('detailImage').src = content.posterURL || 'https://via.placeholder.com/300x400?text=No+Image';
-            
-            document.getElementById('detailActionBtn').onclick = function() {
-                closeDetailModal();
-                checkAccess();
-            };
-            
-            document.getElementById('detailModal').style.display = 'flex';
-        }
-
-        // Check Access
-        function checkAccess() {
-            if (userIsPremium || Date.now() < freeAccessUntil) {
-                // User has access
-                playContent();
-            } else {
-                // User needs to get access
-                showTokenModal();
-            }
-        }
-
-        // Show Token Modal
-        function showTokenModal() {
-            document.getElementById('tokenModal').style.display = 'flex';
-        }
-
-        function closeTokenModal() {
-            document.getElementById('tokenModal').style.display = 'none';
-        }
-
-        // Show Ad Modal
-        function showAdModal() {
-            closeTokenModal();
-            
-            // Get random ad
-            db.ref('ads').once('value').then(snapshot => {
-                const ads = [];
-                snapshot.forEach(child => {
-                    ads.push({id: child.key, ...child.val()});
-                });
-                
-                if (ads.length > 0) {
-                    const ad = ads[Math.floor(Math.random() * ads.length)];
-                    displayAd(ad);
+        function checkAuth() {
+            auth.onAuthStateChanged(user => {
+                if (user) {
+                    currentUser = user;
+                    verifyDevice(user.uid);
                 } else {
-                    // Default ad
-                    displayAd({
-                        title: 'Watch Ad for Free Access',
-                        mediaUrl: 'https://via.placeholder.com/300x200?text=Advertisement',
-                        socialLinks: {
-                            'WhatsApp': 'https://wa.me/',
-                            'Telegram': 'https://t.me/',
-                            'YouTube': 'https://youtube.com/'
-                        }
-                    });
+                    // Redirect to login or show login UI
+                    console.log("No user logged in");
                 }
             });
         }
 
-        // Display Ad
-        function displayAd(ad) {
-            document.getElementById('adTitle').textContent = ad.title || 'Advertisement';
-            
-            const media = document.getElementById('adMedia');
-            if (ad.mediaUrl.includes('.mp4') || ad.mediaUrl.includes('.webm')) {
-                media.innerHTML = `<video autoplay muted style="width: 100%; height: 100%; object-fit: cover;"><source src="${ad.mediaUrl}" type="video/mp4"></video>`;
-            } else {
-                media.innerHTML = `<img src="${ad.mediaUrl}" style="width: 100%; height: 100%; object-fit: cover;">`;
-            }
-            
-            // Display social icons
-            const socialGrid = document.getElementById('adSocialGrid');
-            let socialHtml = '';
-            if (ad.socialLinks) {
-                Object.entries(ad.socialLinks).forEach(([platform, url]) => {
-                    const icons = {
-                        'WhatsApp': 'fab fa-whatsapp',
-                        'Telegram': 'fab fa-telegram',
-                        'YouTube': 'fab fa-youtube',
-                        'Facebook': 'fab fa-facebook',
-                        'Instagram': 'fab fa-instagram',
-                        'Twitter': 'fab fa-twitter',
-                        'TikTok': 'fab fa-tiktok'
-                    };
-                    
-                    if (icons[platform]) {
-                        socialHtml += `
-                            <a href="${url}" target="_blank" class="ad-social-icon">
-                                <i class="${icons[platform]}"></i>
-                                <span>${platform}</span>
-                            </a>
-                        `;
+        function verifyDevice(uid) {
+            db.ref('users/' + uid).on('value', snap => {
+                const data = snap.val();
+                if (data) {
+                    // HWID Check
+                    if (data.hwid && data.hwid !== myHWID) {
+                        document.getElementById('lock-screen').style.display = 'flex';
+                        document.getElementById('my-hwid').innerText = "DEVICE ID: " + myHWID;
+                        return;
+                    } else if (!data.hwid) {
+                        db.ref('users/' + uid).update({ hwid: myHWID });
                     }
-                });
-            }
-            socialGrid.innerHTML = socialHtml;
-            
-            // Show skip button for premium users
-            if (userIsPremium) {
-                document.getElementById('skipAdBtn').classList.add('active');
-            }
-            
-            // Start timer
-            adTimeLeft = 30;
-            document.getElementById('adTimer').textContent = adTimeLeft;
-            
-            if (adTimerInterval) clearInterval(adTimerInterval);
-            adTimerInterval = setInterval(() => {
-                adTimeLeft--;
-                document.getElementById('adTimer').textContent = adTimeLeft;
-                
-                if (adTimeLeft <= 0) {
-                    adFinished();
-                }
-            }, 1000);
-            
-            document.getElementById('adModal').style.display = 'flex';
-            isAdPlaying = true;
-        }
-
-        // Skip Ad
-        function skipAd() {
-            if (userIsPremium) {
-                adFinished();
-            }
-        }
-
-        // Ad Finished
-        function adFinished() {
-            clearInterval(adTimerInterval);
-            document.getElementById('adModal').style.display = 'none';
-            isAdPlaying = false;
-            
-            // Grant 30 minutes free access
-            freeAccessUntil = Date.now() + (30 * 60 * 1000);
-            localStorage.setItem('freeAccessUntil', freeAccessUntil);
-            updateUserInfo();
-            
-            // Play the content
-            playContent();
-            
-            showToast('30 minutes free access granted!', 'success');
-        }
-
-        // Play Content
-        function playContent() {
-            if (!pendingContent) return;
-            
-            const content = pendingContent;
-            const videoUrl = content.streamUrl || content.videoUrl;
-            
-            if (videoUrl) {
-                document.getElementById('playerModal').style.display = 'flex';
-                const player = document.getElementById('videoPlayer');
-                player.src = videoUrl;
-                player.play();
-                
-                // Track watch time
-                trackWatchTime();
-            } else {
-                showToast('No video URL available', 'error');
-            }
-        }
-
-        // Close Player
-        function closePlayer() {
-            document.getElementById('playerModal').style.display = 'none';
-            const player = document.getElementById('videoPlayer');
-            player.pause();
-            player.src = '';
-        }
-
-        // Redeem Token
-        function redeemToken() {
-            const token = document.getElementById('tokenInput').value.trim();
-            
-            if (!token) {
-                showToast('Please enter a token', 'warning');
-                return;
-            }
-            
-            db.ref('tokens/' + token).once('value').then(snapshot => {
-                const tokenData = snapshot.val();
-                
-                if (!tokenData) {
-                    showToast('Invalid token', 'error');
-                    return;
-                }
-                
-                if (tokenData.used) {
-                    showToast('Token already used', 'error');
-                    return;
-                }
-                
-                // Calculate duration
-                let duration = 0;
-                switch (tokenData.durationUnit) {
-                    case 'seconds': duration = tokenData.duration * 1000; break;
-                    case 'minutes': duration = tokenData.duration * 60 * 1000; break;
-                    case 'hours': duration = tokenData.duration * 60 * 60 * 1000; break;
-                    case 'days': duration = tokenData.duration * 24 * 60 * 60 * 1000; break;
-                    default: duration = tokenData.duration * 24 * 60 * 60 * 1000;
-                }
-                
-                // Mark token as used
-                db.ref('tokens/' + token).update({
-                    used: true,
-                    usedBy: currentUser.uid,
-                    usedAt: Date.now()
-                });
-                
-                // Update user premium status
-                userIsPremium = true;
-                freeAccessUntil = Date.now() + duration;
-                localStorage.setItem('userIsPremium', 'true');
-                localStorage.setItem('freeAccessUntil', freeAccessUntil);
-                
-                // Update user record
-                db.ref('users/' + currentUser.uid).update({
-                    premiumExpiry: freeAccessUntil,
-                    lastTokenUsed: token
-                });
-                
-                closeTokenModal();
-                updateUserInfo();
-                showToast('Premium token activated!', 'success');
-                
-                // Play the content
-                playContent();
-                
-            }).catch(error => {
-                showToast('Error redeeming token', 'error');
-            });
-        }
-
-        // Update User Info
-        function updateUserInfo() {
-            if (!currentUser) return;
-            
-            document.getElementById('userName').textContent = currentUser.displayName || 'User';
-            
-            // Check premium status
-            const savedPremium = localStorage.getItem('userIsPremium') === 'true';
-            const savedFreeUntil = parseInt(localStorage.getItem('freeAccessUntil')) || 0;
-            
-            userIsPremium = savedPremium;
-            freeAccessUntil = savedFreeUntil;
-            
-            if (userIsPremium) {
-                document.getElementById('userStatus').textContent = 'Premium User';
-                document.getElementById('userStatus').style.color = '#FFD700';
-            } else if (Date.now() < freeAccessUntil) {
-                const minutesLeft = Math.ceil((freeAccessUntil - Date.now()) / (60 * 1000));
-                document.getElementById('userStatus').textContent = `${minutesLeft} mins free access`;
-                document.getElementById('userStatus').style.color = '#4CAF50';
-            } else {
-                document.getElementById('userStatus').textContent = 'Free User';
-                document.getElementById('userStatus').style.color = 'var(--ios-gray)';
-            }
-            
-            // Update free time display
-            if (Date.now() < freeAccessUntil) {
-                const hoursLeft = Math.ceil((freeAccessUntil - Date.now()) / (60 * 60 * 1000));
-                document.getElementById('freeTime').textContent = `${hoursLeft}h`;
-            } else {
-                document.getElementById('freeTime').textContent = '0h';
-            }
-        }
-
-        // Load User Data
-        function loadUserData() {
-            db.ref('users/' + currentUser.uid).on('value', snapshot => {
-                const userData = snapshot.val();
-                if (userData) {
-                    // Update favorites count
-                    const favorites = userData.favorites || {};
-                    document.getElementById('favoritesCount').textContent = Object.keys(favorites).length;
                     
-                    // Update watch time
-                    const watchTime = userData.totalWatchTime || 0;
-                    document.getElementById('watchTime').textContent = `${Math.round(watchTime / 60)}h`;
+                    isPremium = data.isPremium || false;
+                    loadMainData();
                 }
             });
         }
 
-        // Track Watch Time
-        function trackWatchTime() {
-            const player = document.getElementById('videoPlayer');
-            let watchStart = Date.now();
-            
-            player.addEventListener('pause', () => {
-                const watchDuration = Date.now() - watchStart;
-                db.ref('users/' + currentUser.uid + '/totalWatchTime').transaction(total => {
-                    return (total || 0) + Math.round(watchDuration / 1000);
-                });
-            });
-            
-            player.addEventListener('ended', () => {
-                const watchDuration = Date.now() - watchStart;
-                db.ref('users/' + currentUser.uid + '/totalWatchTime').transaction(total => {
-                    return (total || 0) + Math.round(watchDuration / 1000);
-                });
-            });
-        }
+        // --- AD ENGINE ---
+        function triggerAd(callback) {
+            if (isPremium) return callback();
 
-        // Public Chat
-        function loadPublicChat() {
-            db.ref('publicChat').limitToLast(50).on('child_added', snapshot => {
-                const message = snapshot.val();
-                displayChatMessage(message);
-                
-                // Update badge if not on chat page
-                if (!document.getElementById('chatPage').classList.contains('active')) {
-                    updateChatBadge();
+            const overlay = document.getElementById('ad-overlay');
+            const timerEl = document.getElementById('ad-timer');
+            overlay.style.display = 'flex';
+
+            // Get random ad from DB
+            db.ref('ads').once('value', snap => {
+                const ads = snap.val();
+                if (ads) {
+                    const keys = Object.keys(ads);
+                    const randomAd = ads[keys[Math.floor(Math.random() * keys.length)]];
+                    
+                    document.getElementById('ad-img').src = randomAd.image;
+                    let timeLeft = randomAd.duration || 15;
+                    
+                    const timer = setInterval(() => {
+                        timeLeft--;
+                        timerEl.innerText = timeLeft;
+                        if (timeLeft <= 0) {
+                            clearInterval(timer);
+                            overlay.style.display = 'none';
+                            callback();
+                        }
+                    }, 1000);
+                } else {
+                    overlay.style.display = 'none';
+                    callback();
                 }
             });
         }
 
-        function displayChatMessage(message) {
-            const container = document.getElementById('publicChatMessages');
-            const isCurrentUser = message.userId === currentUser.uid;
+        function renderSocialHub() {
+            const icons = ['whatsapp', 'telegram', 'youtube', 'facebook', 'instagram', 'twitter', 'tiktok', 'discord', 'snapchat', 'threads', 'linkedin', 'github', 'reddit', 'twitch', 'pinterest', 'skype', 'slack', 'vimeo', 'medium', 'quora'];
+            const hub = document.getElementById('social-hub');
+            icons.forEach(icon => {
+                hub.innerHTML += `<i class="fa-brands fa-${icon}" onclick="sponsorLink('${icon}')"></i>`;
+            });
+        }
+
+        // --- PAGE NAVIGATION ---
+        function showPage(id) {
+            document.querySelectorAll('.page').forEach(p => p.classList.remove('active-page'));
+            document.getElementById(id).classList.add('active-page');
             
-            const messageDiv = document.createElement('div');
-            messageDiv.className = `chat-message ${isCurrentUser ? 'message-sent' : 'message-received'}`;
-            
-            if (!isCurrentUser) {
-                messageDiv.innerHTML = `
-                    <div class="message-sender">${message.userName || 'User'}</div>
-                    ${message.text}
-                    <div class="message-time">${formatTime(message.timestamp)}</div>
-                `;
+            // Bottom Nav Active
+            document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+            const activeNav = Array.from(document.querySelectorAll('.nav-item')).find(n => n.innerText.toLowerCase() === id.toLowerCase());
+            if (activeNav) activeNav.classList.add('active');
+
+            // Chat Special UI
+            if (id === 'chat') {
+                document.getElementById('bottom-nav').style.display = 'none';
+                document.getElementById('main-header').style.display = 'none';
+                document.getElementById('chat-header').style.display = 'flex';
             } else {
-                messageDiv.innerHTML = `
-                    ${message.text}
-                    <div class="message-time">${formatTime(message.timestamp)}</div>
-                `;
+                document.getElementById('bottom-nav').style.display = 'flex';
+                document.getElementById('main-header').style.display = 'flex';
+                document.getElementById('chat-header').style.display = 'none';
             }
-            
-            container.appendChild(messageDiv);
-            container.scrollTop = container.scrollHeight;
         }
 
-        function sendPublicChat() {
-            const input = document.getElementById('publicChatInput');
-            const text = input.value.trim();
-            
-            if (!text) return;
-            
-            const message = {
-                text: text,
-                userId: currentUser.uid,
-                userName: currentUser.displayName || 'User',
-                timestamp: Date.now()
-            };
-            
-            db.ref('publicChat').push(message);
-            input.value = '';
+        function exitChat() { showPage('live'); }
+
+        // --- PLAYER & DRM LOGIC ---
+        let vPlayer = videojs('main-player');
+
+        function playContent(url, licUrl = null, token = null) {
+            triggerAd(() => {
+                document.getElementById('video-modal').classList.remove('hidden');
+                
+                let playerConfig = {
+                    src: url,
+                    type: url.includes('.mpd') ? 'application/dash+xml' : 'application/x-mpegURL'
+                };
+
+                if (licUrl) {
+                    playerConfig.keySystems = {
+                        'com.widevine.alpha': {
+                            url: licUrl,
+                            headers: { 'Authorization': token ? 'Bearer ' + token : '' }
+                        }
+                    };
+                }
+
+                vPlayer.src(playerConfig);
+                vPlayer.play();
+            });
         }
 
-        function updateChatBadge() {
-            unreadChatMessages++;
-            const badge = document.getElementById('chatBadge');
-            badge.textContent = unreadChatMessages;
-            badge.style.display = 'block';
+        function closePlayer() {
+            vPlayer.pause();
+            document.getElementById('video-modal').classList.add('hidden');
         }
 
-        function clearChatBadge() {
-            unreadChatMessages = 0;
-            const badge = document.getElementById('chatBadge');
-            badge.style.display = 'none';
+        // --- DATA LOADERS (Original Logic) ---
+        function loadMainData() {
+            // Live Channels
+            db.ref('channels').on('value', snap => {
+                const list = document.getElementById('live-list');
+                list.innerHTML = '';
+                snap.forEach(child => {
+                    const ch = child.val();
+                    list.innerHTML += `
+                        <div class="card" style="padding:5px; text-align:center;" onclick="playContent('${ch.url}', '${ch.licUrl}', '${ch.token}')">
+                            <img src="${ch.logo}" style="width:100%; border-radius:12px;">
+                            <p style="font-size:11px; margin-top:5px; font-weight:600;">${ch.name}</p>
+                        </div>
+                    `;
+                });
+            });
+
+            // Simulizi Reader System
+            db.ref('simulizi').on('value', snap => {
+                const list = document.getElementById('story-list');
+                list.innerHTML = '';
+                snap.forEach(child => {
+                    const s = child.val();
+                    list.innerHTML += `
+                        <div class="card" onclick="readStory('${child.key}')">
+                            <div style="display:flex; gap:15px;">
+                                <img src="${s.cover}" style="width:80px; height:110px; border-radius:10px; object-fit:cover;">
+                                <div>
+                                    <h4 class="red-text">${s.title}</h4>
+                                    <p style="font-size:12px; color:#888;">${s.author}</p>
+                                    <p style="font-size:11px; margin-top:10px; opacity:0.7;">${s.genre} • ${s.parts} Parts</p>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                });
+            });
         }
 
-        // Story Reader
-        function readStory(storyId) {
-            const story = allData.stories.find(s => s.id === storyId);
-            if (!story) return;
-            
-            const reader = document.getElementById('storyReaderContent');
-            reader.innerHTML = `
-                <div class="story-header">
-                    <div class="story-title">${story.title || 'Story'}</div>
-                    <div class="story-meta">
-                        <span><i class="fas fa-user"></i> ${story.author || 'Unknown Author'}</span>
-                        <span><i class="fas fa-tag"></i> ${story.genre || 'General'}</span>
-                    </div>
-                </div>
-                <div class="story-content">
-                    ${story.content || 'No content available.'}
-                </div>
-                <div class="story-navigation">
-                    <button class="ios-btn ios-btn-secondary" onclick="nav('stories')">
-                        <i class="fas fa-arrow-left"></i> Back to Stories
-                    </button>
+        function unlockAdult() {
+            const pass = prompt("Enter 18+ Pin:");
+            if (pass === "1234") { // Inaweza kuwa dynamic kutoka DB
+                document.getElementById('adult-gate').classList.add('hidden');
+                document.getElementById('adult-list').classList.remove('hidden');
+            } else { alert("Wrong Pin!"); }
+        }
+
+        function sendMsg() {
+            const input = document.getElementById('chat-input');
+            if (input.value) {
+                db.ref('chats').push({
+                    uid: currentUser.uid,
+                    name: currentUser.displayName || "User",
+                    msg: input.value,
+                    time: Date.now()
+                });
+                input.value = '';
+            }
+        }
+
+        // Chat Listener
+        db.ref('chats').limitToLast(20).on('child_added', snap => {
+            const c = snap.val();
+            const box = document.getElementById('chat-box');
+            const isMe = c.uid === currentUser.uid;
+            box.innerHTML += `
+                <div style="align-self: ${isMe ? 'flex-end' : 'flex-start'}; background: ${isMe ? 'var(--red)' : 'var(--glass)'}; padding: 10px 15px; border-radius: 20px; max-width: 80%;">
+                    <p style="font-size:10px; font-weight:bold; opacity:0.6;">${c.name}</p>
+                    <p>${c.msg}</p>
                 </div>
             `;
-            
-            nav('storyReader');
-        }
+            box.scrollTop = box.scrollHeight;
+        });
 
-        // Age Gate
-        function showAgeGate() {
-            document.getElementById('ageGateModal').style.display = 'flex';
-        }
-
-        function closeAgeGate() {
-            document.getElementById('ageGateModal').style.display = 'none';
-        }
-
-        function confirmAge() {
-            closeAgeGate();
-            nav('adult');
-            
-            // Display adult content
-            const grid = document.getElementById('adultContentGrid');
-            let html = '';
-            allData.adult.forEach(content => {
-                html += `
-                    <div class="ios-grid-item" onclick="showContentDetail('adult', '${content.id}')">
-                        <img src="${content.posterURL || 'https://via.placeholder.com/300x400?text=Adult+Content'}" 
-                             onerror="this.src='https://via.placeholder.com/300x400?text=Adult+Content'">
-                        <div class="ios-grid-item-label">${content.title || 'Adult Content'}</div>
-                    </div>
-                `;
-            });
-            grid.innerHTML = html;
-        }
-
-        // WhatsApp Float Behavior
-        function initWhatsAppFloat() {
-            let scrollTimeout;
-            
-            window.addEventListener('scroll', () => {
-                if (whatsappFloatVisible) {
-                    hideWhatsAppFloat();
-                }
-                
-                clearTimeout(scrollTimeout);
-                scrollTimeout = setTimeout(() => {
-                    if (!document.getElementById('chatPage').classList.contains('active')) {
-                        showWhatsAppFloat();
-                    }
-                }, 2000);
-            });
-            
-            // Hide in chat page
-            document.getElementById('publicChatInput').addEventListener('focus', () => {
-                hideWhatsAppFloat();
-            });
-            
-            document.getElementById('publicChatInput').addEventListener('blur', () => {
-                if (!document.getElementById('chatPage').classList.contains('active')) {
-                    showWhatsAppFloat();
-                }
-            });
-        }
-
-        function hideWhatsAppFloat() {
-            whatsappFloatVisible = false;
-            document.getElementById('whatsappFloat').classList.add('hidden');
-        }
-
-        function showWhatsAppFloat() {
-            whatsappFloatVisible = true;
-            document.getElementById('whatsappFloat').classList.remove('hidden');
-        }
-
-        // Carousel
-        function startCarousel() {
-            let currentSlide = 0;
-            const slides = [
-                {
-                    image: 'https://images.unsplash.com/photo-1574375927938-d5a98e8ffe85?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80',
-                    title: 'Live Sports',
-                    description: 'Watch live sports in HD'
-                },
-                {
-                    image: 'https://images.unsplash.com/photo-1536440136628-849c177e76a1?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80',
-                    title: 'Latest Movies',
-                    description: 'New releases every week'
-                },
-                {
-                    image: 'https://images.unsplash.com/photo-1535016120720-40c646be5580?ixlib=rb-4.0.3&auto=format&fit=crop&w-800&q=80',
-                    title: 'Premium Content',
-                    description: 'Exclusive shows and series'
-                }
-            ];
-            
-            const carousel = document.getElementById('iosCarousel');
-            carousel.innerHTML = '';
-            
-            slides.forEach((slide, index) => {
-                const slideDiv = document.createElement('div');
-                slideDiv.className = `ios-carousel-slide ${index === 0 ? 'active' : ''}`;
-                slideDiv.innerHTML = `
-                    <img src="${slide.image}" alt="${slide.title}">
-                    <div class="ios-carousel-caption">
-                        <div class="ios-carousel-title">${slide.title}</div>
-                        <div class="ios-carousel-description">${slide.description}</div>
-                    </div>
-                `;
-                carousel.appendChild(slideDiv);
-            });
-            
-            setInterval(() => {
-                const allSlides = carousel.querySelectorAll('.ios-carousel-slide');
-                allSlides.forEach(slide => slide.classList.remove('active'));
-                
-                currentSlide = (currentSlide + 1) % slides.length;
-                allSlides[currentSlide].classList.add('active');
-            }, 5000);
-        }
-
-        // Login/Register
-        function iosLogin() {
-            const email = document.getElementById('loginEmail').value;
-            const password = document.getElementById('loginPassword').value;
-            
-            if (!email || !password) {
-                showToast('Please fill all fields', 'warning');
-                return;
-            }
-            
-            auth.signInWithEmailAndPassword(email, password)
-                .then(() => {
-                    showToast('Login successful', 'success');
-                })
-                .catch(error => {
-                    showToast(error.message, 'error');
-                });
-        }
-
-        function iosRegister() {
-            const name = document.getElementById('registerName').value;
-            const email = document.getElementById('registerEmail').value;
-            const password = document.getElementById('registerPassword').value;
-            
-            if (!name || !email || !password) {
-                showToast('Please fill all fields', 'warning');
-                return;
-            }
-            
-            auth.createUserWithEmailAndPassword(email, password)
-                .then(userCredential => {
-                    // Update display name
-                    return userCredential.user.updateProfile({
-                        displayName: name
-                    });
-                })
-                .then(() => {
-                    // Create user record
-                    return db.ref('users/' + auth.currentUser.uid).set({
-                        name: name,
-                        email: email,
-                        createdAt: Date.now(),
-                        totalWatchTime: 0
-                    });
-                })
-                .then(() => {
-                    showToast('Account created successfully', 'success');
-                    showLogin();
-                })
-                .catch(error => {
-                    showToast(error.message, 'error');
-                });
-        }
-
-        function showRegister() {
-            document.getElementById('loginModal').style.display = 'none';
-            document.getElementById('registerModal').style.display = 'flex';
-        }
-
-        function showLogin() {
-            document.getElementById('registerModal').style.display = 'none';
-            document.getElementById('loginModal').style.display = 'flex';
-        }
-
-        // Logout
-        function iosLogout() {
-            auth.signOut()
-                .then(() => {
-                    window.location.reload();
-                });
-        }
-
-        // Search
-        function iosSearch() {
-            document.getElementById('iosSearchBar').style.display = 'flex';
-        }
-
-        function iosHideSearch() {
-            document.getElementById('iosSearchBar').style.display = 'none';
-        }
-
-        function iosSearchContent() {
-            const query = document.getElementById('searchInput').value.toLowerCase();
-            const currentPage = document.querySelector('.ios-page.active').id;
-            
-            // Implement search based on current page
-            showToast(`Searching for: ${query}`, 'info');
-        }
-
-        // Refresh
-        function iosRefresh() {
-            showToast('Refreshing content...', 'info');
-            loadAllData();
-        }
-
-        // Notifications
-        function showNotifications() {
-            showToast('No new notifications', 'info');
-        }
-
-        // Close Detail Modal
-        function closeDetailModal() {
-            document.getElementById('detailModal').style.display = 'none';
-        }
-
-        // Toast Notification
-        function showToast(message, type = 'info') {
-            const toast = document.getElementById('iosToast');
-            toast.textContent = message;
-            toast.style.background = type === 'error' ? 'rgba(255,59,48,0.9)' : 
-                                   type === 'success' ? 'rgba(76,175,80,0.9)' : 
-                                   'rgba(0,0,0,0.9)';
-            toast.classList.add('show');
-            
-            setTimeout(() => {
-                toast.classList.remove('show');
-            }, 3000);
-        }
-
-        // Utility Functions
-        function formatTime(timestamp) {
-            const date = new Date(timestamp);
-            const now = new Date();
-            const diff = now - date;
-            
-            if (diff < 60000) return 'Just now';
-            if (diff < 3600000) return `${Math.floor(diff / 60000)}m ago`;
-            if (diff < 86400000) return `${Math.floor(diff / 3600000)}h ago`;
-            return date.toLocaleDateString();
-        }
-
-        function clearCache() {
-            localStorage.clear();
-            showToast('Cache cleared successfully', 'success');
-        }
-
-        function setVideoQuality(quality) {
-            showToast(`Video quality set to ${quality}`, 'success');
-        }
-
-        // Add iOS Switch CSS
-        const style = document.createElement('style');
-        style.textContent = `
-            .ios-switch {
-                position: relative;
-                display: inline-block;
-                width: 51px;
-                height: 31px;
-            }
-            
-            .ios-switch input {
-                opacity: 0;
-                width: 0;
-                height: 0;
-            }
-            
-            .ios-slider {
-                position: absolute;
-                cursor: pointer;
-                top: 0;
-                left: 0;
-                right: 0;
-                bottom: 0;
-                background-color: rgba(255,255,255,0.2);
-                transition: .4s;
-                border-radius: 34px;
-            }
-            
-            .ios-slider:before {
-                position: absolute;
-                content: "";
-                height: 27px;
-                width: 27px;
-                left: 2px;
-                bottom: 2px;
-                background-color: white;
-                transition: .4s;
-                border-radius: 50%;
-            }
-            
-            input:checked + .ios-slider {
-                background-color: var(--ios-red);
-            }
-            
-            input:checked + .ios-slider:before {
-                transform: translateX(20px);
-            }
-        `;
-        document.head.appendChild(style);
     </script>
 </body>
 </html>
