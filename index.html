@@ -3,9 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>STANY MIN TV - SUPREME PRO</title>
+    <title>STANY MIN TV - SUPREME MASTER PRO</title>
     
-    <!-- FONTS & ICONS -->
+    <!-- FONTS & ICONS (NO EMOJIS) -->
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&family=Orbitron:wght@700&display=swap" rel="stylesheet">
     
@@ -29,20 +29,22 @@
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Outfit', sans-serif; -webkit-tap-highlight-color: transparent; }
         body { background: var(--bg); color: var(--text); overflow: hidden; height: 100vh; width: 100vw; }
 
-        /* GLASSMORPHISM UI */
+        /* GLASS UI */
         .glass { background: var(--surface); backdrop-filter: var(--glass); -webkit-backdrop-filter: var(--glass); border: 1px solid var(--border); }
 
-        /* 1. FULL SCREEN AD OVERLAY */
+        /* 1. FULL SCREEN AD SYSTEM */
         #ad-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #000; z-index: 25000; display: none; flex-direction: column; justify-content: center; align-items: center; }
         .sliding-words { position: absolute; width: 100%; background: var(--primary); color: white; padding: 6px 0; font-weight: 800; font-size: 11px; overflow: hidden; white-space: nowrap; z-index: 10; }
         .top-words { top: 0; } .bottom-words { bottom: 0; }
         .marquee { display: inline-block; animation: marquee 15s linear infinite; }
         @keyframes marquee { from { transform: translateX(100%); } to { transform: translateX(-100%); } }
 
-        #ad-timer { position: absolute; top: 50px; right: 20px; padding: 8px 16px; border-radius: 20px; background: white; color: black; font-weight: 900; font-size: 12px; z-index: 20; }
-        #ad-close { position: absolute; top: 50px; left: 20px; font-size: 30px; display: none; cursor: pointer; color: white; z-index: 20; }
-        .ad-media-box { width: 100%; height: 100%; object-fit: cover; position: absolute; top: 0; left: 0; opacity: 0.6; }
-        .ad-content-box { z-index: 5; text-align: center; padding: 20px; }
+        #ad-timer { position: absolute; top: 40px; right: 20px; padding: 8px 16px; border-radius: 20px; background: white; color: black; font-weight: 900; font-size: 12px; z-index: 20; }
+        #ad-close { position: absolute; top: 40px; left: 20px; font-size: 30px; display: none; cursor: pointer; color: white; z-index: 20; }
+        .ad-media-box { width: 100%; height: 100%; object-fit: cover; position: absolute; top: 0; left: 0; opacity: 0.6; z-index: 1; }
+        .ad-content-box { z-index: 5; text-align: center; padding: 20px; width: 100%; }
+        .social-btn-grid { display: flex; justify-content: center; gap: 12px; flex-wrap: wrap; margin-top: 20px; }
+        .social-btn { width: 45px; height: 45px; border-radius: 12px; background: rgba(255,255,255,0.1); border: 1px solid var(--border); display: flex; align-items: center; justify-content: center; font-size: 20px; color: #fff; cursor: pointer; }
 
         /* 2. NAVIGATION (iPhone Style Rounded) */
         .tab-bar {
@@ -50,21 +52,22 @@
             width: 94%; height: 75px; display: flex; justify-content: space-around;
             align-items: center; z-index: 10000; background: rgba(10, 10, 10, 0.85);
             backdrop-filter: var(--glass); border: 1px solid var(--border); border-radius: 35px;
+            transition: 0.3s ease;
         }
-        .tab-item { display: flex; flex-direction: column; align-items: center; color: #444; font-size: 9px; font-weight: 700; cursor: pointer; position: relative; }
+        .tab-item { display: flex; flex-direction: column; align-items: center; color: #444; font-size: 8px; font-weight: 700; cursor: pointer; position: relative; }
         .tab-item.active { color: var(--primary); }
         .tab-item i { font-size: 20px; margin-bottom: 4px; }
 
-        /* 3. CHAT HEADER FIX (BACK ARROW RIGHT) */
-        #chat-back-header { display: none; padding: 20px; background: #000; align-items: center; border-bottom: 1px solid var(--border); position: sticky; top: 0; z-index: 1001; }
-        .back-arrow { position: absolute; right: 20px; font-size: 26px; color: var(--primary); cursor: pointer; }
-
-        /* 4. CONTENT AREA & SCROLLING */
+        /* 3. APP LAYOUT */
         #app-container { display: none; height: 100vh; flex-direction: column; overflow: hidden; }
         .header { padding: 20px; display: flex; justify-content: space-between; align-items: center; z-index: 1000; background: rgba(0,0,0,0.8); }
-        .logo { font-family: 'Orbitron'; font-size: 18px; letter-spacing: 2px; }
+        .logo { font-family: 'Orbitron'; font-size: 20px; letter-spacing: 2px; }
         .logo span { color: var(--primary); }
         .content-area { flex: 1; overflow-y: auto; padding: 15px 15px 120px; -webkit-overflow-scrolling: touch; }
+
+        /* 4. CHAT HEADER FIX */
+        #chat-back-header { display: none; padding: 20px; background: #000; align-items: center; border-bottom: 1px solid var(--border); position: sticky; top: 0; z-index: 11001; }
+        .back-arrow { position: absolute; right: 20px; font-size: 26px; color: var(--primary); cursor: pointer; }
 
         /* 5. CARDS & GRID */
         .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
@@ -74,50 +77,54 @@
         .fav-btn { position: absolute; top: 10px; left: 10px; color: #fff; font-size: 18px; z-index: 5; }
         .lock-badge { position: absolute; top: 10px; right: 10px; color: var(--primary); font-size: 14px; }
 
-        /* 6. SETTINGS UI (iOS Style) */
-        .settings-list { background: var(--surface); border-radius: 20px; overflow: hidden; margin-top: 15px; }
-        .settings-item { display: flex; justify-content: space-between; align-items: center; padding: 16px 20px; border-bottom: 1px solid var(--border); color: #ddd; font-weight: 500; font-size: 14px; cursor: pointer; }
-        .settings-item:last-child { border-bottom: none; }
-        .settings-item i { width: 25px; color: var(--primary); }
-        .settings-item span.val { color: #666; font-size: 12px; }
-
-        /* 7. READER PRO (SIMULIZI) */
+        /* 6. PROFESSIONAL READER (SIMULIZI) */
         #reader-view { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #000; z-index: 11000; display: none; flex-direction: column; }
-        .reader-header { position: relative; height: 220px; display: flex; flex-direction: column; justify-content: flex-end; padding: 25px; overflow: hidden; border-bottom: 1px solid var(--border); }
+        .reader-header { 
+            position: relative; height: 220px; display: flex; flex-direction: column; justify-content: flex-end; 
+            padding: 25px; overflow: hidden; border-bottom: 1px solid var(--border); 
+        }
         .reader-header-bg { position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; opacity: 0.3; filter: blur(8px); z-index: -1; transform: scale(1.1); }
         .reader-body { flex: 1; overflow-y: auto; padding: 25px; line-height: 1.9; font-size: 17px; color: #ddd; text-align: justify; }
+        .reader-nav { padding: 20px; display: flex; justify-content: space-between; border-top: 1px solid var(--border); background: #050505; }
+        .nav-btn { padding: 14px 25px; border-radius: 18px; background: var(--primary); font-weight: 700; color: #fff; border: none; font-size: 12px; }
 
-        /* 8. WHATSAPP FLOAT */
+        /* 7. WHATSAPP FLOAT */
         #wa-float { position: fixed; bottom: 100px; right: 20px; width: 55px; height: 55px; background: #25D366; border-radius: 50%; display: none; justify-content: center; align-items: center; font-size: 28px; color: white; z-index: 9000; box-shadow: 0 10px 20px rgba(0,0,0,0.5); transition: 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+        #wa-float.visible { display: flex; transform: scale(1); }
 
-        /* AUTH & SPLASH */
+        /* 8. CHAT PRO */
+        .chat-messages { height: calc(100vh - 230px); overflow-y: auto; padding: 15px; display: flex; flex-direction: column; gap: 10px; }
+        .msg { padding: 12px 16px; border-radius: 20px; max-width: 80%; font-size: 14px; position: relative; }
+        .msg-me { align-self: flex-end; background: var(--primary); color: #fff; border-bottom-right-radius: 4px; }
+        .msg-other { align-self: flex-start; background: #222; color: #fff; border-bottom-left-radius: 4px; }
+
+        /* AUTH & MISC */
         #auth-pages { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #000; z-index: 12000; display: none; flex-direction: column; justify-content: center; padding: 30px; }
-        .btn-p { width: 100%; padding: 16px; background: var(--primary); color: white; border: none; border-radius: 18px; font-weight: 800; cursor: pointer; text-transform: uppercase; }
+        .btn-p { width: 100%; padding: 16px; background: var(--primary); color: white; border: none; border-radius: 20px; font-weight: 800; cursor: pointer; text-transform: uppercase; letter-spacing: 1px; }
         .input-pro { width: 100%; padding: 16px; background: #0a0a0a; border: 1px solid #222; border-radius: 18px; color: white; margin-bottom: 12px; outline: none; }
         #player-wrap { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #000; z-index: 17000; display: none; }
         .close-player { position: absolute; top: 40px; left: 20px; z-index: 17001; font-size: 30px; color: white; }
         #splash { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #000; z-index: 20000; display: flex; flex-direction: column; justify-content: center; align-items: center; }
         .splash-logo { width: 80px; height: 80px; border: 4px solid var(--primary); border-radius: 20px; display: flex; justify-content: center; align-items: center; font-size: 40px; color: var(--primary); font-family: 'Orbitron'; animation: pulse 2s infinite; }
         @keyframes pulse { 0% { transform: scale(1); box-shadow: 0 0 0px var(--primary); } 50% { transform: scale(1.1); box-shadow: 0 0 30px var(--primary); } 100% { transform: scale(1); } }
-        
-        .page { display: none; height: 100%; }
-        .page.active { display: block; animation: slideUp 0.4s ease; }
+        .page { display: none; } .page.active { display: block; animation: slideUp 0.4s; }
         @keyframes slideUp { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
         ::-webkit-scrollbar { width: 0; }
     </style>
 </head>
 <body>
 
-    <!-- 1. FULL SCREEN AD -->
+    <!-- 1. STARTUP AD -->
     <div id="ad-overlay">
         <div class="sliding-words top-words"><div class="marquee" id="ad-text-top">...</div></div>
         <div id="ad-timer">AD: 15s</div>
         <i id="ad-close" class="fas fa-times-circle" onclick="closeAd()"></i>
         
-        <div id="ad-media-container"></div>
+        <div id="ad-media-container" style="width:100%; height:100%; position:absolute;"></div>
+        
         <div class="ad-content-box">
-            <h2 id="ad-header-label" style="color:var(--primary); font-family: 'Orbitron'; margin-bottom:15px;">SPONSOR</h2>
-            <div id="ad-social-icons" style="display: flex; justify-content: center; gap: 20px;"></div>
+            <h2 id="ad-header-label" style="color:var(--primary); font-family: 'Orbitron'; margin-bottom:15px;">OFFICIAL SPONSOR</h2>
+            <div id="ad-social-icons" class="social-btn-grid"></div>
         </div>
 
         <div class="sliding-words bottom-words"><div class="marquee" id="ad-text-bottom">...</div></div>
@@ -147,7 +154,6 @@
 
     <!-- 4. MAIN APP -->
     <div id="app-container">
-        <!-- Back header for chat -->
         <div id="chat-back-header">
             <h3 style="color:var(--primary); font-family:'Orbitron'; font-size:16px;">PRO SUPPORT</h3>
             <i class="fas fa-arrow-left back-arrow" onclick="goHome()"></i>
@@ -161,9 +167,9 @@
         <div class="content-area">
             <!-- PAGES -->
             <div id="view-home" class="page active">
-                <h4 style="color:var(--primary); font-size:11px; margin-bottom:12px; font-weight:800;">LIVE TV CHANNELS</h4>
+                <h4 style="color:var(--primary); font-size:11px; margin-bottom:12px; font-weight:800;">LIVE CHANNELS</h4>
                 <div id="chan-grid" class="grid"></div>
-                <h4 style="color:var(--primary); font-size:11px; margin:25px 0 12px; font-weight:800;">LATEST MOVIES</h4>
+                <h4 style="color:var(--primary); font-size:11px; margin:25px 0 12px; font-weight:800;">PRO MOVIES</h4>
                 <div id="mov-grid" class="grid"></div>
             </div>
 
@@ -178,6 +184,10 @@
             </div>
 
             <div id="view-chat" class="page">
+                <div style="display:flex; gap:10px; margin-bottom:15px;">
+                    <button class="btn-p" style="flex:1; padding:10px; font-size:11px;" onclick="toggleChatMode('group')">GROUP</button>
+                    <button class="btn-p" style="flex:1; padding:10px; font-size:11px; background:#111;" id="bot-btn" onclick="toggleChatMode('bot')">ADMIN SUPPORT</button>
+                </div>
                 <div id="chat-box" class="chat-messages"></div>
                 <div style="padding: 10px; display: flex; gap: 10px;">
                     <input id="chat-input" class="input-pro" style="margin:0; flex:1;" placeholder="Message...">
@@ -193,35 +203,27 @@
             <div id="view-me" class="page">
                 <div class="glass" style="padding: 25px; border-radius: 30px;">
                     <h2 id="pName">User</h2>
-                    <p id="pEmail" style="color:#666; font-size:13px;"></p>
-                    <div id="premium-status-card" style="margin-top:15px; display:none;">
-                        <span style="background:var(--primary); color:white; padding:4px 12px; border-radius:10px; font-size:11px; font-weight:800;">ACTIVE PRO</span>
-                        <p id="pExpiryCount" style="color:var(--primary); font-weight:800; margin-top:8px; font-size:14px;"></p>
-                        <p id="pExpiryDate" style="font-size:10px; color:#444; margin-top:3px;"></p>
-                    </div>
-
+                    <p id="pEmail" style="color:#666"></p>
+                    <p id="pStatus" style="color:var(--primary); font-weight:800; margin-top:10px;"></p>
+                    
                     <div id="token-box" style="margin-top:20px;">
-                        <label style="font-size:10px; color:#444; margin-bottom:8px; display:block;">ENTER PREMIUM TOKEN</label>
-                        <input type="text" id="token-input" class="input-pro" placeholder="Enter Token ID">
-                        <button class="btn-p" onclick="activateToken()">ACTIVATE</button>
+                        <hr style="border:0; border-top:1px solid #111; margin:20px 0">
+                        <input type="text" id="token-input" class="input-pro" placeholder="Enter Premium Token">
+                        <button class="btn-p" onclick="activateToken()">ACTIVATE PRO</button>
                     </div>
 
-                    <div class="settings-list">
-                        <div class="settings-item" onclick="promptPasslock()"><i class="fas fa-key"></i> Passlock Settings <span class="val" id="pass-val">Not Set</span></div>
-                        <div class="settings-item" onclick="toggleAdult()"><i class="fas fa-user-shield"></i> Adult Section <span class="val" id="adult-val">Hidden</span></div>
-                        <div class="settings-item" onclick="clearCache()"><i class="fas fa-trash-alt"></i> Clear App Cache</div>
-                        <div class="settings-item" onclick="auth.signOut()" style="color:var(--primary);"><i class="fas fa-power-off"></i> Logout Account</div>
-                    </div>
+                    <button class="btn-p" style="background:#222; margin-top:15px; font-size:12px;" onclick="promptPasslock()">SET CHANNEL PASSLOCK</button>
+                    <button class="btn-p" style="background:#111; margin-top:20px;" onclick="auth.signOut()">LOGOUT</button>
                 </div>
             </div>
         </div>
 
-        <!-- BOTTOM NAVIGATION -->
+        <!-- NAVIGATION BAR -->
         <div class="tab-bar">
             <div class="tab-item active" onclick="switchPage('home', this)"><i class="fas fa-house"></i>Home</div>
             <div class="tab-item" onclick="switchPage('favs', this)"><i class="fas fa-star"></i>Favs</div>
             <div class="tab-item" onclick="switchPage('locked', this)"><i class="fas fa-lock"></i>Locked</div>
-            <div class="tab-item" onclick="switchPage('chat', this)"><i class="fas fa-comment-dots"></i>Chat</div>
+            <div class="tab-item" onclick="switchPage('chat', this)"><i class="fas fa-comment-dots"></i>Chat<div class="chat-dot" id="chat-count">0</div></div>
             <div class="tab-item" onclick="switchPage('library', this)"><i class="fas fa-book-open"></i>Lib</div>
             <div class="tab-item" onclick="switchPage('me', this)"><i class="fas fa-user-circle"></i>Me</div>
         </div>
@@ -272,9 +274,10 @@
         firebase.initializeApp(firebaseConfig);
         const auth = firebase.auth(), db = firebase.database();
 
-        let userData = null, activePlayer = null, HWID = localStorage.getItem('stany_hwid') || 'SN-' + Math.random().toString(36).substr(2, 9).toUpperCase();
-        localStorage.setItem('stany_hwid', HWID);
+        let userData = null, activePlayer = null, chatMode = 'group';
         let currentBook = null, currentEpIdx = 0;
+        let HWID = localStorage.getItem('stany_hwid') || 'SN-' + Math.random().toString(36).substr(2, 9).toUpperCase();
+        localStorage.setItem('stany_hwid', HWID);
 
         window.onload = () => { setTimeout(() => { document.getElementById('splash').style.display='none'; checkAuth(); }, 3000); };
 
@@ -290,7 +293,6 @@
                         document.getElementById('app-container').style.display='flex';
                         document.getElementById('pName').innerText = userData.name;
                         document.getElementById('pEmail').innerText = userData.email;
-                        document.getElementById('pass-val').innerText = userData.secretPassword ? "Active" : "Not Set";
                         
                         updateStatusUI();
                         loadContent();
@@ -305,53 +307,54 @@
         function updateStatusUI() {
             const now = Date.now();
             const exp = userData.accessExpiry;
-            const card = document.getElementById('premium-status-card');
-            const box = document.getElementById('token-box');
+            const tokenBox = document.getElementById('token-box');
             
             if(userData.isPremium && exp > now) {
-                card.style.display = 'block';
-                box.style.display = 'none';
+                tokenBox.style.display = 'none';
                 const diff = exp - now;
                 const days = Math.floor(diff / 86400000);
-                const hrs = Math.floor((diff % 86400000) / 3600000);
-                document.getElementById('pExpiryCount').innerText = `${days} Days, ${hrs} Hours Left`;
-                document.getElementById('pExpiryDate').innerText = "Expires: " + new Date(exp).toLocaleDateString();
+                const hours = Math.floor((diff % 86400000) / 3600000);
+                document.getElementById('pStatus').innerText = `PRO ACTIVE: ${days}d ${hours}h LEFT`;
             } else {
-                card.style.display = 'none';
-                box.style.display = 'block';
+                tokenBox.style.display = 'block';
+                document.getElementById('pStatus').innerText = "FREE USER";
             }
         }
 
         // --- ADS POOL ---
         function showRandomAd(callback) {
-            if(userData && userData.isPremium) { if(callback) callback(); return; }
-            db.ref('ads').once('value', snap => {
-                const ads = []; snap.forEach(a => ads.push(a.val()));
-                if(ads.length === 0) { if(callback) callback(); return; }
-                const ad = ads[Math.floor(Math.random() * ads.length)];
-                
-                document.getElementById('ad-overlay').style.display='flex';
-                const container = document.getElementById('ad-media-container');
-                container.innerHTML = ad.type === 'video' ? `<video class="ad-media-box" src="${ad.url}" autoplay muted></video>` : `<img class="ad-media-box" src="${ad.url}">`;
-                
-                document.getElementById('ad-text-top').innerText = ad.marqueeTop || "STANY MIN TV SPONSOR";
-                document.getElementById('ad-text-bottom').innerText = ad.marqueeBottom || "CONTACT US FOR ADVERTISING";
+            db.ref('settings/adsConfig').once('value', sc => {
+                const config = sc.val() || { duration: 10, dailyLimit: 5, skipForPremium: true };
+                if(userData.isPremium && config.skipForPremium) { if(callback) callback(); return; }
 
-                const socialBox = document.getElementById('ad-social-icons');
-                socialBox.innerHTML = '';
-                if(ad.socialLinks) {
-                    Object.entries(ad.socialLinks).forEach(([p, url]) => {
-                        const icon = getSocialIcon(p);
-                        socialBox.innerHTML += `<div class="social-btn" onclick="window.open('${url}', '_blank')"><i class="${icon}"></i></div>`;
-                    });
-                }
+                db.ref('ads').once('value', snap => {
+                    const ads = []; snap.forEach(a => ads.push(a.val()));
+                    if(ads.length === 0) { if(callback) callback(); return; }
+                    const ad = ads[Math.floor(Math.random() * ads.length)];
+                    
+                    document.getElementById('ad-overlay').style.display='flex';
+                    const container = document.getElementById('ad-media-container');
+                    container.innerHTML = ad.type === 'video' ? `<video style="width:100%;height:100%;object-fit:cover;" src="${ad.url}" autoplay muted></video>` : `<img style="width:100%;height:100%;object-fit:cover;" src="${ad.url}">`;
+                    
+                    document.getElementById('ad-text-top').innerText = ad.marqueeTop || "STANY MIN TV SPONSOR";
+                    document.getElementById('ad-text-bottom').innerText = ad.marqueeBottom || "CONTACT US FOR ADS";
 
-                let sec = ad.duration || 10;
-                const timer = setInterval(() => {
-                    document.getElementById('ad-timer').innerText = "AD: " + sec + "s";
-                    if(sec-- <= 0) { clearInterval(timer); document.getElementById('ad-timer').style.display='none'; document.getElementById('ad-close').style.display='block'; }
-                }, 1000);
-                window.adCallback = callback;
+                    const socialBox = document.getElementById('ad-social-icons');
+                    socialBox.innerHTML = '';
+                    if(ad.socialLinks) {
+                        Object.entries(ad.socialLinks).forEach(([p, url]) => {
+                            const icon = getSocialIcon(p);
+                            socialBox.innerHTML += `<div class="social-btn" onclick="window.open('${url}', '_blank')"><i class="${icon}"></i></div>`;
+                        });
+                    }
+
+                    let sec = config.duration || 10;
+                    const timer = setInterval(() => {
+                        document.getElementById('ad-timer').innerText = "AD: " + sec + "s";
+                        if(sec-- <= 0) { clearInterval(timer); document.getElementById('ad-timer').style.display='none'; document.getElementById('ad-close').style.display='block'; }
+                    }, 1000);
+                    window.adCallback = callback;
+                });
             });
         }
         function closeAd() { document.getElementById('ad-overlay').style.display = 'none'; if(window.adCallback) window.adCallback(); }
@@ -391,7 +394,7 @@
                 const list = document.getElementById('lib-list'); list.innerHTML = '';
                 snap.forEach(b => {
                     const d = b.val();
-                    list.innerHTML += `<div class="glass" style="padding:20px; border-radius:25px; margin-bottom:15px;" onclick="openBook('${b.key}')"><p style="color:var(--primary); font-size:10px; font-weight:800;">${d.category.toUpperCase()}</p><h3 style="font-size:18px;">${d.title}</h3><p style="font-size:12px; color:#555;">By ${d.author}</p></div>`;
+                    list.innerHTML += `<div class="glass" style="padding:20px; border-radius:25px; margin-bottom:15px;" onclick="openBook('${b.key}')"><p style="color:var(--primary); font-size:10px; font-weight:800; text-transform:uppercase;">${d.category}</p><h3 style="font-size:18px;">${d.title}</h3><p style="font-size:12px; color:#555;">By ${d.author}</p></div>`;
                 });
             });
         }
@@ -418,20 +421,23 @@
         }
 
         // --- CHAT ---
+        function toggleChatMode(m) { chatMode = m; loadMessages(); }
+        function sendMessage() {
+            const t = document.getElementById('chat-input').value; if(!t) return;
+            const path = chatMode === 'group' ? 'groupChat' : `supportChats/${auth.currentUser.uid}`;
+            db.ref(path).push({ uid: auth.currentUser.uid, name: userData.name, text: t, timestamp: Date.now() });
+            document.getElementById('chat-input').value = '';
+        }
         function loadMessages() {
-            db.ref(`supportChats/${auth.currentUser.uid}`).limitToLast(25).on('value', snap => {
+            const path = chatMode === 'group' ? 'groupChat' : `supportChats/${auth.currentUser.uid}`;
+            db.ref(path).limitToLast(25).on('value', snap => {
                 const b = document.getElementById('chat-box'); b.innerHTML = '';
                 snap.forEach(m => {
                     const d = m.val(), me = d.uid === auth.currentUser.uid;
-                    b.innerHTML += `<div class="msg ${me ? 'msg-me' : 'msg-other'}">${d.text}</div>`;
+                    b.innerHTML += `<div class="msg ${me ? 'msg-me' : 'msg-other'}"><small style="font-size:9px; display:block; color:${me?'#fff':'var(--primary)'}">${d.name}</small>${d.text}</div>`;
                 });
                 b.scrollTop = b.scrollHeight;
             });
-        }
-        function sendMessage() {
-            const t = document.getElementById('chat-input').value; if(!t) return;
-            db.ref(`supportChats/${auth.currentUser.uid}`).push({ uid: auth.currentUser.uid, name: userData.name, text: t, timestamp: Date.now() });
-            document.getElementById('chat-input').value = '';
         }
 
         // --- BOOK READER ---
@@ -448,7 +454,7 @@
             document.getElementById('read-title').innerText = currentBook.title;
             document.getElementById('read-author').innerText = "BY " + currentBook.author.toUpperCase();
             document.getElementById('read-genre').innerText = currentBook.category;
-            document.getElementById('read-desc').innerText = currentBook.description || "Story summary.";
+            document.getElementById('read-desc').innerText = currentBook.description || "No info.";
             document.getElementById('read-body').innerText = ep.content;
             document.getElementById('ep-count').innerText = `Part ${currentEpIdx + 1} of ${currentBook.episodes.length}`;
             document.getElementById('prev-btn').disabled = (currentEpIdx === 0);
@@ -480,17 +486,9 @@
         function promptPasslock() { const p = prompt("Enter New Secret Password:"); if(p) db.ref(`users/${currentUser.uid}/secretPassword`).set(p); }
         function closeReader() { document.getElementById('reader-view').style.display='none'; }
         function closePlayer() { if(activePlayer) activePlayer.unload(); document.getElementById('player-wrap').style.display='none'; }
+        function registerInDB(u) { db.ref('users/'+u.uid).set({ name: u.displayName || "User", email: u.email, isPremium: false, hwid: "" }); }
         function login() { auth.signInWithEmailAndPassword(document.getElementById('lemail').value, document.getElementById('lpass').value); }
         function googleLogin() { auth.signInWithPopup(new firebase.auth.GoogleAuthProvider()); }
-        function registerInDB(u) { db.ref('users/'+u.uid).set({ name: u.displayName || "User", email: u.email, isPremium: false, hwid: "" }); }
-        function clearCache() { localStorage.clear(); location.reload(); }
-        
-        // Float effect
-        document.querySelector('.content-area').addEventListener('scroll', function() {
-            const f = document.getElementById('wa-float');
-            if(this.scrollTop > 100) f.style.opacity = '0.3';
-            else f.style.opacity = '1';
-        });
     </script>
 </body>
 </html>
