@@ -2,1383 +2,221 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>STANY MIN TV</title>
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&family=Orbitron:wght@400;700&display=swap" rel="stylesheet">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>STANY MIN TV - iOS 26 PRO</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&family=Orbitron:wght@700&display=swap" rel="stylesheet">
+    
+    <!-- Firebase & Video SDKs -->
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-database-compat.js"></script>
     
-    <!-- Video Player -->
-    <link href="https://unpkg.com/video.js@7.21.1/dist/video-js.min.css" rel="stylesheet">
-    <script src="https://unpkg.com/video.js@7.21.1/dist/video.min.js"></script>
-    <script src="https://unpkg.com/@videojs/http-streaming@2.14.2/dist/videojs-http-streaming.min.js"></script>
+    <!-- Shaka Player for DRM & Token ID -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/shaka-player/4.3.5/shaka-player.ui.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/shaka-player/4.3.5/controls.min.css">
     
     <!-- Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <style>
-        /* iOS 26 STYLE - Red, Black, White Theme */
         :root {
-            --primary-red: #FF3B30;
-            --secondary-black: #000000;
-            --background-white: #FFFFFF;
-            --card-white: #F2F2F7;
-            --text-black: #1D1D1F;
-            --text-gray: #8E8E93;
-            --success: #34C759;
-            --error: #FF3B30;
-            --warning: #FF9500;
-            --info: #007AFF;
-            --glass-bg: rgba(242, 242, 247, 0.7);
-            --glass-border: rgba(255, 255, 255, 0.2);
+            --primary: #FF0000;
+            --bg: #000000;
+            --card: #0a0a0a;
+            --text: #FFFFFF;
+            --glass: rgba(255, 255, 255, 0.05);
+            --border: rgba(255, 255, 255, 0.1);
         }
 
-        * { 
-            margin: 0; 
-            padding: 0; 
-            box-sizing: border-box; 
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif; 
-            user-select: none; 
-            -webkit-user-select: none; 
-        }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Outfit', sans-serif; -webkit-tap-highlight-color: transparent; }
 
         body {
-            background: var(--background-white);
-            color: var(--text-black);
-            min-height: 100vh;
+            background: var(--bg);
+            color: var(--text);
+            height: 100vh;
+            overflow: hidden;
             display: flex;
             flex-direction: column;
-            overflow-x: hidden;
-            padding-bottom: 83px;
         }
 
-        /* iOS 26 Glassmorphism */
-        .glass-card {
-            background: var(--glass-bg);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
-            border: 1px solid var(--glass-border);
-            border-radius: 16px;
-            box-shadow: 0 4px 24px rgba(0, 0, 0, 0.08);
+        /* iOS Glassmorphism UI */
+        .ios-glass {
+            background: var(--glass);
+            backdrop-filter: blur(25px);
+            -webkit-backdrop-filter: blur(25px);
+            border: 1px solid var(--border);
+            border-radius: 30px;
         }
 
-        /* Rounded Corners */
-        .rounded-full {
-            border-radius: 9999px;
+        /* 1. ULTIMATE AD SYSTEM (UNSKIPPABLE) */
+        #adOverlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: #000; z-index: 10000; display: none;
+            flex-direction: column; justify-content: center; align-items: center;
         }
+        .ad-header-text { position: absolute; top: 80px; width: 100%; text-align: center; color: var(--primary); font-weight: 800; text-transform: uppercase; letter-spacing: 2px; }
+        .ad-footer-text { position: absolute; bottom: 120px; width: 100%; text-align: center; color: #888; font-size: 14px; }
+        #adTimer { position: absolute; top: 40px; right: 20px; padding: 10px 20px; border-radius: 20px; background: #fff; color: #000; font-weight: 900; }
+        #adClose { display: none; position: absolute; top: 40px; left: 20px; font-size: 30px; color: #fff; cursor: pointer; }
         
-        .rounded-lg {
-            border-radius: 12px;
-        }
-        
-        .rounded-xl {
-            border-radius: 16px;
-        }
+        .ad-content-box { width: 90%; max-height: 60%; border-radius: 20px; overflow: hidden; border: 1px solid var(--primary); display: flex; align-items: center; }
+        .ad-content-box img, .ad-content-box video { width: 100%; height: auto; }
 
-        /* Loader */
-        #loader { 
-            position: fixed; 
-            top: 0; 
-            left: 0; 
-            width: 100%; 
-            height: 100%; 
-            background: var(--background-white); 
-            z-index: 9999; 
-            display: flex; 
-            justify-content: center; 
-            align-items: center; 
-            flex-direction: column;
-            transition: opacity 0.3s ease;
-        }
-        
-        .splash-logo {
-            font-family: 'Orbitron', sans-serif;
-            font-size: 2.5em;
-            font-weight: 700;
-            color: var(--primary-red);
-            margin-bottom: 30px;
-            letter-spacing: -0.5px;
-        }
-        
-        .spinner { 
-            width: 44px; 
-            height: 44px; 
-            border: 3px solid #E5E5EA; 
-            border-top: 3px solid var(--primary-red); 
-            border-radius: 50%; 
-            animation: spin 0.8s linear infinite; 
-        }
-        
-        @keyframes spin { 
-            0% { transform: rotate(0deg); } 
-            100% { transform: rotate(360deg); } 
-        }
+        /* 2. AUTH SCREEN */
+        .auth-screen { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #000; z-index: 9000; display: flex; justify-content: center; align-items: center; }
+        .auth-card { width: 90%; max-width: 400px; padding: 35px; text-align: center; }
+        .input-box { width: 100%; padding: 16px; margin-bottom: 15px; background: #111; border: 1px solid #333; color: white; border-radius: 15px; outline: none; }
+        .btn-red { width: 100%; padding: 16px; background: var(--primary); border: none; color: white; font-weight: 800; border-radius: 15px; cursor: pointer; text-transform: uppercase; }
 
-        /* Ultimate Ad Engine Styles */
-        #adModal {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: var(--secondary-black);
-            z-index: 10000;
-            display: none;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-        }
-        
-        .ad-container {
-            width: 100%;
-            height: 100%;
-            position: relative;
-            overflow: hidden;
-        }
-        
-        .ad-video {
-            width: 100%;
-            height: 100%;
-            object-fit: contain;
-            background: var(--secondary-black);
-        }
-        
-        .ad-image {
-            width: 100%;
-            height: 100%;
-            object-fit: contain;
-            background: var(--secondary-black);
-        }
-        
-        .marquee-top, .marquee-bottom {
-            position: absolute;
-            width: 100%;
-            background: rgba(0, 0, 0, 0.85);
-            color: var(--background-white);
-            padding: 12px 0;
-            font-weight: 600;
-            overflow: hidden;
-            white-space: nowrap;
-            z-index: 10;
-        }
-        
-        .marquee-top {
-            top: 0;
-            border-bottom: 1px solid var(--primary-red);
-        }
-        
-        .marquee-bottom {
-            bottom: 0;
-            border-top: 1px solid var(--primary-red);
-        }
-        
-        .marquee-content {
-            display: inline-block;
-            padding-left: 100%;
-            animation: marquee 20s linear infinite;
-        }
-        
-        @keyframes marquee {
-            0% { transform: translateX(0); }
-            100% { transform: translateX(-100%); }
-        }
-        
-        .ad-timer {
-            position: absolute;
-            top: 20px;
-            right: 20px;
-            background: rgba(255, 59, 48, 0.9);
-            color: white;
-            width: 50px;
-            height: 50px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: bold;
-            font-size: 1.2em;
-            z-index: 11;
-        }
-        
-        .skip-btn {
-            position: absolute;
-            bottom: 90px;
-            right: 20px;
-            background: rgba(255, 255, 255, 0.9);
-            color: var(--primary-red);
-            padding: 10px 20px;
-            border-radius: 20px;
-            font-weight: bold;
-            border: none;
-            cursor: pointer;
-            z-index: 11;
-            display: none;
-        }
-        
-        .social-hub {
-            position: absolute;
-            bottom: 20px;
-            left: 0;
-            right: 0;
-            display: flex;
-            justify-content: center;
-            flex-wrap: wrap;
-            gap: 12px;
-            padding: 15px;
-            z-index: 11;
-        }
-        
-        .social-icon {
-            width: 40px;
-            height: 40px;
-            background: rgba(255, 255, 255, 0.15);
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            font-size: 1.2em;
-            cursor: pointer;
-            transition: transform 0.2s, background 0.2s;
-        }
-        
-        .social-icon:hover {
-            transform: scale(1.1);
-            background: var(--primary-red);
-        }
+        /* 3. MAIN APP STRUCTURE */
+        #mainApp { display: none; height: 100vh; flex-direction: column; }
+        .header { padding: 20px; display: flex; justify-content: space-between; align-items: center; }
+        .logo { font-family: 'Orbitron'; font-size: 20px; font-weight: 700; color: var(--text); }
+        .logo span { color: var(--primary); }
 
-        /* Locked/Expired Logic Styles */
-        .locked-overlay {
-            position: absolute; 
-            top: 0; 
-            left: 0; 
-            width: 100%; 
-            height: 100%;
-            background: rgba(0,0,0,0.85); 
-            display: flex; 
-            justify-content: center; 
-            align-items: center;
-            z-index: 10; 
-            border-radius: 12px;
-        }
-        
-        .lock-icon { 
-            font-size: 2.5em; 
-            color: var(--background-white); 
-            text-shadow: 0 0 10px var(--primary-red); 
-        }
-        
-        /* Blurring for Premium Content */
-        .blur-wrapper { 
-            position: relative; 
-            overflow: hidden; 
-        }
-        
-        .blur-content { 
-            filter: blur(8px); 
-            pointer-events: none; 
-            opacity: 0.6; 
-        }
-        
-        .blur-text-overlay {
-            position: absolute; 
-            top: 50%; 
-            left: 50%; 
-            transform: translate(-50%, -50%);
-            z-index: 20; 
-            color: var(--text-black); 
-            text-align: center; 
-            width: 100%;
-            font-weight: 600;
-        }
+        .content-area { flex: 1; overflow-y: auto; padding: 15px; padding-bottom: 100px; }
 
-        /* Standard UI */
-        .auth-screen { 
-            position: fixed; 
-            top: 0; 
-            left: 0; 
-            width: 100%; 
-            height: 100%; 
-            background: var(--background-white); 
-            z-index: 2000; 
-            display: flex; 
-            justify-content: center; 
-            align-items: center; 
-            flex-direction: column; 
-        }
-        
-        .auth-card { 
-            width: 90%; 
-            max-width: 400px; 
-            background: var(--card-white);
-            padding: 32px; 
-            border-radius: 20px; 
-            border: 1px solid var(--glass-border);
-            text-align: center; 
-            backdrop-filter: blur(10px);
-        }
-        
-        .input-box { 
-            width: 100%; 
-            padding: 14px 16px; 
-            margin-bottom: 16px; 
-            background: var(--background-white); 
-            border: 1px solid #C7C7CC; 
-            color: var(--text-black); 
-            border-radius: 10px; 
-            outline: none; 
-            font-size: 16px;
-        }
-        
-        .btn { 
-            width: 100%; 
-            padding: 14px; 
-            background: var(--primary-red); 
-            border: none; 
-            color: var(--background-white); 
-            font-weight: 600; 
-            border-radius: 10px; 
-            cursor: pointer; 
-            margin-top: 10px; 
-            font-size: 16px;
-        }
+        /* CARDS GRID */
+        .grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; }
+        .card { aspect-ratio: 2/3; border-radius: 25px; overflow: hidden; position: relative; border: 1px solid var(--border); transition: 0.3s; }
+        .card img { width: 100%; height: 100%; object-fit: cover; }
+        .card-info { position: absolute; bottom: 0; width: 100%; padding: 15px 10px; background: linear-gradient(transparent, #000); font-weight: 600; font-size: 13px; text-align: center; }
 
-        /* Cards Grid - SAME SIZE FOR ALL PAGES */
-        .grid { 
-            display: grid; 
-            grid-template-columns: repeat(2, 1fr); 
-            gap: 12px;
-            padding: 0 16px 20px; 
+        /* 4. BOOK READER (SIMULIZI & TECH) */
+        #readerView {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: #000; z-index: 5000; display: none; flex-direction: column;
         }
-        
-        @media (min-width: 480px) {
-            .grid { 
-                grid-template-columns: repeat(3, 1fr);
-                gap: 14px;
-            }
-        }
-        
-        @media (min-width: 768px) {
-            .grid { 
-                grid-template-columns: repeat(4, 1fr);
-                gap: 16px;
-            }
-        }
-        
-        .card { 
-            background: var(--card-white); 
-            border-radius: 14px; 
-            overflow: hidden; 
-            border: 1px solid var(--glass-border);
-            position: relative;
-            aspect-ratio: 2/3;
-            transition: transform 0.2s, box-shadow 0.2s;
-        }
-        
-        .card:hover { 
-            transform: translateY(-4px); 
-            box-shadow: 0 8px 32px rgba(255, 59, 48, 0.15);
-        }
-        
-        .card img { 
-            width: 100%; 
-            height: 100%; 
-            object-fit: cover; 
-        }
-        
-        .card-info { 
-            position: absolute; 
-            bottom: 0; 
-            left: 0; 
-            right: 0; 
-            padding: 12px;
-            text-align: center; 
-            background: linear-gradient(transparent, rgba(0,0,0,0.8));
-            color: var(--background-white);
-            font-size: 0.9em;
-            font-weight: 600;
-        }
-        
-        .card-info h4 { 
-            white-space: nowrap; 
-            overflow: hidden; 
-            text-overflow: ellipsis; 
-            font-size: 1em;
-            font-weight: 600;
-        }
+        .reader-header { padding: 40px 20px 20px; border-bottom: 1px solid var(--border); }
+        .reader-body { flex: 1; overflow-y: auto; padding: 25px; line-height: 1.8; font-size: 18px; color: #ccc; }
+        .reader-footer { padding: 20px; display: flex; justify-content: space-between; background: #0a0a0a; border-top: 1px solid var(--border); }
+        .nav-btn { padding: 12px 25px; border-radius: 15px; background: var(--primary); border: none; color: #fff; font-weight: bold; }
+        .nav-btn:disabled { background: #222; color: #555; }
 
-        /* Carousel */
-        .carousel {
-            width: calc(100% - 32px);
-            height: 200px;
-            overflow: hidden;
-            position: relative;
-            margin: 16px auto 20px;
-            border-radius: 18px;
-        }
-        
-        .carousel-slide {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            opacity: 0;
-            transition: opacity 0.8s ease;
-            border-radius: 18px;
-            overflow: hidden;
-        }
-        
-        .carousel-slide.active {
-            opacity: 1;
-        }
-        
-        .carousel-slide img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
-        
-        .carousel-caption {
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            background: linear-gradient(transparent, rgba(0,0,0,0.9));
-            padding: 16px 20px;
-            color: var(--background-white);
-        }
-        
-        .carousel-title {
-            font-size: 1.3em;
-            font-weight: 600;
-            margin-bottom: 4px;
-            color: var(--background-white);
-        }
-        
-        .carousel-description {
-            font-size: 0.9em;
-            color: #E5E5EA;
-            line-height: 1.4;
-        }
+        /* NAVIGATION BAR */
+        .bottom-nav { position: fixed; bottom: 0; width: 100%; height: 85px; display: flex; justify-content: space-around; align-items: center; padding-bottom: 25px; z-index: 1000; border-top: 1px solid var(--border); }
+        .nav-item { display: flex; flex-direction: column; align-items: center; font-size: 11px; color: #444; font-weight: 600; cursor: pointer; }
+        .nav-item.active { color: var(--primary); }
+        .nav-item i { font-size: 24px; margin-bottom: 4px; }
 
-        /* Betting Card */
-        .bet-card { 
-            background: var(--card-white); 
-            margin: 16px; 
-            padding: 16px; 
-            border-radius: 14px; 
-            border: 1px solid var(--glass-border);
-            position: relative; 
-        }
-        
-        .bet-head { 
-            display: flex; 
-            justify-content: space-between; 
-            font-weight: 600; 
-            color: var(--primary-red); 
-            margin-bottom: 12px; 
-            font-size: 1em; 
-        }
-        
-        .bet-match { 
-            background: rgba(255, 59, 48, 0.05); 
-            padding: 12px; 
-            text-align: center; 
-            margin-bottom: 12px; 
-            border-radius: 8px; 
-            font-weight: 600; 
-            font-size: 1em; 
-        }
-        
-        .booking-code { 
-            background: rgba(255, 59, 48, 0.1); 
-            color: var(--primary-red); 
-            padding: 10px; 
-            text-align: center; 
-            border-radius: 8px; 
-            margin-top: 10px; 
-            cursor: pointer; 
-            font-size: 1em; 
-            font-weight: 500;
-        }
+        /* PLAYER WRAP */
+        #playerWrap { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #000; z-index: 8000; display: none; }
+        .close-player { position: absolute; top: 40px; left: 20px; z-index: 8001; font-size: 30px; color: white; cursor: pointer; }
 
-        /* Downloads */
-        .dl-card { 
-            background: var(--card-white); 
-            margin: 16px; 
-            display: flex; 
-            border-radius: 14px; 
-            overflow: hidden; 
-            border: 1px solid var(--glass-border); 
-            position: relative; 
-        }
-        
-        .dl-card img { 
-            width: 100px; 
-            height: 140px; 
-            object-fit: cover; 
-        }
-        
-        .dl-info { 
-            padding: 12px; 
-            flex: 1; 
-            display: flex; 
-            flex-direction: column; 
-            justify-content: center; 
-        }
-        
-        .dl-btn { 
-            background: var(--primary-red); 
-            color: var(--background-white); 
-            text-align: center; 
-            padding: 10px; 
-            border-radius: 8px; 
-            text-decoration: none; 
-            font-weight: 600; 
-            margin-top: 8px; 
-        }
+        .page { display: none; } .page.active { display: block; animation: slideUp 0.4s; }
+        @keyframes slideUp { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
 
-        /* Chat & Profile */
-        .chat-container { 
-            height: calc(100vh - 150px); 
-            display: flex; 
-            flex-direction: column; 
-            padding: 16px; 
-        }
-        
-        .chat-box { 
-            flex: 1; 
-            overflow-y: auto; 
-            padding: 12px; 
-            background: var(--card-white); 
-            border-radius: 14px; 
-            margin-bottom: 12px; 
-            display: flex; 
-            flex-direction: column; 
-            gap: 12px; 
-        }
-        
-        .msg { 
-            padding: 12px 16px; 
-            border-radius: 18px; 
-            max-width: 80%; 
-            font-size: 1em; 
-            font-weight: 500;
-        }
-        
-        .msg-user { 
-            align-self: flex-end; 
-            background: var(--primary-red); 
-            color: var(--background-white); 
-        }
-        
-        .msg-admin { 
-            align-self: flex-start; 
-            background: var(--card-white); 
-            color: var(--text-black);
-            border: 1px solid var(--glass-border);
-        }
-        
-        .profile-box { 
-            margin: 20px; 
-            background: var(--card-white); 
-            padding: 20px; 
-            border-radius: 14px; 
-            border: 1px solid var(--glass-border);
-        }
-
-        /* Header & Navigation - iOS 26 Style */
-        .header { 
-            padding: 12px 16px; 
-            background: var(--background-white); 
-            border-bottom: 1px solid var(--glass-border); 
-            display: flex; 
-            justify-content: space-between; 
-            align-items: center; 
-            position: sticky; 
-            top: 0; 
-            z-index: 100; 
-            backdrop-filter: blur(20px);
-        }
-        
-        .logo { 
-            font-family: 'Orbitron'; 
-            color: var(--primary-red); 
-            font-size: 1.4em; 
-            font-weight: 700; 
-            letter-spacing: -0.5px;
-        }
-        
-        .header-icons { 
-            display: flex; 
-            gap: 20px; 
-            align-items: center; 
-        }
-        
-        .bottom-nav { 
-            position: fixed; 
-            bottom: 0; 
-            left: 0; 
-            width: 100%; 
-            background: var(--background-white); 
-            border-top: 1px solid var(--glass-border); 
-            display: flex; 
-            justify-content: space-around; 
-            padding: 12px 0; 
-            z-index: 1000; 
-            backdrop-filter: blur(20px);
-        }
-        
-        .nav-item { 
-            color: var(--text-gray); 
-            text-align: center; 
-            font-size: 0.75em; 
-            text-decoration: none; 
-            font-weight: 500; 
-            position: relative; 
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 4px;
-        }
-        
-        .nav-item i { 
-            font-size: 1.4em; 
-        }
-        
-        .nav-item.active { 
-            color: var(--primary-red); 
-        }
-
-        /* Search Bar */
-        .search-container {
-            position: relative;
-            display: flex;
-            align-items: center;
-        }
-        
-        .search-input {
-            width: 0;
-            opacity: 0;
-            transition: all 0.3s ease;
-            border-radius: 10px;
-            padding: 10px 16px;
-            background: var(--card-white);
-            border: 1px solid var(--glass-border);
-            color: var(--text-black);
-            outline: none;
-            font-size: 16px;
-        }
-        
-        .search-input.active {
-            width: 200px;
-            opacity: 1;
-            margin-right: 12px;
-        }
-        
-        .search-icon {
-            cursor: pointer;
-            font-size: 1.2em;
-            color: var(--primary-red);
-            transition: color 0.3s ease;
-        }
-
-        /* Modals */
-        .modal { 
-            display: none; 
-            position: fixed; 
-            top: 0; 
-            left: 0; 
-            width: 100%; 
-            height: 100%; 
-            background: rgba(0,0,0,0.6); 
-            z-index: 7000; 
-            justify-content: center; 
-            align-items: center; 
-            backdrop-filter: blur(10px);
-        }
-        
-        .modal-box { 
-            background: var(--background-white); 
-            width: 90%; 
-            max-width: 400px; 
-            padding: 24px; 
-            border-radius: 20px; 
-            border: 1px solid var(--glass-border);
-            position: relative; 
-            text-align: center; 
-        }
-        
-        .close-modal { 
-            position: absolute; 
-            top: 16px; 
-            right: 16px; 
-            color: var(--text-gray); 
-            font-size: 24px; 
-            cursor: pointer; 
-        }
-        
-        /* Utilities */
-        .page { display: none; } 
-        .page.active { display: block; }
-        
-        .section-title { 
-            margin: 20px 16px 12px; 
-            font-family: 'Orbitron'; 
-            color: var(--primary-red); 
-            border-left: 4px solid var(--primary-red); 
-            padding-left: 12px; 
-            font-size: 1.2em;
-            font-weight: 700;
-        }
-        
-        .cat-btn { 
-            display: inline-block; 
-            padding: 10px 16px; 
-            margin: 6px; 
-            background: var(--card-white); 
-            border: 1px solid var(--glass-border); 
-            border-radius: 20px; 
-            color: var(--text-black); 
-            cursor: pointer; 
-            font-weight: 500;
-        }
-        
-        .cat-btn.active { 
-            background: var(--primary-red); 
-            color: var(--background-white); 
-        }
-        
-        /* Category Grid Layout */
-        .category-section {
-            margin-bottom: 24px;
-        }
-        
-        .category-title {
-            font-size: 1.1em;
-            font-weight: 600;
-            color: var(--primary-red);
-            margin: 16px 16px 12px;
-            padding-bottom: 6px;
-            border-bottom: 2px solid var(--card-white);
-        }
-        
-        /* TOAST NOTIFICATIONS */
-        #toast { 
-            position: fixed; 
-            bottom: 100px; 
-            right: 16px; 
-            padding: 14px 18px; 
-            border-radius: 12px; 
-            transform: translateX(200%); 
-            transition: transform 0.3s ease; 
-            z-index: 9000; 
-            font-weight: 600;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            min-width: 280px;
-            box-shadow: 0 4px 24px rgba(0,0,0,0.1);
-            max-width: 90%;
-            word-wrap: break-word;
-            backdrop-filter: blur(10px);
-        }
-        
-        .toast-success { 
-            background: rgba(52, 199, 89, 0.9); 
-            color: var(--background-white);
-            border: 1px solid rgba(52, 199, 89, 0.2);
-        }
-        
-        .toast-error { 
-            background: rgba(255, 59, 48, 0.9); 
-            color: var(--background-white);
-            border: 1px solid rgba(255, 59, 48, 0.2);
-        }
-        
-        .toast-warning { 
-            background: rgba(255, 149, 0, 0.9); 
-            color: var(--background-white);
-            border: 1px solid rgba(255, 149, 0, 0.2);
-        }
-        
-        .toast-info { 
-            background: rgba(0, 122, 255, 0.9); 
-            color: var(--background-white);
-            border: 1px solid rgba(0, 122, 255, 0.2);
-        }
-
-        .toast-premium { 
-            background: rgba(255, 59, 48, 0.9);
-            color: var(--background-white);
-            border: 1px solid rgba(255, 59, 48, 0.2);
-        }
-        
-        .toast-chat { 
-            background: rgba(255, 59, 48, 0.9);
-            color: var(--background-white);
-            border: 1px solid rgba(255, 59, 48, 0.2);
-        }
-        
-        /* Device Overlay */
-        #deviceOverlay {
-            position: fixed; 
-            top: 0; 
-            left: 0; 
-            width: 100%; 
-            height: 100%;
-            background: var(--background-white); 
-            z-index: 8000; 
-            display: none;
-            flex-direction: column; 
-            justify-content: center; 
-            align-items: center; 
-            text-align: center; 
-            padding: 32px;
-        }
-
-        /* Loading States */
-        .loading-text {
-            text-align: center;
-            padding: 20px;
-            color: var(--text-gray);
-            font-style: italic;
-        }
-
-        /* Quick Load Styles */
-        .quick-load { animation: quickFade 0.3s ease-in-out; }
-        @keyframes quickFade { from { opacity: 0; } to { opacity: 1; } }
-
-        /* Notification dots & counts */
-        .notification-dot {
-            position: absolute;
-            top: -2px;
-            right: -2px;
-            width: 8px;
-            height: 8px;
-            background-color: var(--primary-red);
-            border-radius: 50%;
-            display: none;
-        }
-        
-        .notification-count {
-            position: absolute;
-            top: -6px;
-            right: -6px;
-            background-color: var(--primary-red);
-            color: var(--background-white);
-            border-radius: 50%;
-            width: 18px;
-            height: 18px;
-            font-size: 0.7em;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            display: none;
-        }
-
-        /* Notification bell with indicator */
-        .notification-bell-container {
-            position: relative;
-            cursor: pointer;
-        }
-
-        /* Guides/Tips Cards */
-        .guide-card { 
-            background: var(--card-white); 
-            margin: 16px; 
-            padding: 20px; 
-            border-radius: 14px; 
-            border: 1px solid var(--glass-border); 
-            position: relative;
-        }
-        
-        .guide-category {
-            position: absolute;
-            top: 12px;
-            right: 12px;
-            background: var(--primary-red);
-            color: var(--background-white);
-            padding: 6px 12px;
-            border-radius: 12px;
-            font-size: 0.75em;
-            font-weight: 600;
-        }
-
-        /* Login page styling */
-        .login-header {
-            text-align: center;
-            margin-bottom: 24px;
-        }
-        
-        .login-header h2 {
-            font-size: 1.8em;
-            margin-bottom: 8px;
-            color: var(--primary-red);
-            font-family: 'Orbitron';
-            font-weight: 700;
-        }
-        
-        .login-header p {
-            color: var(--text-gray);
-            font-size: 1em;
-            font-weight: 500;
-        }
-
-        /* Error states */
-        .input-error {
-            border-color: var(--error) !important;
-            background: rgba(255, 59, 48, 0.05) !important;
-        }
-        
-        .login-error {
-            color: var(--error);
-            margin-top: 12px;
-            font-weight: 600;
-            display: none;
-        }
-
-        /* App Settings Styles */
-        .settings-card {
-            background: var(--card-white);
-            margin: 16px;
-            padding: 16px;
-            border-radius: 14px;
-            border: 1px solid var(--glass-border);
-        }
-        
-        .setting-item {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 12px;
-            padding: 12px;
-            background: var(--background-white);
-            border-radius: 10px;
-            font-weight: 500;
-        }
-
-        /* Premium Token Modal */
-        .token-input {
-            width: 100%;
-            padding: 14px;
-            margin: 16px 0;
-            border: 1px solid var(--glass-border);
-            border-radius: 10px;
-            text-align: center;
-            font-size: 16px;
-            font-weight: 600;
-            letter-spacing: 2px;
-            background: var(--card-white);
-            color: var(--text-black);
-        }
-
-        /* Adult Content Warning */
-        .age-gate {
-            background: var(--background-white);
-            padding: 32px;
-            border-radius: 20px;
-            text-align: center;
-            max-width: 400px;
-            width: 90%;
-        }
-        
-        .age-warning-icon {
-            font-size: 3em;
-            color: var(--primary-red);
-            margin-bottom: 20px;
-        }
-
-        /* Chat Page Styles */
-        .chat-header {
-            padding: 16px;
-            background: var(--background-white);
-            border-bottom: 1px solid var(--glass-border);
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            position: sticky;
-            top: 0;
-            z-index: 100;
-            backdrop-filter: blur(20px);
-        }
-        
-        .back-arrow {
-            font-size: 1.5em;
-            color: var(--primary-red);
-            cursor: pointer;
-        }
+        ::-webkit-scrollbar { width: 0; }
     </style>
 </head>
 <body>
 
-    <!-- Ultimate Ad Engine Modal -->
-    <div id="adModal">
-        <div class="ad-container">
-            <!-- Ad Content (Video/Image) -->
-            <video id="adVideo" class="ad-video" playsinline></video>
-            <img id="adImage" class="ad-image" style="display:none;">
-            
-            <!-- Marquee Text -->
-            <div class="marquee-top">
-                <div class="marquee-content" id="marqueeTop">Loading ad message...</div>
+    <!-- AD OVERLAY -->
+    <div id="adOverlay">
+        <div id="adTimer">AD: 15s</div>
+        <i id="adClose" class="fas fa-times-circle" onclick="closeAd()"></i>
+        <div class="ad-header-text" id="adHeaderWords">SPONSORED AD</div>
+        <div class="ad-content-box" id="adMediaContainer">
+            <!-- Random Ad Content (Video/Image/Slider) -->
+        </div>
+        <div class="ad-footer-text" id="adFooterWords">Please wait for the sponsor message</div>
+        <button class="btn-red" style="width: 200px; margin-top: 30px;" onclick="visitSponsor()">VISIT SPONSOR</button>
+    </div>
+
+    <!-- AUTH SECTION -->
+    <div id="authView" class="auth-screen">
+        <div class="auth-card ios-glass">
+            <h1 style="margin-bottom: 30px; font-family: 'Orbitron'; letter-spacing: 2px;">STANY<span>MIN</span></h1>
+            <div id="loginForm">
+                <input type="email" id="emailIn" class="input-box" placeholder="Email">
+                <input type="password" id="passIn" class="input-box" placeholder="Password">
+                <button class="btn-red" onclick="handleAuth('login')">LOGIN PRO</button>
+                <p style="margin-top: 20px; font-size: 13px; color: #666;" onclick="toggleAuth()">New member? <span style="color:var(--primary)">Register</span></p>
             </div>
-            
-            <div class="marquee-bottom">
-                <div class="marquee-content" id="marqueeBottom">Sponsored content</div>
-            </div>
-            
-            <!-- Timer Display -->
-            <div class="ad-timer" id="adTimer">30</div>
-            
-            <!-- Skip Button (Premium Only) -->
-            <button class="skip-btn" id="skipBtn" onclick="skipAd()">
-                <i class="fas fa-forward"></i> Skip Ad
-            </button>
-            
-            <!-- Social Media Hub -->
-            <div class="social-hub" id="socialHub">
-                <!-- Social icons will be dynamically added here -->
+            <div id="regForm" style="display: none;">
+                <input type="text" id="nameIn" class="input-box" placeholder="Full Name">
+                <input type="email" id="remailIn" class="input-box" placeholder="Email">
+                <input type="password" id="rpassIn" class="input-box" placeholder="Password">
+                <button class="btn-red" onclick="handleAuth('reg')">CREATE ACCOUNT</button>
+                <p style="margin-top: 20px; font-size: 13px; color: #666;" onclick="toggleAuth()">Already member? <span style="color:var(--primary)">Login</span></p>
             </div>
         </div>
     </div>
 
-    <!-- Loader with Splash Screen -->
-    <div id="loader">
-        <div class="splash-logo">STANY MIN TV</div>
-        <div class="spinner"></div>
-        <div style="margin-top: 20px; color: var(--text-gray); font-weight: 500;">Loading Ultimate Experience...</div>
-    </div>
-    
-    <!-- Toast -->
-    <div id="toast"></div>
-
-    <!-- Custom Logout Confirm Modal -->
-    <div id="logoutConfirmModal" class="modal">
-        <div class="modal-box">
-            <i class="fas fa-sign-out-alt" style="font-size: 3em; color: var(--primary-red); margin-bottom: 15px;"></i>
-            <h3 style="color: var(--text-black); margin-bottom: 10px; font-size: 1.4em; font-weight: 600;">Confirm Logout</h3>
-            <p style="color: var(--text-gray); margin-bottom: 20px; font-size: 1.1em;">Are you sure you want to logout from STANY MIN TV?</p>
-            <div style="display: flex; gap: 12px;">
-                <button class="btn" onclick="confirmLogout()" style="background: var(--primary-red);">Yes, Logout</button>
-                <button class="btn" onclick="cancelLogout()" style="background: var(--card-white); color: var(--text-black); border: 1px solid var(--glass-border);">Cancel</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- Premium Token Modal -->
-    <div id="tokenModal" class="modal">
-        <div class="modal-box">
-            <span class="close-modal" onclick="closeTokenModal()">×</span>
-            <i class="fas fa-crown" style="font-size: 3em; color: var(--primary-red); margin-bottom: 15px;"></i>
-            <h3 style="color: var(--text-black); margin-bottom: 10px; font-size: 1.4em; font-weight: 600;">Premium Access Required</h3>
-            <p style="color: var(--text-gray); margin-bottom: 15px; font-size: 1.1em;">Enter your premium token to skip ads and access all content.</p>
-            <input type="text" id="tokenInput" class="token-input" placeholder="Enter Premium Token" maxlength="20">
-            <button class="btn" onclick="validateToken()" style="margin-bottom: 10px;">Validate Token</button>
-            <p style="color: var(--text-gray); font-size: 0.9em;">Don't have a token? Watch ads to earn free access.</p>
-            <button class="btn" onclick="watchAdForAccess()" style="background: var(--card-white); color: var(--text-black); border: 1px solid var(--glass-border); margin-top: 10px;">
-                <i class="fas fa-ad"></i> Watch Ad for Free Access
-            </button>
-        </div>
-    </div>
-
-    <!-- Adult Content Age Gate -->
-    <div id="ageGateModal" class="modal">
-        <div class="age-gate">
-            <div class="age-warning-icon">
-                <i class="fas fa-exclamation-triangle"></i>
-            </div>
-            <h3 style="color: var(--text-black); margin-bottom: 15px; font-size: 1.5em; font-weight: 600;">Adult Content (18+)</h3>
-            <p style="color: var(--text-gray); margin-bottom: 20px; font-size: 1.1em;">This section contains adult content. You must be 18 years or older to proceed.</p>
-            <div style="display: flex; gap: 12px;">
-                <button class="btn" onclick="proceedToAdult()" style="background: var(--primary-red);">I am 18+</button>
-                <button class="btn" onclick="closeAgeGate()" style="background: var(--card-white); color: var(--text-black); border: 1px solid var(--glass-border);">Exit</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- Device Approval Overlay -->
-    <div id="deviceOverlay">
-        <i class="fas fa-mobile-alt" style="font-size: 4em; color: var(--primary-red);"></i>
-        <h2 style="color: var(--text-black); margin: 20px 0; font-size: 1.5em; font-weight: 600;">Device Verification Required</h2>
-        <p id="deviceMsg" style="color: var(--text-gray); margin-bottom: 20px; font-size: 1.1em; max-width: 300px;">
-            You're trying to login from a new device. Please wait for admin approval.
-        </p>
-        <button id="refreshDevBtn" class="btn" onclick="refreshDeviceStatus()" style="max-width: 200px;">
-            <i class="fas fa-sync-alt"></i> Check Status
-        </button>
-        <button class="btn" style="background: var(--card-white); color: var(--text-black); border: 1px solid var(--glass-border); margin-top: 10px; max-width: 200px; font-weight: 500;" onclick="logoutFromDevice()">
-            <i class="fas fa-sign-out-alt"></i> Back to Login
-        </button>
-    </div>
-
-    <!-- Auth -->
-    <div id="authPages" class="auth-screen">
-        <div id="loginPage" class="auth-card">
-            <div class="login-header">
-                <h2>STANY MIN TV</h2>
-                <p>Welcome Back!</p>
-            </div>
-            <input type="email" id="lemail" class="input-box" placeholder="Email">
-            <input type="password" id="lpass" class="input-box" placeholder="Password">
-            <div id="loginError" class="login-error">Login failed. Please check your credentials.</div>
-            <button class="btn" onclick="login()">Login</button>
-            <p style="margin-top:15px; cursor:pointer; color:var(--primary-red); font-weight: 500;" onclick="document.getElementById('loginPage').style.display='none'; document.getElementById('regPage').style.display='block';">Create Account</p>
-        </div>
-        <div id="regPage" class="auth-card" style="display:none;">
-            <div class="login-header">
-                <h2>Create Account</h2>
-                <p>Join STANY MIN TV</p>
-            </div>
-            <input type="text" id="rname" class="input-box" placeholder="Full Name">
-            <input type="email" id="remail" class="input-box" placeholder="Email">
-            <input type="password" id="rpass" class="input-box" placeholder="Password">
-            <div id="regError" class="login-error" style="display:none;"></div>
-            <button class="btn" onclick="register()">Register</button>
-            <p style="margin-top:15px; cursor:pointer; color:var(--primary-red); font-weight: 500;" onclick="document.getElementById('regPage').style.display='none'; document.getElementById('loginPage').style.display='block';">Back to Login</p>
-        </div>
-    </div>
-
-    <!-- Main App -->
-    <div id="mainApp" style="display:none;">
-        <!-- Chat Page Header -->
-        <div class="chat-header" id="chatHeader" style="display:none;">
-            <div class="back-arrow" onclick="backFromChat()">
-                <i class="fas fa-arrow-left"></i>
-            </div>
-            <div class="logo">Group Chat</div>
-            <div></div>
-        </div>
-
-        <!-- Standard Header -->
-        <div class="header" id="mainHeader">
-            <div class="logo">STANY MIN TV</div>
-            <div class="header-icons">
-                <div class="search-container">
-                    <input type="text" id="searchInput" class="search-input" placeholder="Search..." onkeyup="globalSearch()">
-                    <i class="fas fa-search search-icon" onclick="toggleSearch()"></i>
-                </div>
-                <i class="fas fa-sync-alt" onclick="quickRefresh()" style="cursor:pointer; color:var(--primary-red);"></i>
-                <div class="notification-bell-container" onclick="showNotifModal()">
-                    <i class="fas fa-bell"></i>
-                    <span id="bellNotification" class="notification-dot"></span>
-                    <span id="bellNotificationCount" class="notification-count"></span>
-                </div>
+    <!-- MAIN APP SECTION -->
+    <div id="mainApp">
+        <div class="header">
+            <div class="logo">STANY<span>MIN</span> TV</div>
+            <div style="display: flex; gap: 20px; align-items: center;">
+                <i class="fas fa-search"></i>
+                <i class="fas fa-sync" onclick="location.reload()"></i>
             </div>
         </div>
 
-        <!-- HOME -->
-        <div id="home" class="page active">
-            <!-- Carousel -->
-            <div class="carousel" id="carousel">
-                <div class="loading-text">Loading carousel...</div>
+        <div class="content-area">
+            <!-- HOME VIEW -->
+            <div id="view-home" class="page active">
+                <h3 style="margin-bottom: 15px; color: var(--primary);">CHANNELS</h3>
+                <div id="chanGrid" class="grid"></div>
+                <h3 style="margin: 30px 0 15px; color: var(--primary);">MOVIES</h3>
+                <div id="movGrid" class="grid"></div>
             </div>
 
-            <div id="catTags" style="padding:0 16px; overflow-x:auto; white-space:nowrap; margin-bottom:12px;"></div>
-            <h3 class="section-title">Live Channels</h3>
-            <div class="grid" id="chanGrid">
-                <div class="loading-text">Loading channels...</div>
+            <!-- LIBRARY VIEW -->
+            <div id="view-library" class="page">
+                <h2 style="margin-bottom: 20px; color: var(--primary);">LIBRARY</h2>
+                <div id="bookList"></div>
             </div>
-            <h3 class="section-title">Movies</h3>
-            <div class="grid" id="movGrid">
-                <div class="loading-text">Loading movies...</div>
-            </div>
-        </div>
 
-        <!-- Categories Page -->
-        <div id="cats" class="page">
-            <h3 class="section-title">Categories</h3>
-            <div id="catContent">
-                <div class="loading-text">Loading categories...</div>
-            </div>
-        </div>
-
-        <!-- Downloads -->
-        <div id="downloads" class="page">
-            <h3 class="section-title">Downloads</h3>
-            <div id="dlContent">
-                <div class="loading-text">Loading downloads...</div>
-            </div>
-        </div>
-
-        <!-- Adult Section (18+) -->
-        <div id="adult" class="page" style="display:none;">
-            <h3 class="section-title">Adult Content (18+)</h3>
-            <div class="grid" id="adultGrid">
-                <div class="loading-text">Loading adult content...</div>
-            </div>
-        </div>
-
-        <!-- TIPS -->
-        <div id="tips" class="page">
-            <h3 class="section-title">Betting Tips</h3>
-            <div id="tipsContent">
-                <div class="loading-text">Loading tips...</div>
-            </div>
-            
-            <h3 class="section-title" style="margin-top: 30px;">Tips & Guides</h3>
-            <div id="guidesContent">
-                <div class="loading-text">Loading guides...</div>
-            </div>
-        </div>
-
-        <!-- CHAT -->
-        <div id="chat" class="page">
-            <div class="chat-container">
-                <div class="chat-box" id="chatBox">
-                    <div class="msg msg-admin">Welcome to Group Chat! Connect with other users.</div>
-                </div>
-                <div style="display:flex; gap:12px;">
-                    <input type="text" id="chatInput" class="input-box" style="margin:0; border-radius:20px;" placeholder="Type message...">
-                    <button class="btn" style="width:50px; border-radius:50%; margin:0; padding:0; display:flex; align-items:center; justify-content:center;" onclick="sendChat()">
-                        <i class="fas fa-paper-plane"></i>
-                    </button>
-                </div>
-            </div>
-        </div>
-
-        <!-- PROFILE -->
-        <div id="profile" class="page">
-            <div class="profile-box">
-                <h2 id="pName" style="color:var(--primary-red); font-size: 1.4em; font-weight: 600;">User</h2>
-                <p id="pEmail" style="color:var(--text-gray); font-size: 1.1em;">email</p>
-                <h3 id="pDays" style="margin-top:10px; font-size: 1.2em; font-weight: 600;">...</h3>
-                <div style="display: flex; gap: 10px; margin-top: 15px;">
-                    <button class="btn" style="flex: 1; background: var(--info);" onclick="quickRefresh()">
-                        <i class="fas fa-sync-alt"></i> Refresh
-                    </button>
-                    <button class="btn" style="flex: 1; background: var(--card-white); color: var(--text-black); border: 1px solid var(--glass-border);" onclick="showLogoutConfirm()">
-                        <i class="fas fa-sign-out-alt"></i> Logout
-                    </button>
-                </div>
-            </div>
-            
-            <div class="profile-box">
-                <h3 style="font-size: 1.2em; font-weight: 600; color: var(--text-black); margin-bottom: 15px;">Channel Passwords</h3>
-                <select id="pChanSel" class="input-box"><option>Select Channel</option></select>
-                <input type="password" id="pNewPass" class="input-box" placeholder="Set Password" style="margin-top: 10px;">
-                <button class="btn" onclick="savePass()" style="margin-top: 10px;">Save Password</button>
-                <div id="pPassList" style="margin-top:15px;"></div>
-            </div>
-            
-            <!-- App Settings Display -->
-            <div class="profile-box">
-                <h3 style="font-size: 1.2em; font-weight: 600; color: var(--text-black); margin-bottom: 15px;">App Settings</h3>
-                <div class="settings-card">
-                    <div class="setting-item">
-                        <span>Card Size:</span>
-                        <span id="settingCardSize">Medium</span>
-                    </div>
-                    <div class="setting-item">
-                        <span>Font Size:</span>
-                        <span id="settingFontSize">Medium</span>
-                    </div>
-                    <div class="setting-item">
-                        <span>Theme:</span>
-                        <span id="settingThemeColor" style="color:var(--primary-red)">Red Theme</span>
+            <!-- PROFILE VIEW -->
+            <div id="view-profile" class="page">
+                <div class="ios-glass" style="padding: 30px;">
+                    <h3>TOKEN ACTIVATION</h3>
+                    <p style="color: #666; font-size: 12px; margin: 10px 0 20px;">Weka Token ya Premium hapa kuondoa matangazo na ku-lock kifaa.</p>
+                    <input type="text" id="tokenInput" class="input-box" placeholder="Weka Token ID...">
+                    <button class="btn-red" onclick="activatePremium()">ACTIVATE NOW</button>
+                    
+                    <div id="userStats" style="margin-top: 30px; border-top: 1px solid var(--border); padding-top: 20px;">
+                        <p>Status: <span id="statusLabel" style="color: var(--primary);">FREE USER</span></p>
+                        <p style="font-size: 12px; color: #444; margin-top: 10px;" id="hwidLabel"></p>
+                        <button class="btn-red" style="margin-top: 20px; background: #111;" onclick="auth.signOut()">LOGOUT</button>
                     </div>
                 </div>
             </div>
         </div>
 
-        <!-- Navigation -->
-        <div class="bottom-nav" id="bottomNav">
-            <a onclick="nav('home',this)" class="nav-item active">
-                <i class="fas fa-home"></i>Home
-            </a>
-            <a onclick="nav('cats',this)" class="nav-item">
-                <i class="fas fa-list"></i>Categories
-            </a>
-            <a onclick="showAdultWarning()" class="nav-item">
-                <i class="fas fa-user-secret"></i>Adult
-            </a>
-            <a onclick="openChatPage()" class="nav-item" style="position:relative;">
-                <i class="fas fa-comments"></i>Chat
-                <span id="chatNotification" class="notification-dot"></span>
-                <span id="chatNotificationCount" class="notification-count"></span>
-            </a>
-            <a onclick="nav('profile',this)" class="nav-item">
-                <i class="fas fa-user"></i>Profile
-            </a>
+        <!-- TAB BAR -->
+        <div class="bottom-nav ios-glass" style="border-radius: 40px 40px 0 0;">
+            <div class="nav-item active" onclick="switchPage('home', this)"><i class="fas fa-house"></i>Home</div>
+            <div class="nav-item" onclick="switchPage('library', this)"><i class="fas fa-book"></i>Library</div>
+            <div class="nav-item" onclick="switchPage('profile', this)"><i class="fas fa-crown"></i>Premium</div>
         </div>
     </div>
 
-    <!-- MODALS -->
-    <div id="blockModal" class="modal">
-        <div class="modal-box">
-            <span class="close-modal" onclick="document.getElementById('blockModal').style.display='none'">×</span>
-            <i class="fas fa-lock" style="font-size:3em; color:var(--primary-red); margin-bottom:15px;"></i>
-            <h3 style="color:var(--text-black); font-size: 1.4em; font-weight: 600;">Access Expired</h3>
-            <p style="color:var(--text-gray); margin:15px 0; font-size: 1.1em;">Your subscription has ended. Please renew to access this content.</p>
-            <button class="btn" onclick="openWhatsApp()" style="background:var(--success);">
-                <i class="fab fa-whatsapp"></i> Contact Admin
-            </button>
-            <button class="btn" onclick="nav('profile'); document.getElementById('blockModal').style.display='none';" style="background:var(--card-white); color:var(--text-black); border:1px solid var(--glass-border); margin-top:10px;">
-                <i class="fas fa-user"></i> Check Profile
-            </button>
+    <!-- BOOK READER VIEW -->
+    <div id="readerView">
+        <div class="reader-header">
+            <i class="fas fa-times" onclick="closeReader()" style="font-size: 25px; float: right;"></i>
+            <h2 id="readTitle" style="color: var(--primary);">Title</h2>
+            <p id="readMeta" style="font-size: 13px; color: #666; margin-top: 5px;"></p>
+        </div>
+        <div class="reader-body" id="readBody"></div>
+        <div class="reader-footer">
+            <button id="prevBtn" class="nav-btn" onclick="changeEp(-1)">PREVIOUS</button>
+            <button id="nextBtn" class="nav-btn" onclick="changeEp(1)">NEXT PART</button>
         </div>
     </div>
 
-    <div id="detailModal" class="modal">
-        <div class="modal-box">
-            <span class="close-modal" onclick="document.getElementById('detailModal').style.display='none'">×</span>
-            <img id="dImg" src="" style="width:100%; height:180px; object-fit:cover; border-radius:12px;">
-            <h3 id="dTitle" style="color:var(--primary-red); margin:10px 0; font-size: 1.3em; font-weight: 600;"></h3>
-            <p id="dDesc" style="color:var(--text-gray); font-size:1em; margin-bottom:15px;"></p>
-            <button class="btn" id="dBtn">Watch Now</button>
-        </div>
-    </div>
-
-    <div id="playerModal" class="modal">
-        <div class="modal-box" style="width:100%; height:100%; max-width:100%; background:var(--secondary-black); padding:0; border:none;">
-            <span class="close-modal" style="z-index:99; background:rgba(0,0,0,0.5); width:40px; height:40px; border-radius:50%; display:flex; align-items:center; justify-content:center; color:white;" onclick="closePlayer()">×</span>
-            <video id="videoJS" class="video-js vjs-default-skin vjs-big-play-centered" controls style="width:100%; height:100%;"></video>
-        </div>
-    </div>
-
-    <div id="passPrompt" class="modal">
-        <div class="modal-box">
-            <span class="close-modal" onclick="document.getElementById('passPrompt').style.display='none'">×</span>
-            <h3 style="font-size: 1.3em; font-weight: 600; color: var(--text-black);">Enter Password</h3>
-            <p id="ppName" style="color:var(--text-gray); margin:10px 0; font-size: 1.1em;"></p>
-            <input type="password" id="ppInput" class="input-box" style="text-align:center;">
-            <button class="btn" onclick="unlockChan()">Unlock</button>
-        </div>
-    </div>
-
-    <div id="deletePassModal" class="modal">
-        <div class="modal-box">
-            <span class="close-modal" onclick="document.getElementById('deletePassModal').style.display='none'">×</span>
-            <i class="fas fa-shield-alt" style="font-size:3em; color:var(--primary-red); margin-bottom:15px;"></i>
-            <h3 style="color:var(--text-black); font-size: 1.3em; font-weight: 600;">Confirm Password Deletion</h3>
-            <p id="deleteChanName" style="color:var(--text-gray); margin:10px 0; font-size: 1.1em;"></p>
-            <p style="color:var(--text-gray); margin-bottom:15px; font-size: 1em;">Enter current password to delete:</p>
-            <input type="password" id="deletePassInput" class="input-box" style="text-align:center;" placeholder="Enter current password">
-            <button class="btn" onclick="confirmDeletePass()" style="background:var(--error);">Delete Password</button>
-            <button class="btn" onclick="document.getElementById('deletePassModal').style.display='none'" style="background:var(--card-white); color:var(--text-black); border:1px solid var(--glass-border); margin-top:10px;">Cancel</button>
-        </div>
-    </div>
-    
-    <!-- Notification Modal -->
-    <div id="notifModal" class="modal">
-        <div class="modal-box">
-            <span class="close-modal" onclick="closeNotifModal()">×</span>
-            <h3 style="color:var(--primary-red); font-size: 1.3em; font-weight: 600;">Notifications</h3>
-            <div id="notifList" style="margin-top:15px; max-height:300px; overflow-y:auto;"></div>
-        </div>
-    </div>
-
-    <!-- WhatsApp Float Button -->
-    <div id="whatsappFloat" style="position:fixed; bottom:100px; right:20px; z-index:500; display:none;">
-        <div class="social-icon" style="background:#25D366; width:50px; height:50px; box-shadow:0 4px 12px rgba(37, 211, 102, 0.3);" onclick="openSupportWhatsApp()">
-            <i class="fab fa-whatsapp" style="font-size:1.5em;"></i>
+    <!-- PLAYER VIEW -->
+    <div id="playerWrap">
+        <i class="fas fa-chevron-left close-player" onclick="closePlayer()"></i>
+        <div id="videoContainer" style="width:100%; height:100%;" class="shaka-video-container">
+            <video id="stanyPlayer" style="width:100%; height:100%;" autoplay controls></video>
         </div>
     </div>
 
     <script>
-        // UPDATED FIREBASE CONFIG
+        // CONFIG
         const firebaseConfig = {
             apiKey: "AIzaSyDiexD5WK9GLhQldr6zNmC8iYWc4em5eyM",
             authDomain: "stany-min-tv.firebaseapp.com",
@@ -1386,2210 +224,248 @@
             projectId: "stany-min-tv",
             storageBucket: "stany-min-tv.firebasestorage.app",
             messagingSenderId: "16513327552",
-            appId: "1:16513327552:web:b4b2247053f83aa0b8e825",
-            measurementId: "G-JM25LJXL5C"
+            appId: "1:16513327552:web:b4b2247053f83aa0b8e825"
         };
-        
-        // Initialize Firebase
-        try {
-            firebase.initializeApp(firebaseConfig);
-            console.log("✅ Firebase initialized successfully");
-        } catch (error) {
-            console.log("✅ Firebase already initialized");
-        }
-        
+        firebase.initializeApp(firebaseConfig);
         const auth = firebase.auth();
         const db = firebase.database();
 
-        // Global Variables
-        let currentUser = null;
-        let userIsExpired = false;
-        let allData = {movies:[], channels:[], adult: []};
-        let player = null;
-        let pendingChan = null;
-        let adminContact = "";
-        const deviceId = localStorage.getItem('did') || 'dev_'+Date.now();
-        localStorage.setItem('did', deviceId);
-        
-        // Ultimate Ad Engine Variables
-        let adEngine = {
-            activeAd: null,
-            adTimer: null,
-            remainingSeconds: 0,
-            isPremium: false,
-            freeAccessUntil: 0,
-            adsWatchedToday: 0,
-            maxAdsPerDay: 3,
-            freeHoursPerAd: 1,
-            socialIcons: {
-                'whatsapp': 'fab fa-whatsapp',
-                'telegram': 'fab fa-telegram',
-                'youtube': 'fab fa-youtube',
-                'facebook': 'fab fa-facebook',
-                'instagram': 'fab fa-instagram',
-                'twitter': 'fab fa-twitter',
-                'tiktok': 'fab fa-tiktok',
-                'snapchat': 'fab fa-snapchat',
-                'linkedin': 'fab fa-linkedin',
-                'pinterest': 'fab fa-pinterest',
-                'reddit': 'fab fa-reddit',
-                'discord': 'fab fa-discord',
-                'twitch': 'fab fa-twitch',
-                'spotify': 'fab fa-spotify',
-                'apple': 'fab fa-apple',
-                'android': 'fab fa-android',
-                'chrome': 'fab fa-chrome',
-                'firefox': 'fab fa-firefox',
-                'edge': 'fab fa-edge',
-                'safari': 'fab fa-safari',
-                'windows': 'fab fa-windows',
-                'linux': 'fab fa-linux',
-                'github': 'fab fa-github',
-                'gitlab': 'fab fa-gitlab',
-                'bitbucket': 'fab fa-bitbucket',
-                'messenger': 'fab fa-facebook-messenger',
-                'skype': 'fab fa-skype',
-                'viber': 'fab fa-viber',
-                'wechat': 'fab fa-weixin',
-                'whatsapp-business': 'fab fa-whatsapp-square'
-            }
-        };
-        
-        // App Settings
-        let appSettings = {
-            cardSize: 'medium',
-            fontSize: 'medium',
-            carouselInterval: 5000,
-            lockedChannels: [],
-            freeChannels: [],
-            channelScripts: {},
-            adSettings: {
-                startupAd: true,
-                contentAd: true,
-                adDuration: 30,
-                skipForPremium: true,
-                maxAdsPerDay: 3,
-                freeHoursPerAd: 1
-            }
-        };
-        
-        // Variables for password deletion
-        let pendingDeleteChannelId = null;
-        let pendingDeleteChannelName = "";
-        
-        // Caching for faster loading
-        let cachedData = {
-            channels: null,
-            movies: null,
-            lastUpdated: null
-        };
-        
-        // Chat notification tracking
-        let unreadMessages = 0;
-        let lastCheckedChat = Date.now();
-        
-        // Notification tracking
-        let unreadNotifications = 0;
-        let lastCheckedNotif = Date.now();
-        
-        // Carousel
-        let carouselSlides = [];
-        let currentCarouselSlide = 0;
-        let carouselInterval = null;
-        
-        // Device Check Interval
-        let deviceCheckInterval = null;
-        
-        // Content access tracking
-        let pendingContentAccess = null;
-        
-        const specialMap = {
-            "AZAM SPORTS 1":"SP1", "AZAM SPORTS 2":"SP2", "AZAM SPORTS 3":"SP3", "AZAM SPORTS 4":"SP4",
-            "AZAM ONE HD":"AZ1", "AZAM TWO HD":"AZ2", "CHEKA PLUS":"CHK", "BRAZZERS":"BXX", "KIX":"KIX", "WASAFI":"WSF"
-        };
+        let currentUser = null, userData = null, activePlayer = null;
+        let currentBook = null, currentEpIdx = 0;
+        let HWID = localStorage.getItem('stany_did') || 'SN-' + Math.random().toString(36).substr(2, 9).toUpperCase();
+        localStorage.setItem('stany_did', HWID);
 
-        // Search functionality
-        let isSearchActive = false;
-
-        // AUTH STATE HANDLER
-        auth.onAuthStateChanged(u => {
-            console.log("🔄 Auth state changed:", u ? "User logged in" : "No user");
-            if(u) {
-                document.getElementById('authPages').style.display='none';
-                document.getElementById('loader').style.display='flex';
-                
-                setTimeout(() => {
-                    checkDevice(u.uid);
-                }, 1000);
-                
+        // --- AUTH LOGIC ---
+        auth.onAuthStateChanged(user => {
+            if(user) {
+                currentUser = user;
+                db.ref('users/' + user.uid).on('value', snap => {
+                    userData = snap.val();
+                    if(!userData) { registerInDB(user); return; }
+                    
+                    // Device Lock Check
+                    if(userData.hwid && userData.hwid !== HWID) {
+                        alert("ACCOUNT LOCKED ON ANOTHER DEVICE!");
+                        auth.signOut(); return;
+                    }
+                    
+                    document.getElementById('authView').style.display = 'none';
+                    document.getElementById('mainApp').style.display = 'flex';
+                    document.getElementById('statusLabel').innerText = userData.isPremium ? 'PREMIUM ACTIVE' : 'FREE USER';
+                    document.getElementById('hwidLabel').innerText = "DEVICE ID: " + HWID;
+                    loadContent();
+                });
             } else {
-                document.getElementById('authPages').style.display='flex';
-                document.getElementById('mainApp').style.display='none';
-                document.getElementById('loader').style.display='none';
-                document.getElementById('loginPage').style.display='block';
-                document.getElementById('regPage').style.display='none';
-                
-                // Clear any intervals when logged out
-                if (deviceCheckInterval) {
-                    clearInterval(deviceCheckInterval);
-                    deviceCheckInterval = null;
-                }
-                
-                // Clear carousel interval
-                if (carouselInterval) {
-                    clearInterval(carouselInterval);
-                    carouselInterval = null;
-                }
-                
-                // Clear ad timer
-                if (adEngine.adTimer) {
-                    clearInterval(adEngine.adTimer);
-                    adEngine.adTimer = null;
-                }
+                document.getElementById('authView').style.display = 'flex';
+                document.getElementById('mainApp').style.display = 'none';
             }
         });
 
-        // ==================== ULTIMATE AD ENGINE FUNCTIONS ====================
-
-        // Load Ad Settings
-        function loadAdSettings() {
-            db.ref('adSettings').on('value', snapshot => {
-                if (snapshot.exists()) {
-                    const settings = snapshot.val();
-                    adEngine.maxAdsPerDay = settings.maxAdsPerDay || 3;
-                    adEngine.freeHoursPerAd = settings.freeHoursPerAd || 1;
-                    appSettings.adSettings = settings;
-                    console.log("✅ Ad settings loaded:", settings);
-                    
-                    // Check if user already watched ads today
-                    const today = new Date().toDateString();
-                    const lastWatchDate = localStorage.getItem('lastAdWatchDate');
-                    if (lastWatchDate === today) {
-                        adEngine.adsWatchedToday = parseInt(localStorage.getItem('adsWatchedToday')) || 0;
-                    } else {
-                        adEngine.adsWatchedToday = 0;
-                        localStorage.setItem('lastAdWatchDate', today);
-                    }
-                    
-                    // Check premium status
-                    const token = localStorage.getItem('premiumToken');
-                    const tokenExpiry = localStorage.getItem('tokenExpiry');
-                    if (token && tokenExpiry && Date.now() < parseInt(tokenExpiry)) {
-                        adEngine.isPremium = true;
-                    }
-                    
-                    // Check free access
-                    const freeAccessUntil = localStorage.getItem('freeAccessUntil');
-                    if (freeAccessUntil && Date.now() < parseInt(freeAccessUntil)) {
-                        adEngine.isPremium = false;
-                    }
-                }
-            });
+        function handleAuth(type) {
+            const e = (type === 'login' ? document.getElementById('emailIn') : document.getElementById('remailIn')).value;
+            const p = (type === 'login' ? document.getElementById('passIn') : document.getElementById('rpassIn')).value;
+            if(type === 'login') auth.signInWithEmailAndPassword(e, p).catch(err => alert(err.message));
+            else auth.createUserWithEmailAndPassword(e, p).then(u => registerInDB(u.user)).catch(err => alert(err.message));
         }
 
-        // Load Random Ad
-        function loadRandomAd() {
-            return new Promise((resolve) => {
-                db.ref('ads').once('value').then(snapshot => {
-                    if (!snapshot.exists()) {
-                        console.log("No ads available");
-                        resolve(null);
-                        return;
-                    }
-
-                    const ads = [];
-                    snapshot.forEach(ad => {
-                        const adData = ad.val();
-                        if (adData.active) {
-                            ads.push({id: ad.key, ...adData});
-                        }
-                    });
-
-                    if (ads.length === 0) {
-                        console.log("No active ads available");
-                        resolve(null);
-                        return;
-                    }
-
-                    // Select random ad
-                    const randomIndex = Math.floor(Math.random() * ads.length);
-                    console.log("🎲 Selected random ad:", ads[randomIndex].sponsorName);
-                    resolve(ads[randomIndex]);
-                }).catch(error => {
-                    console.error("Error loading ads:", error);
-                    resolve(null);
-                });
-            });
+        function registerInDB(u) {
+            db.ref('users/' + u.uid).set({ email: u.email, isPremium: false, hwid: "" });
         }
 
-        // Show Ad Modal
-        function showAd(adData, onComplete) {
-            if (!adData) {
-                if (onComplete && typeof onComplete === 'function') {
-                    onComplete();
-                }
-                return;
-            }
-            
-            adEngine.activeAd = adData;
-            adEngine.remainingSeconds = adData.duration || appSettings.adSettings.adDuration || 30;
-            
-            // Reset UI
-            document.getElementById('adVideo').style.display = 'none';
-            document.getElementById('adImage').style.display = 'none';
-            document.getElementById('skipBtn').style.display = 'none';
-            
-            // Set ad content
-            if (adData.type === 'video') {
-                const video = document.getElementById('adVideo');
-                video.src = adData.mediaURL;
-                video.style.display = 'block';
-                video.load();
-                video.play().catch(e => {
-                    console.log("Video play error:", e);
-                    // Fallback to image if video fails
-                    const image = document.getElementById('adImage');
-                    image.src = adData.fallbackImage || 'https://via.placeholder.com/400x600?text=Ad';
-                    image.style.display = 'block';
-                });
-            } else {
-                const image = document.getElementById('adImage');
-                image.src = adData.mediaURL;
-                image.style.display = 'block';
-            }
-            
-            // Set marquee text
-            if (adData.marqueeTop) {
-                document.getElementById('marqueeTop').textContent = adData.marqueeTop;
-            } else {
-                document.getElementById('marqueeTop').textContent = `Sponsored by: ${adData.sponsorName || 'Unknown Sponsor'}`;
-            }
-            
-            if (adData.marqueeBottom) {
-                document.getElementById('marqueeBottom').textContent = adData.marqueeBottom;
-            } else {
-                document.getElementById('marqueeBottom').textContent = adData.sponsorMessage || "Thank you for watching this ad!";
-            }
-            
-            // Set social icons
-            const socialHub = document.getElementById('socialHub');
-            socialHub.innerHTML = '';
-            
-            if (adData.socialLinks && typeof adData.socialLinks === 'object') {
-                Object.entries(adData.socialLinks).forEach(([platform, url]) => {
-                    const platformLower = platform.toLowerCase();
-                    if (adEngine.socialIcons[platformLower]) {
-                        const icon = document.createElement('div');
-                        icon.className = 'social-icon';
-                        icon.innerHTML = `<i class="${adEngine.socialIcons[platformLower]}"></i>`;
-                        icon.title = platform.charAt(0).toUpperCase() + platform.slice(1);
-                        icon.onclick = (e) => {
-                            e.stopPropagation();
-                            if (url && url.startsWith('http')) {
-                                window.open(url, '_blank');
-                            }
-                        };
-                        socialHub.appendChild(icon);
-                    }
-                });
-            }
-            
-            // Add channel links if available
-            if (adData.channelLinks && typeof adData.channelLinks === 'object') {
-                Object.entries(adData.channelLinks).forEach(([platform, url]) => {
-                    const icon = document.createElement('div');
-                    icon.className = 'social-icon';
-                    icon.innerHTML = `<i class="fas fa-tv"></i>`;
-                    icon.title = `${platform} Channel`;
-                    icon.onclick = (e) => {
-                        e.stopPropagation();
-                        if (url && url.startsWith('http')) {
-                            window.open(url, '_blank');
-                        }
-                    };
-                    socialHub.appendChild(icon);
-                });
-            }
-            
-            // Show/hide skip button based on premium status
-            if (adEngine.isPremium && appSettings.adSettings.skipForPremium) {
-                document.getElementById('skipBtn').style.display = 'block';
-            }
-            
-            // Start timer
-            updateTimerDisplay();
-            if (adEngine.adTimer) {
-                clearInterval(adEngine.adTimer);
-            }
-            
-            adEngine.adTimer = setInterval(() => {
-                adEngine.remainingSeconds--;
-                updateTimerDisplay();
-                
-                if (adEngine.remainingSeconds <= 0) {
-                    completeAd(onComplete);
-                }
-            }, 1000);
-            
-            // Show modal
-            document.getElementById('adModal').style.display = 'flex';
-        }
-
-        // Update Timer Display
-        function updateTimerDisplay() {
-            document.getElementById('adTimer').textContent = adEngine.remainingSeconds;
-        }
-
-        // Skip Ad (Premium Only)
-        function skipAd() {
-            if (!adEngine.isPremium) {
-                showToast("Premium token required to skip ads", "warning");
-                return;
-            }
-            
-            completeAd();
-            showToast("Ad skipped", "info");
-        }
-
-        // Complete Ad
-        function completeAd(onComplete) {
-            if (adEngine.adTimer) {
-                clearInterval(adEngine.adTimer);
-                adEngine.adTimer = null;
-            }
-            
-            // Stop video if playing
-            const video = document.getElementById('adVideo');
-            if (video && !video.paused) {
-                video.pause();
-            }
-            
-            // Hide modal
-            document.getElementById('adModal').style.display = 'none';
-            
-            // Update user's ad watch count
-            if (!adEngine.isPremium) {
-                updateAdWatchCount();
-            }
-            
-            // Execute callback
-            if (onComplete && typeof onComplete === 'function') {
-                onComplete();
-            }
-        }
-
-        // Update User's Ad Watch Count
-        function updateAdWatchCount() {
-            const today = new Date().toDateString();
-            const lastWatchDate = localStorage.getItem('lastAdWatchDate');
-            
-            // Reset count if new day
-            if (lastWatchDate !== today) {
-                adEngine.adsWatchedToday = 0;
-                localStorage.setItem('lastAdWatchDate', today);
-            }
-            
-            adEngine.adsWatchedToday++;
-            localStorage.setItem('adsWatchedToday', adEngine.adsWatchedToday);
-            
-            // Grant free access if reached daily limit
-            if (adEngine.adsWatchedToday >= adEngine.maxAdsPerDay) {
-                const freeHours = adEngine.maxAdsPerDay * adEngine.freeHoursPerAd;
-                adEngine.freeAccessUntil = Date.now() + (freeHours * 60 * 60 * 1000);
-                localStorage.setItem('freeAccessUntil', adEngine.freeAccessUntil);
-                
-                showToast(`🎉 You earned ${freeHours} hours of free access!`, "success");
-            }
-            
-            // Update in Firebase
-            if (currentUser) {
-                db.ref(`users/${currentUser.uid}/adStats`).update({
-                    lastAdWatch: Date.now(),
-                    adsWatchedToday: adEngine.adsWatchedToday,
-                    totalAdsWatched: firebase.database.ServerValue.increment(1)
-                });
-            }
-        }
-
-        // Check if User Can Skip Ads
-        function checkAdAccess(contentCallback) {
-            // Check premium token
-            const premiumToken = localStorage.getItem('premiumToken');
-            const tokenExpiry = localStorage.getItem('tokenExpiry');
-            
-            if (premiumToken && tokenExpiry && Date.now() < parseInt(tokenExpiry)) {
-                adEngine.isPremium = true;
-                if (contentCallback) contentCallback();
-                return;
-            }
-            
-            // Check free access
-            const freeAccessUntil = localStorage.getItem('freeAccessUntil');
-            if (freeAccessUntil && Date.now() < parseInt(freeAccessUntil)) {
-                adEngine.isPremium = false;
-                if (contentCallback) contentCallback();
-                return;
-            }
-            
-            // Check daily ad limit
-            const today = new Date().toDateString();
-            const lastWatchDate = localStorage.getItem('lastAdWatchDate');
-            if (lastWatchDate === today) {
-                adEngine.adsWatchedToday = parseInt(localStorage.getItem('adsWatchedToday')) || 0;
-            } else {
-                adEngine.adsWatchedToday = 0;
-            }
-            
-            if (adEngine.adsWatchedToday >= adEngine.maxAdsPerDay) {
-                // User already watched max ads today
-                adEngine.isPremium = false;
-                if (contentCallback) contentCallback();
-                return;
-            }
-            
-            // User needs to watch ad
-            showToast("📺 Loading advertisement...", "info");
-            loadRandomAd().then(ad => {
-                if (ad) {
-                    showAd(ad, contentCallback);
-                } else {
-                    // No ads available, allow access
-                    if (contentCallback) contentCallback();
-                }
-            });
-        }
-
-        // Show Startup Ad
-        function showStartupAd() {
-            if (!appSettings.adSettings.startupAd) return;
-            
-            setTimeout(() => {
-                loadRandomAd().then(ad => {
-                    if (ad) {
-                        showAd(ad, () => {
-                            showToast("App loaded successfully!", "success");
-                        });
-                    }
-                });
-            }, 1500);
-        }
-
-        // Validate Premium Token
-        function validateToken() {
-            const token = document.getElementById('tokenInput').value.trim();
-            if (!token) {
-                showToast("Please enter a token", "warning");
-                return;
-            }
-            
-            db.ref('premiumTokens').once('value').then(snapshot => {
-                let tokenValid = false;
-                let tokenData = null;
-                
-                snapshot.forEach(t => {
-                    const tData = t.val();
-                    if (tData.token === token && tData.active) {
-                        // Check if token is not expired
-                        const now = Date.now();
-                        if (!tData.expiry || now < tData.expiry) {
-                            tokenValid = true;
-                            tokenData = tData;
-                            
-                            // Mark token as used if single use
-                            if (tData.singleUse) {
-                                db.ref('premiumTokens/' + t.key).update({
-                                    active: false,
-                                    usedAt: now,
-                                    usedBy: currentUser ? currentUser.uid : 'anonymous'
-                                });
-                            }
-                        }
-                    }
-                });
-                
-                if (tokenValid) {
-                    // Activate premium
-                    const expiry = tokenData.expiry || (Date.now() + (30 * 24 * 60 * 60 * 1000)); // Default 30 days
-                    localStorage.setItem('premiumToken', token);
-                    localStorage.setItem('tokenExpiry', expiry);
-                    adEngine.isPremium = true;
-                    
-                    // Update user in database
-                    if (currentUser) {
-                        db.ref(`users/${currentUser.uid}`).update({
-                            isPremium: true,
-                            premiumExpiry: expiry,
-                            premiumToken: token,
-                            premiumActivated: Date.now()
-                        });
-                    }
-                    
-                    document.getElementById('tokenModal').style.display = 'none';
-                    document.getElementById('tokenInput').value = '';
-                    showToast("🎉 Premium token activated successfully!", "success");
-                    
-                    // Continue with pending content access
-                    if (pendingContentAccess) {
-                        pendingContentAccess();
-                        pendingContentAccess = null;
-                    }
-                } else {
-                    showToast("Invalid or expired token", "error");
-                }
-            }).catch(error => {
-                console.error("Error validating token:", error);
-                showToast("Error validating token", "error");
-            });
-        }
-
-        // Watch Ad for Free Access
-        function watchAdForAccess() {
-            document.getElementById('tokenModal').style.display = 'none';
-            document.getElementById('tokenInput').value = '';
-            checkAdAccess(() => {
-                if (pendingContentAccess) {
-                    pendingContentAccess();
-                    pendingContentAccess = null;
-                }
-            });
-        }
-
-        // Close Token Modal
-        function closeTokenModal() {
-            document.getElementById('tokenModal').style.display = 'none';
-            document.getElementById('tokenInput').value = '';
-        }
-
-        // Show Premium Token Modal
-        function showTokenModal() {
-            document.getElementById('tokenModal').style.display = 'flex';
-        }
-
-        // ==================== CHAT PAGE NAVIGATION ====================
-
-        function openChatPage() {
-            // Hide main header and bottom nav
-            document.getElementById('mainHeader').style.display = 'none';
-            document.getElementById('bottomNav').style.display = 'none';
-            
-            // Show chat header
-            document.getElementById('chatHeader').style.display = 'flex';
-            
-            // Navigate to chat page
-            document.querySelectorAll('.page').forEach(x => x.classList.remove('active'));
-            document.getElementById('chat').classList.add('active');
-            
-            // Clear chat notifications
-            clearChatNotifications();
-            
-            // Load chat messages
-            loadChatMessages();
-        }
-
-        function backFromChat() {
-            // Show main header and bottom nav
-            document.getElementById('mainHeader').style.display = 'flex';
-            document.getElementById('bottomNav').style.display = 'flex';
-            
-            // Hide chat header
-            document.getElementById('chatHeader').style.display = 'none';
-            
-            // Navigate back to home
-            document.querySelectorAll('.page').forEach(x => x.classList.remove('active'));
-            document.getElementById('home').classList.add('active');
-            
-            // Update nav active state
-            document.querySelectorAll('.nav-item').forEach(x => x.classList.remove('active'));
-            document.querySelector('.nav-item[onclick*="home"]').classList.add('active');
-        }
-
-        // Load Chat Messages
-        function loadChatMessages() {
-            if (!currentUser) return;
-            
-            db.ref('groupChat').limitToLast(50).on('value', snapshot => {
-                const chatBox = document.getElementById('chatBox');
-                chatBox.innerHTML = '';
-                
-                if (!snapshot.exists()) {
-                    chatBox.innerHTML = '<div class="msg msg-admin">Welcome to Group Chat! Start the conversation.</div>';
-                    return;
-                }
-                
-                snapshot.forEach(child => {
-                    const msg = child.val();
-                    const msgElement = document.createElement('div');
-                    msgElement.className = `msg ${msg.senderId === currentUser.uid ? 'msg-user' : 'msg-admin'}`;
-                    
-                    const time = new Date(msg.timestamp).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
-                    msgElement.innerHTML = `
-                        <div style="font-weight: 600; margin-bottom: 4px;">${msg.senderName || 'User'}</div>
-                        <div>${msg.text}</div>
-                        <div style="font-size: 0.7em; text-align: right; margin-top: 4px; opacity: 0.7;">${time}</div>
-                    `;
-                    
-                    chatBox.appendChild(msgElement);
-                });
-                
-                chatBox.scrollTop = chatBox.scrollHeight;
-            });
-        }
-
-        // Send Chat Message
-        function sendChat() {
-            if (!currentUser) {
-                showToast("Please login to send messages", "warning");
-                return;
-            }
-            
-            const text = document.getElementById('chatInput').value.trim();
-            if (!text) {
-                showToast("Please enter a message", "warning");
-                return;
-            }
-            
-            const chatData = {
-                text: text,
-                senderId: currentUser.uid,
-                senderName: currentUser.name || 'User',
-                senderEmail: currentUser.email,
-                timestamp: Date.now(),
-                type: 'group'
-            };
-            
-            db.ref('groupChat').push(chatData)
-                .then(() => {
-                    document.getElementById('chatInput').value = '';
-                    showToast("💬 Message sent!", "success");
-                })
-                .catch(error => {
-                    console.error("Error sending message:", error);
-                    showToast("Failed to send message", "error");
-                });
-        }
-
-        // ==================== ADULT CONTENT WARNING ====================
-
-        function showAdultWarning() {
-            document.getElementById('ageGateModal').style.display = 'flex';
-        }
-
-        function proceedToAdult() {
-            document.getElementById('ageGateModal').style.display = 'none';
-            
-            // Load adult content
-            loadAdultContent();
-            
-            // Navigate to adult page
-            document.querySelectorAll('.page').forEach(x => {
-                x.classList.remove('active');
-                if (x.id !== 'adult') x.style.display = 'none';
-            });
-            document.getElementById('adult').style.display = 'block';
-            document.getElementById('adult').classList.add('active');
-            
-            // Update nav active state
-            document.querySelectorAll('.nav-item').forEach(x => x.classList.remove('active'));
-            document.querySelector('.nav-item[onclick*="showAdultWarning"]').classList.add('active');
-        }
-
-        function closeAgeGate() {
-            document.getElementById('ageGateModal').style.display = 'none';
-        }
-
-        function loadAdultContent() {
-            db.ref('adultContent').on('value', snapshot => {
-                const container = document.getElementById('adultGrid');
-                container.innerHTML = '';
-                
-                if (!snapshot.exists()) {
-                    container.innerHTML = '<div class="loading-text">No adult content available</div>';
-                    return;
-                }
-                
-                snapshot.forEach(item => {
-                    const data = item.val();
-                    container.innerHTML += `
-                        <div class="card" onclick="handleAdultClick('${item.key}')">
-                            <img src="${data.posterURL || 'https://via.placeholder.com/150x200?text=18+'}" 
-                                 onerror="this.src='https://via.placeholder.com/150x200?text=18+'">
-                            <div class="card-info"><h4>${data.title || 'Adult Content'}</h4></div>
-                        </div>
-                    `;
-                });
-            });
-        }
-
-        function handleAdultClick(id) {
-            // Check ad access for adult content
-            pendingContentAccess = () => {
-                db.ref(`adultContent/${id}`).once('value').then(snapshot => {
-                    const item = snapshot.val();
-                    if (item) {
-                        playContent({...item, type: 'adult', id: id});
-                    }
-                });
-            };
-            
-            // First check if user needs to enter premium token
-            const token = localStorage.getItem('premiumToken');
-            const tokenExpiry = localStorage.getItem('tokenExpiry');
-            
-            if (!token || !tokenExpiry || Date.now() >= parseInt(tokenExpiry)) {
-                showTokenModal();
-                return;
-            }
-            
-            checkAdAccess(pendingContentAccess);
-        }
-
-        // ==================== UPDATED CONTENT ACCESS ====================
-
-        function handleClick(type, id, locked) {
-            if(locked) { 
-                showBlockModal(); 
-                return; 
-            }
-            
-            const item = type==='channel' ? allData.channels.find(x=>x.id===id) : 
-                         type==='movie' ? allData.movies.find(x=>x.id===id) : null;
-            
-            if (!item) {
-                showToast("Item not found", "error");
-                return;
-            }
-            
-            // Show detail modal
-            document.getElementById('dImg').src = item.posterURL || 'https://via.placeholder.com/300x180?text=No+Image';
-            document.getElementById('dTitle').innerText = item.name||item.title||'Untitled';
-            document.getElementById('dDesc').innerText = item.description || 'No description available';
-            document.getElementById('dBtn').onclick = () => {
-                document.getElementById('detailModal').style.display='none';
-                
-                // Set pending content access
-                pendingContentAccess = () => {
-                    if(type==='channel') checkChanPass(item); 
-                    else playContent(item);
-                };
-                
-                // Check if user needs to watch ad or enter token
-                if (!adEngine.isPremium && appSettings.adSettings.contentAd) {
-                    checkAdAccess(pendingContentAccess);
-                } else {
-                    pendingContentAccess();
-                }
-            };
-            
-            document.getElementById('detailModal').style.display='flex';
-        }
-
-        // ==================== CUSTOM LOGOUT FUNCTIONS ====================
-
-        function showLogoutConfirm() {
-            document.getElementById('logoutConfirmModal').style.display = 'flex';
-        }
-
-        function cancelLogout() {
-            document.getElementById('logoutConfirmModal').style.display = 'none';
-        }
-
-        function confirmLogout() {
-            console.log("🚪 Logging out user");
-            
-            // Clear intervals
-            if (deviceCheckInterval) clearInterval(deviceCheckInterval);
-            if (carouselInterval) clearInterval(carouselInterval);
-            if (adEngine.adTimer) clearInterval(adEngine.adTimer);
-            
-            // Sign out
-            auth.signOut();
-            document.getElementById('logoutConfirmModal').style.display = 'none';
-            
-            // Clear local storage
-            localStorage.removeItem('premiumToken');
-            localStorage.removeItem('tokenExpiry');
-            localStorage.removeItem('freeAccessUntil');
-            localStorage.removeItem('adsWatchedToday');
-            localStorage.removeItem('lastAdWatchDate');
-            
-            showToast("Logged out successfully", "info");
-        }
-
-        // ==================== WHATSAPP SUPPORT ====================
-
-        function openSupportWhatsApp() {
-            const phone = "255000000000"; // Admin phone number from settings
-            const message = "Hello STANY MIN TV Support, I need assistance.";
-            window.open(`https://wa.me/${phone}?text=${encodeURIComponent(message)}`, '_blank');
-        }
-
-        // ==================== TOAST NOTIFICATION ====================
-
-        function showToast(message, type = "info") {
-            const toast = document.getElementById('toast');
-            const icons = {
-                success: "fas fa-check-circle",
-                error: "fas fa-times-circle",
-                warning: "fas fa-exclamation-triangle",
-                info: "fas fa-info-circle"
-            };
-            
-            toast.innerHTML = `<i class="${icons[type] || icons.info}"></i> ${message}`;
-            toast.className = `toast-${type}`;
-            toast.style.transform = 'translateX(0)';
-            
-            setTimeout(() => {
-                toast.style.transform = 'translateX(200%)';
-            }, 4000);
-        }
-
-        // ==================== NAVIGATION ====================
-
-        function nav(page, element) { 
-            if (page === 'chat') {
-                openChatPage();
-                return;
-            }
-            
-            if (page === 'adult') {
-                showAdultWarning();
-                return;
-            }
-            
-            document.querySelectorAll('.page').forEach(x => {
-                x.classList.remove('active');
-                if (x.id === 'adult') x.style.display = 'none';
-            }); 
-            document.getElementById(page).classList.add('active'); 
-            document.querySelectorAll('.nav-item').forEach(x => x.classList.remove('active')); 
-            if(element) element.classList.add('active'); 
-            
-            // Hide search when navigating
-            if (isSearchActive) {
-                toggleSearch();
-            }
-            
-            // Show WhatsApp float button except on chat page
-            if (page !== 'chat') {
-                setTimeout(() => {
-                    document.getElementById('whatsappFloat').style.display = 'block';
-                }, 1000);
-            } else {
-                document.getElementById('whatsappFloat').style.display = 'none';
-            }
-        }
-
-        // ==================== DEVICE CHECK & AUTH FUNCTIONS ====================
-
-        function checkDevice(uid) {
-            console.log("🔍 Checking device for user:", uid);
-            console.log("📱 Current device ID:", deviceId);
-            
-            document.getElementById('loader').style.display = 'flex';
-            
-            // Load cached data first for instant display
-            loadCachedData();
-            
-            // Get user data first, then proceed
-            db.ref('users/'+uid).once('value').then(userSnap => {
-                const u = userSnap.val();
-                console.log("📱 User data loaded:", u);
-                
-                if(!u) { 
-                    console.log("❌ No user data found - signing out");
-                    auth.signOut(); 
-                    return; 
-                }
-                
-                if(u.isBlocked) { 
-                    console.log("🚫 User is blocked");
-                    showBlockScreen("Account Blocked"); 
-                    return; 
-                }
-
-                // DEVICE CHECK LOGIC
-                if(!u.activeDeviceId) {
-                    console.log("📱 First time login - registering device");
-                    registerNewDevice(uid, u);
-                }
-                else if(u.activeDeviceId !== deviceId) {
-                    console.log("⚠️ Device mismatch - requiring admin approval");
-                    console.log("🆔 Stored device:", u.activeDeviceId);
-                    console.log("🆔 Current device:", deviceId);
-                    handleDeviceMismatch(uid);
-                } else {
-                    console.log("✅ Device matches - initializing app");
-                    initializeUserApp(uid, u);
-                }
-            }).catch(error => {
-                console.error("❌ Error loading user data:", error);
-                showToast("Error loading user data", "error");
-                document.getElementById('loader').style.display = 'none';
-            });
-        }
-
-        function registerNewDevice(uid, userData) {
-            db.ref('users/'+uid).update({
-                activeDeviceId: deviceId,
-                lastLogin: Date.now()
-            }).then(() => {
-                console.log("✅ Device registered successfully");
-                userIsExpired = false;
-                if(userData.accessExpiry && userData.accessExpiry < Date.now()) userIsExpired = true;
-                currentUser = {uid:uid, ...userData, activeDeviceId: deviceId};
-                
-                // Load essential data
-                loadEssentialData();
-                initApp();
-                
-            }).catch(error => {
-                console.error("❌ Device registration error:", error);
-                showToast("Device setup failed", "error");
-                document.getElementById('loader').style.display = 'none';
-            });
-        }
-
-        function handleDeviceMismatch(uid) {
-            showDeviceWait(uid);
-            createDeviceRequest(uid);
-            startDeviceApprovalCheck(uid);
-        }
-
-        function initializeUserApp(uid, userData) {
-            userIsExpired = false;
-            if(userData.accessExpiry && userData.accessExpiry < Date.now()) userIsExpired = true;
-
-            currentUser = {uid:uid, ...userData};
-            
-            // Load essential data
-            loadEssentialData();
-            initApp();
-        }
-
-        function startDeviceApprovalCheck(uid) {
-            if (deviceCheckInterval) {
-                clearInterval(deviceCheckInterval);
-            }
-            
-            deviceCheckInterval = setInterval(() => {
-                checkDeviceApprovalStatus(uid);
-            }, 2000);
-        }
-
-        async function checkDeviceApprovalStatus(uid) {
-            try {
-                const s = await db.ref('deviceRequests/'+uid).once('value');
-                const r = s.val();
-
-                if (r && r.status === 'approved' && r.deviceId === deviceId) {
-                    // Device approved - update user and initialize app
-                    await db.ref('users/'+uid).update({
-                        activeDeviceId: deviceId,
-                        lastDeviceApproval: Date.now()
-                    });
-                    await db.ref('deviceRequests/'+uid).remove();
-                    
-                    // Clear the interval
-                    if (deviceCheckInterval) {
-                        clearInterval(deviceCheckInterval);
-                        deviceCheckInterval = null;
-                    }
-                    
-                    document.getElementById('deviceOverlay').style.display = 'none';
-                    showToast("🎉 Device approved! Welcome to STANY MIN TV", "success");
-                    
-                    // Reload essential data
-                    document.getElementById('loader').style.display = 'flex';
-                    setTimeout(() => {
-                        location.reload();
-                    }, 1000);
-                    
-                } else if (r && r.status === 'rejected') {
-                    // Clear the interval if rejected
-                    if (deviceCheckInterval) {
-                        clearInterval(deviceCheckInterval);
-                        deviceCheckInterval = null;
-                    }
-                    document.getElementById('deviceMsg').innerText = "❌ Admin Rejected Request. Please contact support.";
-                    showToast("Device request was rejected", "error");
-                }
-            } catch (error) {
-                console.error("Error checking device approval:", error);
-            }
-        }
-
-        function createDeviceRequest(uid) {
-            const user = auth.currentUser;
-            if (!user) {
-                console.log("❌ No authenticated user");
-                return;
-            }
-            
-            const requestData = {
-                email: user.email, 
-                deviceId: deviceId, 
-                status: 'pending', 
-                timestamp: Date.now(),
-                userName: user.displayName || 'Unknown User',
-                userUid: uid,
-                userEmail: user.email
-            };
-            
-            console.log("📨 Creating device request:", requestData);
-            
-            db.ref('deviceRequests/'+uid).set(requestData)
-                .then(() => {
-                    console.log("✅ Device request created successfully in database");
-                    showToast("📱 Device approval requested. Waiting for admin...", "info");
-                })
-                .catch(error => {
-                    console.error("❌ Failed to create device request:", error);
-                    setTimeout(() => createDeviceRequest(uid), 3000);
-                });
-        }
-
-        function showDeviceWait(uid) {
-            console.log("⏳ Showing device wait screen for user:", uid);
-            document.getElementById('deviceOverlay').style.display='flex';
-            document.getElementById('loader').style.display='none';
-            document.getElementById('deviceMsg').innerText = "⏳ Waiting for Admin Approval... Auto-checking every 2 seconds.";
-        }
-
-        async function refreshDeviceStatus() {
-            const btn = document.getElementById('refreshDevBtn');
-            const originalText = btn.innerText;
-            btn.innerText = "🔄 Checking...";
-            btn.disabled = true;
-            
-            try {
-                const uid = auth.currentUser.uid;
-                console.log("🔄 Manual device status check for:", uid);
-                
-                const s = await db.ref('deviceRequests/'+uid).once('value');
-                const r = s.val();
-
-                console.log("📋 Device request data:", r);
-
-                if (r && r.status === 'approved' && r.deviceId === deviceId) {
-                    console.log("✅ Device approved - updating user record");
-                    await db.ref('users/'+uid).update({
-                        activeDeviceId: deviceId,
-                        lastDeviceApproval: Date.now()
-                    });
-                    await db.ref('deviceRequests/'+uid).remove();
-                    
-                    document.getElementById('deviceOverlay').style.display = 'none';
-                    showToast("🎉 Device approved! Welcome to STANY MIN TV", "success");
-                    
-                    document.getElementById('loader').style.display = 'flex';
-                    setTimeout(() => {
-                        location.reload();
-                    }, 1000);
-                    
-                } else if (r && r.status === 'rejected') {
-                    console.log("❌ Device request rejected");
-                    document.getElementById('deviceMsg').innerText = "❌ Admin Rejected Request. Please contact support.";
-                    btn.innerText = "❌ Rejected";
-                    showToast("Device request was rejected", "error");
-                } else {
-                    console.log("⏳ Device request still pending");
-                    document.getElementById('deviceMsg').innerText = "⏳ Still Pending... Auto-checking every 2 seconds.";
-                    btn.innerText = originalText;
-                    showToast("Status: Still pending. Auto-checking...", "info");
-                }
-            } catch (error) {
-                console.error("❌ Error checking device status:", error);
-                showToast("Error checking status", "error");
-                btn.innerText = originalText;
-            } finally {
-                btn.disabled = false;
-            }
-        }
-
-        function logoutFromDevice() {
-            console.log("🚪 Logging out from device approval screen");
-            
-            if (deviceCheckInterval) {
-                clearInterval(deviceCheckInterval);
-                deviceCheckInterval = null;
-            }
-            
-            auth.signOut();
-            document.getElementById('deviceOverlay').style.display = 'none';
-            document.getElementById('authPages').style.display = 'flex';
-            document.getElementById('loginPage').style.display = 'block';
-            
-            showToast("👋 Returned to login page", "info");
-        }
-
-        function quickRefresh() {
-            console.log("🔄 Quick refresh triggered");
-            document.getElementById('loader').style.display='flex';
-            
-            if(currentUser && currentUser.uid) {
-                loadEssentialData();
-                setTimeout(() => {
-                    document.getElementById('loader').style.display='none';
-                    showToast("🔄 App data refreshed successfully!", "success");
-                }, 1000);
-            } else {
-                setTimeout(() => {
-                    document.getElementById('loader').style.display='none';
-                    showToast("🔄 App data refreshed successfully!", "success");
-                }, 800);
-            }
-        }
-
-        function showBlockScreen(msg) {
-            document.getElementById('mainApp').style.display='none';
-            document.getElementById('deviceOverlay').style.display='flex';
-            document.getElementById('deviceMsg').innerText = msg;
-            document.getElementById('refreshDevBtn').style.display='none';
-        }
-
-        // ==================== INIT APP ====================
-
-        function initApp() {
-            console.log("🚀 Initializing app for user:", currentUser?.email);
-            
-            document.getElementById('loader').style.display='none';
-            document.getElementById('deviceOverlay').style.display='none';
-            document.getElementById('mainApp').style.display='block';
-            
-            if (!currentUser) {
-                console.error("❌ No current user found in initApp");
-                return;
-            }
-            
-            document.getElementById('pName').innerText = currentUser.name || 'User';
-            document.getElementById('pEmail').innerText = currentUser.email;
-            
-            const days = currentUser.accessExpiry ? Math.ceil((currentUser.accessExpiry - Date.now())/(1000*60*60*24)) : 0;
-            const statusEl = document.getElementById('pDays');
-            if(userIsExpired) { 
-                statusEl.innerText = "EXPIRED"; 
-                statusEl.style.color = "var(--error)"; 
-            } else { 
-                statusEl.innerText = (days > 0 ? days + " DAYS LEFT" : "TRIAL / FREE"); 
-                statusEl.style.color = "var(--primary-red)"; 
-            }
-
-            // Apply app settings
-            applyAppSettings();
-            
-            // Load ad settings
-            loadAdSettings();
-            
-            // Setup chat
-            setupChat();
-            
-            // Setup notifications
-            setupNotif();
-            
-            // Check unread messages
-            checkUnreadMessages();
-            
-            // Show startup ad
-            setTimeout(() => {
-                showStartupAd();
-            }, 2000);
-            
-            // Show WhatsApp float button
-            setTimeout(() => {
-                document.getElementById('whatsappFloat').style.display = 'block';
-            }, 5000);
-            
-            showToast("🎉 Welcome back to STANY MIN TV!", "success");
-            console.log("✅ App initialized successfully");
-        }
-
-        // ==================== DATA LOADING FUNCTIONS ====================
-
-        function loadCachedData() {
-            const cached = localStorage.getItem('stanyCachedData');
-            if(cached) {
-                try {
-                    cachedData = JSON.parse(cached);
-                    if(cachedData.channels) {
-                        displayChannels(cachedData.channels);
-                    }
-                    if(cachedData.movies) {
-                        displayMovies(cachedData.movies);
-                    }
-                } catch(e) {
-                    console.log('Cache load error');
-                }
-            }
-        }
-
-        function saveToCache(data) {
-            cachedData = {
-                channels: data.channels || cachedData.channels,
-                movies: data.movies || cachedData.movies,
-                lastUpdated: Date.now()
-            };
-            localStorage.setItem('stanyCachedData', JSON.stringify(cachedData));
-        }
-
-        function loadEssentialData() {
-            console.log("📥 Loading essential data");
-            
-            // Load app settings first with real-time listener
-            loadAppSettings();
-            
-            // Load channels with real-time listener
-            db.ref('channels').on('value', s => {
-                processChannelsData(s);
-            });
-            
-            // Load movies with real-time listener
-            db.ref('movies').on('value', s => {
-                processMoviesData(s);
-            });
-            
-            // Load categories with real-time listener
-            db.ref('genres').on('value', s => {
-                const t = document.getElementById('catTags'); 
-                const c = document.getElementById('catContent');
-                t.innerHTML = `<button class="cat-btn active" onclick="filterHome('all')">All</button>`; 
-                c.innerHTML='';
-                s.forEach(g => {
-                    const n = g.val().name;
-                    t.innerHTML += `<button class="cat-btn" onclick="filterHome('${n}')">${n}</button>`;
-                    c.innerHTML += `<div class="category-section">
-                        <div class="category-title">${n}</div>
-                        <div class="grid" id="cat_${n.replace(/s/g,'')}"><div class="loading-text">Loading...</div></div>
+        // --- CONTENT LOADER ---
+        function loadContent() {
+            db.ref('channels').on('value', snap => {
+                const g = document.getElementById('chanGrid'); g.innerHTML = '';
+                snap.forEach(c => {
+                    const d = c.val();
+                    g.innerHTML += `<div class="card" onclick="handlePlay('${c.key}', 'channels')">
+                        <img src="${d.logo}">
+                        <div class="card-info">${d.name}</div>
                     </div>`;
                 });
-                setTimeout(fillCats, 500);
-            });
-            
-            // Load carousel with real-time listener
-            loadCarousel();
-            
-            // Load other data
-            setTimeout(loadNonEssentialData, 500);
-        }
-
-        function loadAppSettings() {
-            db.ref('appSettings').on('value', snapshot => {
-                if (snapshot.exists()) {
-                    appSettings = snapshot.val();
-                    console.log("✅ App settings loaded:", appSettings);
-                    applyAppSettings();
-                    
-                    // Show notification when settings are updated
-                    showToast("⚙️ App settings updated", "info");
-                }
-            });
-        }
-
-        function applyAppSettings() {
-            // Apply card size
-            if (appSettings.cardSize) {
-                const cards = document.querySelectorAll('.card');
-                cards.forEach(card => {
-                    card.style.transform = appSettings.cardSize === 'large' ? 'scale(1.1)' : 
-                                         appSettings.cardSize === 'small' ? 'scale(0.9)' : 'scale(1)';
-                });
-                document.getElementById('settingCardSize').textContent = appSettings.cardSize.charAt(0).toUpperCase() + appSettings.cardSize.slice(1);
-            }
-            
-            // Apply font size
-            if (appSettings.fontSize) {
-                document.body.style.fontSize = appSettings.fontSize === 'large' ? '18px' : 
-                                              appSettings.fontSize === 'small' ? '14px' : '16px';
-                document.getElementById('settingFontSize').textContent = appSettings.fontSize.charAt(0).toUpperCase() + appSettings.fontSize.slice(1);
-            }
-            
-            // Update carousel interval
-            if (appSettings.carouselInterval) {
-                startCarousel();
-            }
-        }
-
-        function loadCarousel() {
-            db.ref('carousel').on('value', snapshot => {
-                const carousel = document.getElementById('carousel');
-                carousel.innerHTML = '';
-                carouselSlides = [];
-                
-                if (!snapshot.exists()) {
-                    carousel.innerHTML = '<div class="loading-text">No carousel slides available</div>';
-                    return;
-                }
-                
-                snapshot.forEach(slide => {
-                    const slideData = slide.val();
-                    carouselSlides.push(slideData);
-                });
-                
-                if (carouselSlides.length > 0) {
-                    displayCarouselSlide(0);
-                    startCarousel();
-                    showToast("🔄 Carousel updated", "info");
-                }
-            });
-        }
-
-        function displayCarouselSlide(index) {
-            const carousel = document.getElementById('carousel');
-            const slide = carouselSlides[index];
-            
-            carousel.innerHTML = `
-                <div class="carousel-slide active">
-                    <img src="${slide.imageURL || 'https://via.placeholder.com/400x200?text=No+Image'}" 
-                         onerror="this.src='https://via.placeholder.com/400x200?text=No+Image'">
-                    <div class="carousel-caption">
-                        <div class="carousel-title">${slide.title || 'No Title'}</div>
-                        <div class="carousel-description">${slide.description || ''}</div>
-                    </div>
-                </div>
-            `;
-        }
-
-        function startCarousel() {
-            if (carouselInterval) {
-                clearInterval(carouselInterval);
-            }
-            
-            if (carouselSlides.length > 1) {
-                const interval = appSettings.carouselInterval || 5000;
-                carouselInterval = setInterval(() => {
-                    currentCarouselSlide = (currentCarouselSlide + 1) % carouselSlides.length;
-                    displayCarouselSlide(currentCarouselSlide);
-                }, interval);
-            }
-        }
-
-        function processChannelsData(snapshot) {
-            const channelsData = [];
-            snapshot.forEach(c => {
-                const channel = {id:c.key, ...c.val(), type:'channel'};
-                
-                // Check if channel is locked or free
-                channel.isLocked = userIsExpired && 
-                                 appSettings.lockedChannels && 
-                                 appSettings.lockedChannels.includes(channel.id) &&
-                                 !(appSettings.freeChannels && appSettings.freeChannels.includes(channel.id));
-                
-                channelsData.push(channel);
-            });
-            
-            // PRESERVE THE EXACT ORDER FROM FIREBASE - SORT BY ORDER FIELD
-            channelsData.sort((a, b) => (a.order || 999) - (b.order || 999));
-            allData.channels = channelsData;
-            
-            // Update both homepage and categories page
-            displayChannels(channelsData);
-            
-            // Update categories page if active
-            if (document.getElementById('cats').classList.contains('active')) {
-                fillCats();
-            }
-            
-            saveToCache({channels: channelsData});
-            
-            // Show update notification
-            showToast("📺 Channels updated", "info");
-        }
-
-        function processMoviesData(snapshot) {
-            const moviesData = [];
-            snapshot.forEach(c => {
-                moviesData.push({id:c.key, ...c.val(), type:'movie'});
-            });
-            allData.movies = moviesData;
-            displayMovies(moviesData);
-            
-            // Update categories page if active
-            if (document.getElementById('cats').classList.contains('active')) {
-                fillCats();
-            }
-            
-            saveToCache({movies: moviesData});
-            
-            // Show update notification
-            showToast("🎬 Movies updated", "info");
-        }
-
-        function loadNonEssentialData() {
-            console.log("📥 Loading non-essential data");
-            
-            // Betting Tips with real-time updates
-            db.ref('bettingTips').on('value', s => {
-                const d = document.getElementById('tipsContent'); 
-                d.innerHTML='';
-                if (s.exists()) {
-                    s.forEach(c => {
-                        const tip = c.val();
-                        let formattedDate = 'N/A';
-                        if (tip.createdAt) {
-                            const date = new Date(tip.createdAt);
-                            const day = String(date.getDate()).padStart(2, '0');
-                            const month = String(date.getMonth() + 1).padStart(2, '0');
-                            const year = date.getFullYear();
-                            formattedDate = `${day}/${month}/${year}`;
-                        }
-                        tip.formattedDate = formattedDate;
-                        d.innerHTML += createBettingTip(tip);
-                    });
-                    showToast("⚽ Betting tips updated", "info");
-                } else {
-                    d.innerHTML = '<div class="loading-text">No tips available yet</div>';
-                }
-            });
-            
-            // Load Guides & Tips with real-time updates
-            loadGuides();
-            
-            // Downloads with real-time updates
-            db.ref('downloadableMovies').on('value', s => {
-                const d = document.getElementById('dlContent'); 
-                d.innerHTML='';
-                if (s.exists()) {
-                    s.forEach(c => d.innerHTML += createDl(c.val()));
-                    showToast("📥 Downloads updated", "info");
-                } else {
-                    d.innerHTML = '<div class="loading-text">No downloads available yet</div>';
-                }
             });
 
-            // Load passwords list
-            loadPassList();
-        }
-
-        function loadGuides() {
-            db.ref('tips').on('value', s => {
-                const d = document.getElementById('guidesContent'); 
-                d.innerHTML = '';
-                if (s.exists()) {
-                    s.forEach(c => {
-                        const guide = c.val();
-                        d.innerHTML += createGuide(guide);
-                    });
-                    showToast("💡 Guides updated", "info");
-                } else {
-                    d.innerHTML = '<div class="loading-text">No guides available yet</div>';
-                }
-            });
-        }
-
-        // ==================== UI RENDERING FUNCTIONS ====================
-
-        function createGuide(guide) {
-            if(userIsExpired && guide.category === 'premium') {
-                return `<div class="guide-card blur-wrapper" onclick="showBlockModal()">
-                    <div class="blur-content">
-                        <h3 style="color:var(--primary-red); margin-bottom:10px; font-size: 1.2em;">${guide.title || 'No Title'}</h3>
-                        <p style="color:var(--text-gray);">${guide.content || 'No content available'}</p>
-                    </div>
-                    <div class="blur-text-overlay"><i class="fas fa-lock"></i> PREMIUM CONTENT</div>
-                </div>`;
-            }
-            
-            return `<div class="guide-card quick-load">
-                <span class="guide-category">${guide.category || 'General'}</span>
-                <h3 style="color:var(--primary-red); margin-bottom:10px; font-size: 1.2em;">${guide.title || 'No Title'}</h3>
-                <p style="color:var(--text-gray); line-height:1.5;">${guide.content || 'No content available'}</p>
-                ${guide.updatedAt ? `<p style="color:#666; font-size:0.8em; margin-top:10px;">Updated: ${new Date(guide.updatedAt).toLocaleDateString()}</p>` : ''}
-            </div>`;
-        }
-
-        function createBettingTip(t) {
-            if(userIsExpired) {
-                return `<div class="blur-wrapper" onclick="showBlockModal()">
-                    <div class="blur-content">
-                         <div class="bet-card"><div class="bet-head"><span>XXX</span></div><h3>LOCKED</h3><div class="bet-match">XXX VS XXX</div></div>
-                    </div>
-                    <div class="blur-text-overlay"><i class="fas fa-lock"></i> PREMIUM ONLY</div>
-                </div>`;
-            }
-            
-            let codes = '';
-            if(t.bookingCodes && Array.isArray(t.bookingCodes)) {
-                t.bookingCodes.forEach(code => {
-                    codes += `<div class="booking-code" onclick="copy('${code.code}')">${code.platform}: ${code.code}</div>`;
-                });
-            } else if(t.bookingCodes) {
-                for(let [k,v] of Object.entries(t.bookingCodes)) {
-                    codes += `<div class="booking-code" onclick="copy('${v}')">${k}: ${v}</div>`;
-                }
-            }
-            
-            return `<div class="bet-card quick-load">
-                <div class="bet-head">
-                    <span>${t.status || 'Pending'}</span>
-                    <span>${t.formattedDate || 'N/A'}</span>
-                </div>
-                <h3 style="text-align:center; margin-bottom:10px; font-size: 1.2em;">${t.title || 'No Title'}</h3>
-                <div class="bet-match">${t.team1 || 'Team A'} VS ${t.team2 || 'Team B'}</div>
-                <div style="font-size: 1.1em; margin-bottom:8px;">
-                    <strong>Tip:</strong> ${t.prediction || 'N/A'} 
-                    <strong style="color:var(--warning);">@ ${t.odds || 'N/A'}</strong>
-                </div>
-                ${t.stake ? `<div style="font-size: 1em; margin-bottom:8px;"><strong>Stake:</strong> ${t.stake}</div>` : ''}
-                ${t.result ? `<div style="font-size: 1em; margin-bottom:8px; color:${t.status === 'successful' ? 'var(--success)' : t.status === 'failed' ? 'var(--error)' : 'var(--info)'}"><strong>Result:</strong> ${t.result}</div>` : ''}
-                ${t.description ? `<div style="font-size: 0.9em; color:var(--text-gray); margin-bottom:10px;">${t.description}</div>` : ''}
-                ${codes}
-                ${t.bookmakerLink ? `<a href="${t.bookmakerLink}" target="_blank" style="display:block; text-align:center; background:var(--info); color:white; padding:8px; border-radius:5px; margin-top:10px; text-decoration:none;">View on Bookmaker</a>` : ''}
-            </div>`;
-        }
-
-        function displayChannels(channels) {
-            const g = document.getElementById('chanGrid'); 
-            if(channels.length === 0) {
-                g.innerHTML = '<div class="loading-text">No channels available</div>';
-                return;
-            }
-            
-            let html = '';
-            channels.forEach(ch => {
-                html += createCard(ch);
-            });
-            g.innerHTML = html;
-        }
-
-        function displayMovies(movies) {
-            const g = document.getElementById('movGrid'); 
-            if(movies.length === 0) {
-                g.innerHTML = '<div class="loading-text">No movies available</div>';
-                return;
-            }
-            
-            let html = '';
-            movies.forEach(m => {
-                html += createCard(m);
-            });
-            g.innerHTML = html;
-        }
-
-        function createCard(item) {
-            let isLocked = userIsExpired;
-            
-            // Check if this specific channel is locked
-            if(item.type === 'channel' && item.isLocked) {
-                isLocked = true;
-            }
-            
-            // Always allow TBC1
-            if(item.type === 'channel' && item.name && item.name.toUpperCase().includes('TBC1')) isLocked = false;
-
-            const overlay = isLocked ? `<div class="locked-overlay"><i class="fas fa-lock lock-icon"></i></div>` : '';
-            return `<div class="card quick-load" onclick="handleClick('${item.type}','${item.id}', ${isLocked})">
-                ${overlay}
-                <img src="${item.posterURL || 'https://via.placeholder.com/150x200?text=No+Image'}" onerror="this.src='https://via.placeholder.com/150x200?text=No+Image'">
-                <div class="card-info"><h4>${item.name||item.title||'Untitled'}</h4></div>
-            </div>`;
-        }
-
-        function createDl(d) {
-            if(userIsExpired) {
-                return `<div class="dl-card" onclick="showBlockModal()">
-                    <div class="locked-overlay"><i class="fas fa-lock lock-icon"></i></div>
-                    <img src="${d.posterURL || 'https://via.placeholder.com/100x140?text=No+Image'}"><div class="dl-info"><h4>${d.title || 'Untitled'}</h4></div>
-                </div>`;
-            }
-            return `<div class="dl-card quick-load">
-                <img src="${d.posterURL || 'https://via.placeholder.com/100x140?text=No+Image'}">
-                <div class="dl-info"><h4>${d.title || 'Untitled'}</h4><a href="${d.downloadURL || '#'}" class="dl-btn" target="_blank">Download</a></div>
-            </div>`;
-        }
-
-        // ==================== PLAYER FUNCTIONS ====================
-
-        function playContent(item) {
-            // Execute channel script if available
-            if(item.type === 'channel' && appSettings.channelScripts && appSettings.channelScripts[item.id]) {
-                try {
-                    eval(appSettings.channelScripts[item.id]);
-                } catch(e) {
-                    console.error("Channel script error:", e);
-                }
-            }
-            
-            if(item.playerType === 'external_section') {
-                let code = item.externalCode;
-                if(!code && item.name) {
-                    const up = item.name.toUpperCase();
-                    for(let [k,v] of Object.entries(specialMap)) {
-                        if(up.includes(k)) {
-                            code = v;
-                            break;
-                        }
-                    }
-                }
-                if(code) { 
-                    window.location.href = 'go:'+code; 
-                    return; 
-                }
-            }
-            else if(item.playerType === 'external_browser') {
-                window.open(item.m3u8Link || item.movieURL, '_blank'); 
-                return;
-            }
-            
-            if((!item.playerType || item.playerType === 'internal') && item.name) {
-                const up = item.name.toUpperCase();
-                for(let [k,v] of Object.entries(specialMap)) {
-                    if(up.includes(k)) { 
-                        window.location.href = 'go:'+v; 
-                        return; 
-                    }
-                }
-            }
-
-            const url = item.m3u8Link || item.movieURL;
-            if(!url) { 
-                showToast("No URL available for this content", "error"); 
-                return; 
-            }
-            document.getElementById('playerModal').style.display='flex';
-            if(!player) {
-                player = videojs('videoJS', {
-                    fluid: true, 
-                    autoplay: true,
-                    preload: 'auto'
-                });
-            }
-            player.src({src:url, type: url.includes('.m3u8')?'application/x-mpegURL':'video/mp4'});
-            player.play();
-        }
-
-        function closePlayer() { 
-            document.getElementById('playerModal').style.display = 'none'; 
-            if(player) {
-                player.pause();
-                player.reset();
-            }
-        }
-
-        // ==================== CHANNEL PASSWORDS ====================
-
-        function checkChanPass(c) {
-            if(currentUser.channelPasswords && currentUser.channelPasswords[c.id]) {
-                pendingChan = c;
-                document.getElementById('ppName').innerText = c.name || 'Channel';
-                document.getElementById('passPrompt').style.display='flex';
-            } else {
-                playContent(c);
-            }
-        }
-
-        function unlockChan() {
-            const inputPass = document.getElementById('ppInput').value;
-            if(inputPass === currentUser.channelPasswords[pendingChan.id]) {
-                document.getElementById('passPrompt').style.display='none';
-                document.getElementById('ppInput').value='';
-                playContent(pendingChan);
-                showToast("🔓 Channel unlocked successfully!", "success");
-            } else {
-                showToast("❌ Wrong password", "error");
-            }
-        }
-
-        function savePass() {
-            const channelId = document.getElementById('pChanSel').value; 
-            const password = document.getElementById('pNewPass').value;
-            
-            if(!channelId || channelId === 'Select Channel') {
-                showToast("Please select a channel first", "warning");
-                return;
-            }
-            
-            if(!password) {
-                showToast("Please enter a password", "warning");
-                return;
-            }
-            
-            db.ref(`users/${currentUser.uid}/channelPasswords/${channelId}`).set(password)
-                .then(() => {
-                    showToast("🔐 Password saved successfully!", "success");
-                    document.getElementById('pNewPass').value='';
-                    if(!currentUser.channelPasswords) currentUser.channelPasswords = {};
-                    currentUser.channelPasswords[channelId] = password;
-                    loadPassList();
-                })
-                .catch(error => {
-                    showToast("Error saving password: " + error.message, "error");
-                });
-        }
-
-        function loadPassList() {
-            const d = document.getElementById('pPassList'); 
-            d.innerHTML='';
-            
-            if(currentUser.channelPasswords && Object.keys(currentUser.channelPasswords).length > 0) {
-                for(let [channelId, password] of Object.entries(currentUser.channelPasswords)) {
-                    const channelName = allData.channels.find(x=>x.id===channelId)?.name || 'Unknown Channel';
-                    d.innerHTML += `<div style="background:var(--card-white); padding:10px; margin-bottom:8px; border-radius:5px; display:flex; justify-content:space-between; align-items:center;">
-                        <div>
-                            <strong style="font-size: 1.1em;">${channelName}</strong>
-                            <div style="font-size:0.8em; color:var(--text-gray);">${'*'.repeat(password.length)}</div>
-                        </div>
-                        <i class="fas fa-trash" style="color:var(--error); cursor:pointer; font-size: 1.1em;" onclick="showDeletePassModal('${channelId}', '${channelName.replace(/'/g, "\\'")}')"></i>
+            db.ref('movies').on('value', snap => {
+                const g = document.getElementById('movGrid'); g.innerHTML = '';
+                snap.forEach(m => {
+                    const d = m.val();
+                    g.innerHTML += `<div class="card" onclick="handlePlay('${m.key}', 'movies')">
+                        <img src="${d.posterURL}">
+                        <div class="card-info">${d.title}</div>
                     </div>`;
-                }
-            } else {
-                d.innerHTML = '<div style="text-align:center; color:var(--text-gray); padding:10px;">No passwords set yet</div>';
-            }
-            
-            // Update channel selector
-            const sel = document.getElementById('pChanSel'); 
-            sel.innerHTML = '<option>Select Channel</option>';
-            allData.channels.forEach(ch => {
-                sel.innerHTML += `<option value="${ch.id}">${ch.name}</option>`;
-            });
-        }
-
-        function showDeletePassModal(channelId, channelName) {
-            pendingDeleteChannelId = channelId;
-            pendingDeleteChannelName = channelName;
-            document.getElementById('deleteChanName').innerText = channelName;
-            document.getElementById('deletePassInput').value = '';
-            document.getElementById('deletePassModal').style.display = 'flex';
-        }
-
-        function confirmDeletePass() {
-            const inputPass = document.getElementById('deletePassInput').value;
-            const currentPassword = currentUser.channelPasswords[pendingDeleteChannelId];
-            
-            if(!inputPass) {
-                showToast("Please enter the current password", "warning");
-                return;
-            }
-            
-            if(inputPass === currentPassword) {
-                db.ref(`users/${currentUser.uid}/channelPasswords/${pendingDeleteChannelId}`).remove()
-                    .then(() => {
-                        showToast("🗑️ Password deleted successfully!", "success");
-                        delete currentUser.channelPasswords[pendingDeleteChannelId];
-                        document.getElementById('deletePassModal').style.display = 'none';
-                        setTimeout(loadPassList, 300);
-                    })
-                    .catch(error => {
-                        showToast("Error deleting password", "error");
-                    });
-            } else {
-                showToast("Incorrect password. Please try again.", "error");
-            }
-        }
-
-        // ==================== CHAT FUNCTIONS ====================
-
-        function setupChat() {
-            checkUnreadMessages();
-        }
-
-        function checkUnreadMessages() {
-            if (!currentUser) return;
-            
-            db.ref('groupChat').orderByChild('timestamp').startAt(lastCheckedChat).once('value')
-            .then(snapshot => {
-                let unreadCount = 0;
-                snapshot.forEach(child => {
-                    const msg = child.val();
-                    if (msg.senderId !== currentUser.uid && msg.timestamp > lastCheckedChat) {
-                        unreadCount++;
-                    }
                 });
-                
-                if (unreadCount > 0) {
-                    updateChatNotification(unreadCount);
-                }
             });
-        }
 
-        function updateChatNotification(count = 1) {
-            unreadMessages += count;
-            
-            const dot = document.getElementById('chatNotification');
-            const countEl = document.getElementById('chatNotificationCount');
-            
-            if (unreadMessages === 1) {
-                dot.style.display = 'block';
-                countEl.style.display = 'none';
-            } else if (unreadMessages > 1) {
-                dot.style.display = 'none';
-                countEl.style.display = 'flex';
-                countEl.textContent = unreadMessages > 9 ? '9+' : unreadMessages;
-            }
-        }
-
-        function clearChatNotifications() {
-            unreadMessages = 0;
-            lastCheckedChat = Date.now();
-            
-            const dot = document.getElementById('chatNotification');
-            const countEl = document.getElementById('chatNotificationCount');
-            
-            dot.style.display = 'none';
-            countEl.style.display = 'none';
-            
-            localStorage.setItem('lastCheckedChat', lastCheckedChat);
-        }
-
-        // ==================== NOTIFICATION SYSTEM ====================
-
-        function setupNotif() {
-            db.ref(`userNotifications/${currentUser.uid}`).limitToLast(10).on('child_added', s=>{
-                const n = s.val();
-                
-                if(Date.now() - n.timestamp < 30000) {
-                    showToast("📢 " + (n.title || "New Notification"), "info");
-                }
-                
-                if(n.timestamp > lastCheckedNotif) {
-                    updateBellNotification();
-                }
-                
-                document.getElementById('notifList').innerHTML = 
-                    `<div style="background:var(--card-white); padding:10px; margin-bottom:5px; border-radius:5px;">
-                        <b style="font-size: 1.1em; color:var(--text-black);">${n.title || 'Notification'}</b><br>
-                        <span style="color:var(--text-gray);">${n.message || ''}</span>
-                        <div style="font-size:0.7em; color:var(--text-gray); margin-top:5px;">${new Date(n.timestamp).toLocaleString()}</div>
-                    </div>` + document.getElementById('notifList').innerHTML;
-            });
-            
-            checkUnreadNotifications();
-        }
-
-        function checkUnreadNotifications() {
-            if (!currentUser) return;
-            
-            db.ref(`userNotifications/${currentUser.uid}`).orderByChild('timestamp').startAt(lastCheckedNotif).once('value')
-            .then(snapshot => {
-                let unreadCount = 0;
-                snapshot.forEach(child => {
-                    const notif = child.val();
-                    if (notif.timestamp > lastCheckedNotif) {
-                        unreadCount++;
-                    }
+            db.ref('library').on('value', snap => {
+                const l = document.getElementById('bookList'); l.innerHTML = '';
+                snap.forEach(b => {
+                    const d = b.val();
+                    l.innerHTML += `
+                        <div class="ios-glass" style="padding:20px; margin-bottom:15px;" onclick="openBook('${b.key}')">
+                            <span style="color:var(--primary); font-weight:800; font-size:12px;">${d.category.toUpperCase()}</span>
+                            <h2 style="margin:5px 0;">${d.title}</h2>
+                            <p style="color:#666; font-size:14px;">Author: ${d.author}</p>
+                        </div>`;
                 });
+            });
+        }
+
+        // --- ADS ENGINE (RANDOM & UNSKIPPABLE) ---
+        function handlePlay(id, type) {
+            if(userData.isPremium) { processPlay(id, type); }
+            else { showRandomAd(() => processPlay(id, type)); }
+        }
+
+        function showRandomAd(callback) {
+            db.ref('ads').once('value', snap => {
+                const ads = []; snap.forEach(a => ads.push(a.val()));
+                if(ads.length === 0) { callback(); return; }
+
+                const ad = ads[Math.floor(Math.random() * ads.length)];
+                const overlay = document.getElementById('adOverlay');
+                const mediaBox = document.getElementById('adMediaContainer');
+                const timer = document.getElementById('adTimer');
+
+                document.getElementById('adHeaderWords').innerText = ad.header || "STANY MIN SPONSOR";
+                document.getElementById('adFooterWords').innerText = ad.footer || "Support us by visiting the link";
                 
-                if (unreadCount > 0) {
-                    updateBellNotification(unreadCount);
+                mediaBox.innerHTML = '';
+                if(ad.type === 'video') mediaBox.innerHTML = `<video src="${ad.url}" autoplay muted></video>`;
+                else if(ad.type === 'image') mediaBox.innerHTML = `<img src="${ad.url}">`;
+                else if(ad.type === 'slider') {
+                    let slides = ad.images.map(img => `<img src="${img}" style="width:100%">`).join('');
+                    mediaBox.innerHTML = `<div id="adSlider" style="display:flex; transition:0.5s;">${slides}</div>`;
+                    startAdSlider();
                 }
+
+                overlay.style.display = 'flex';
+                let sec = ad.duration || 15;
+                timer.innerText = "AD: " + sec + "s";
+
+                const countdown = setInterval(() => {
+                    sec--; timer.innerText = "AD: " + sec + "s";
+                    if(sec <= 0) {
+                        clearInterval(countdown);
+                        timer.style.display = 'none';
+                        document.getElementById('adClose').style.display = 'block';
+                    }
+                }, 1000);
+
+                window.adCallback = callback;
+                window.currentAdLink = ad.link;
             });
         }
 
-        function updateBellNotification(count = 1) {
-            unreadNotifications += count;
-            
-            const dot = document.getElementById('bellNotification');
-            const countEl = document.getElementById('bellNotificationCount');
-            
-            if (unreadNotifications === 1) {
-                dot.style.display = 'block';
-                countEl.style.display = 'none';
-            } else if (unreadNotifications > 1) {
-                dot.style.display = 'none';
-                countEl.style.display = 'flex';
-                countEl.textContent = unreadNotifications > 9 ? '9+' : unreadNotifications;
-            }
+        function closeAd() {
+            document.getElementById('adOverlay').style.display = 'none';
+            document.getElementById('adTimer').style.display = 'block';
+            if(window.adCallback) window.adCallback();
         }
 
-        function clearBellNotifications() {
-            unreadNotifications = 0;
-            lastCheckedNotif = Date.now();
-            
-            const dot = document.getElementById('bellNotification');
-            const countEl = document.getElementById('bellNotificationCount');
-            
-            dot.style.display = 'none';
-            countEl.style.display = 'none';
-            
-            localStorage.setItem('lastCheckedNotif', lastCheckedNotif);
+        function visitSponsor() { if(window.currentAdLink) window.open(window.currentAdLink, '_blank'); }
+
+        function startAdSlider() {
+            let i = 0;
+            setInterval(() => {
+                const s = document.getElementById('adSlider');
+                if(!s) return;
+                i = (i + 1) % s.children.length;
+                s.style.transform = `translateX(-${i * 100}%)`;
+            }, 3000);
         }
 
-        function showNotifModal() {
-            document.getElementById('notifModal').style.display='flex';
-            clearBellNotifications();
-        }
-
-        function closeNotifModal() {
-            document.getElementById('notifModal').style.display='none';
-            clearBellNotifications();
-        }
-
-        // ==================== OTHER FUNCTIONS ====================
-
-        function loadSettings() { 
-            db.ref('settings/adminContactNumber').on('value', s => {
-                adminContact = s.val();
-            }); 
-        }
-        
-        function filterHome(category) {
-            const mg = document.getElementById('movGrid'); 
-            const cg = document.getElementById('chanGrid');
-            mg.innerHTML = ''; 
-            cg.innerHTML = '';
-            
-            // Update active category button
-            document.querySelectorAll('.cat-btn').forEach(btn => {
-                btn.classList.remove('active');
-            });
-            event.target.classList.add('active');
-            
-            allData.movies.forEach(m => { 
-                if(category === 'all' || (m.genre && m.genre.includes(category))) {
-                    mg.innerHTML += createCard(m); 
+        // --- DRM PLAYER ENGINE ---
+        async function processPlay(id, path) {
+            db.ref(path + '/' + id).once('value', async snap => {
+                const item = snap.val();
+                document.getElementById('playerWrap').style.display = 'block';
+                const video = document.getElementById('stanyPlayer');
+                
+                if(!activePlayer) {
+                    activePlayer = new shaka.ShakaPlayer(video);
                 }
-            });
-            
-            allData.channels.forEach(ch => { 
-                if(category === 'all' || (ch.categories && ch.categories.includes(category))) {
-                    cg.innerHTML += createCard(ch); 
-                }
-            });
-            
-            if(mg.innerHTML === '') mg.innerHTML = '<div class="loading-text">No movies found</div>';
-            if(cg.innerHTML === '') cg.innerHTML = '<div class="loading-text">No channels found</div>';
-        }
 
-        function fillCats() {
-            db.ref('genres').once('value', s => {
-                s.forEach(g => {
-                    const name = g.val().name;
-                    const container = document.getElementById(`cat_${name.replace(/s/g,'')}`);
-                    if(container) { 
-                        container.innerHTML = ''; 
-                        
-                        // Use the same order as homepage for channels
-                        allData.channels.forEach(c => {
-                            if(c.categories && c.categories.includes(name)) {
-                                container.innerHTML += createCard(c);
-                            }
+                try {
+                    if(item.playerType === 'drm') {
+                        activePlayer.configure({
+                            drm: { servers: { 'com.widevine.alpha': item.licenseURL } }
                         });
-                        
-                        allData.movies.forEach(m => {
-                            if(m.genre && m.genre.includes(name)) {
-                                container.innerHTML += createCard(m);
-                            }
-                        });
-                        
-                        if(container.innerHTML === '') {
-                            container.innerHTML = '<div class="loading-text">No content in this category</div>';
-                        }
-                    }
-                });
-            });
-        }
-        
-        function toggleSearch() {
-            const searchInput = document.getElementById('searchInput');
-            isSearchActive = !isSearchActive;
-            
-            if (isSearchActive) {
-                searchInput.classList.add('active');
-                searchInput.focus();
-            } else {
-                searchInput.classList.remove('active');
-                searchInput.value = '';
-                // Clear search and show all content
-                if(document.getElementById('home').classList.contains('active')) {
-                    filterHome('all');
-                }
-            }
-        }
-
-        function globalSearch() {
-            const query = document.getElementById('searchInput').value.toLowerCase().trim();
-            
-            if(!query) {
-                if(document.getElementById('home').classList.contains('active')) {
-                    filterHome('all');
-                }
-                return;
-            }
-            
-            if(document.getElementById('home').classList.contains('active')) {
-                const mg = document.getElementById('movGrid'); 
-                const cg = document.getElementById('chanGrid');
-                mg.innerHTML = ''; 
-                cg.innerHTML = '';
-                
-                allData.movies.forEach(m => { 
-                    if(m.title && m.title.toLowerCase().includes(query)) {
-                        mg.innerHTML += createCard(m); 
-                    }
-                });
-                
-                allData.channels.forEach(c => { 
-                    if(c.name && c.name.toLowerCase().includes(query)) {
-                        cg.innerHTML += createCard(c); 
-                    }
-                });
-                
-                if(mg.innerHTML === '') mg.innerHTML = '<div class="loading-text">No movies found</div>';
-                if(cg.innerHTML === '') cg.innerHTML = '<div class="loading-text">No channels found</div>';
-            }
-        }
-
-        function copy(text) { 
-            navigator.clipboard.writeText(text).then(() => {
-                showToast("📋 Copied to clipboard!", "success");
-            }).catch(() => {
-                const textArea = document.createElement("textarea");
-                textArea.value = text;
-                document.body.appendChild(textArea);
-                textArea.select();
-                document.execCommand("copy");
-                document.body.removeChild(textArea);
-                showToast("📋 Copied!", "success");
-            });
-        }
-
-        function showBlockModal() { 
-            document.getElementById('blockModal').style.display='flex'; 
-        }
-        
-        function openWhatsApp() { 
-            if(adminContact) {
-                const message = `Hello Admin, I need assistance with my STANY MIN TV account.`;
-                window.open(`https://wa.me/${adminContact}?text=${encodeURIComponent(message)}`, '_blank'); 
-            } else {
-                showToast("No admin contact found", "warning");
-            }
-        }
-
-        // ==================== LOGIN/REGISTER FUNCTIONS ====================
-
-        function login() { 
-            const email = document.getElementById('lemail').value;
-            const password = document.getElementById('lpass').value;
-            const loginError = document.getElementById('loginError');
-            
-            document.getElementById('lemail').classList.remove('input-error');
-            document.getElementById('lpass').classList.remove('input-error');
-            loginError.style.display = 'none';
-            
-            if(!email || !password) {
-                showToast("Please enter email and password", "warning");
-                if(!email) document.getElementById('lemail').classList.add('input-error');
-                if(!password) document.getElementById('lpass').classList.add('input-error');
-                return;
-            }
-            
-            console.log("🔐 Attempting login for:", email);
-            
-            const loginBtn = document.querySelector('#loginPage .btn');
-            const originalText = loginBtn.innerHTML;
-            loginBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Logging in...';
-            loginBtn.disabled = true;
-            
-            auth.signInWithEmailAndPassword(email, password)
-                .then((userCredential) => {
-                    console.log("✅ Login successful for:", email);
-                    showToast("🔐 Login successful!", "success");
-                    document.getElementById('loader').style.display = 'flex';
-                    
-                    loginBtn.innerHTML = originalText;
-                    loginBtn.disabled = false;
-                })
-                .catch(e => {
-                    console.error("❌ Login failed:", e.message);
-                    
-                    loginError.style.display = 'block';
-                    document.getElementById('lemail').classList.add('input-error');
-                    document.getElementById('lpass').classList.add('input-error');
-                    
-                    showToast("❌ " + e.message, "error");
-                    
-                    loginBtn.innerHTML = originalText;
-                    loginBtn.disabled = false;
-                });
-        }
-        
-        function register() { 
-            const name = document.getElementById('rname').value;
-            const email = document.getElementById('remail').value;
-            const password = document.getElementById('rpass').value;
-            const regError = document.getElementById('regError');
-            
-            document.getElementById('rname').classList.remove('input-error');
-            document.getElementById('remail').classList.remove('input-error');
-            document.getElementById('rpass').classList.remove('input-error');
-            regError.style.display = 'none';
-            
-            if(!name || !email || !password) {
-                showToast("Please fill all fields", "warning");
-                if(!name) document.getElementById('rname').classList.add('input-error');
-                if(!email) document.getElementById('remail').classList.add('input-error');
-                if(!password) document.getElementById('rpass').classList.add('input-error');
-                return;
-            }
-            
-            console.log("📝 Attempting registration for:", email);
-            
-            const regBtn = document.querySelector('#regPage .btn');
-            const originalText = regBtn.innerHTML;
-            regBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Registering...';
-            regBtn.disabled = true;
-
-            db.ref('users').orderByChild('activeDeviceId').equalTo(deviceId).once('value')
-                .then(snapshot => {
-                    if (snapshot.exists()) {
-                        console.log("❌ Device already registered to another account");
-                        showToast("This device is already registered. Please login instead.", "error");
-                        
-                        regBtn.innerHTML = originalText;
-                        regBtn.disabled = false;
-                        return;
-                    }
-                    
-                    auth.createUserWithEmailAndPassword(email, password)
-                        .then(user => {
-                            console.log("✅ User created, now saving to database");
-                            return db.ref('users/' + user.user.uid).set({
-                                name: name,
-                                email: email,
-                                activeDeviceId: deviceId,
-                                registeredAt: Date.now(),
-                                accessExpiry: Date.now() + (7 * 24 * 60 * 60 * 1000) // 7 days free trial
+                        if(item.tokenID) {
+                            activePlayer.getNetworkingEngine().registerRequestFilter((type, request) => {
+                                if (type == shaka.net.NetworkingEngine.RequestType.LICENSE) {
+                                    request.headers['Authorization'] = 'Bearer ' + item.tokenID;
+                                }
                             });
-                        })
-                        .then(() => {
-                            console.log("✅ Registration completed successfully");
-                            showToast("🎉 Registration successful! 7 days free trial activated.", "success");
-                            
-                            regBtn.innerHTML = originalText;
-                            regBtn.disabled = false;
-                        })
-                        .catch(e => {
-                            console.error("❌ Registration failed:", e.message);
-                            regError.style.display = 'block';
-                            regError.textContent = e.message;
-                            showToast("❌ " + e.message, "error");
-                            
-                            regBtn.innerHTML = originalText;
-                            regBtn.disabled = false;
-                        });
-                })
-                .catch(error => {
-                    console.error("❌ Error checking device registration:", error);
-                    showToast("Error checking device registration: " + error.message, "error");
-                    
-                    regBtn.innerHTML = originalText;
-                    regBtn.disabled = false;
-                });
+                        }
+                    } else {
+                        activePlayer.configure({ drm: { servers: {} } });
+                    }
+                    await activePlayer.load(item.streamURL || item.movieURL);
+                } catch(e) { console.error(e); alert("Error Loading Stream"); }
+            });
         }
 
-        // FALLBACK INITIALIZATION
-        setTimeout(() => {
-            if(auth.currentUser && document.getElementById('authPages').style.display === 'flex') {
-                console.log("🔄 Manual auth state recovery");
-                document.getElementById('authPages').style.display='none';
-                document.getElementById('loader').style.display='flex';
-                checkDevice(auth.currentUser.uid);
-            }
-        }, 2000);
+        // --- BOOK READER LOGIC ---
+        function openBook(id) {
+            db.ref('library/' + id).once('value', snap => {
+                currentBook = snap.val();
+                currentEpIdx = 0;
+                document.getElementById('readerView').style.display = 'flex';
+                showEp();
+            });
+        }
 
-        // Initialize WhatsApp float button
-        setTimeout(() => {
-            document.getElementById('whatsappFloat').style.display = 'block';
-        }, 10000);
+        function showEp() {
+            const ep = currentBook.episodes[currentEpIdx];
+            document.getElementById('readTitle').innerText = currentBook.title;
+            document.getElementById('readMeta').innerText = `${currentBook.category} | ${ep.partTitle}`;
+            document.getElementById('readBody').innerText = ep.content;
+            document.getElementById('prevBtn').disabled = (currentEpIdx === 0);
+            document.getElementById('nextBtn').disabled = (currentEpIdx === currentBook.episodes.length - 1);
+            document.getElementById('readBody').scrollTop = 0;
+        }
+
+        function changeEp(dir) {
+            currentEpIdx += dir;
+            showEp();
+        }
+
+        function closeReader() { document.getElementById('readerView').style.display = 'none'; }
+
+        // --- TOKEN SYSTEM ---
+        function activatePremium() {
+            const token = document.getElementById('tokenInput').value;
+            if(!token) return;
+            db.ref('tokens/' + token).once('value', snap => {
+                const t = snap.val();
+                if(t && t.status === 'unused') {
+                    db.ref('users/' + currentUser.uid).update({ isPremium: true, hwid: HWID });
+                    db.ref('tokens/' + token).update({ status: 'used', usedBy: currentUser.uid });
+                    alert("PREMIUM ACTIVATED!");
+                } else {
+                    alert("INVALID OR USED TOKEN");
+                }
+            });
+        }
+
+        // --- UI UTILS ---
+        function switchPage(id, el) {
+            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+            document.getElementById('view-' + id).classList.add('active');
+            document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+            el.classList.add('active');
+        }
+
+        function toggleAuth() {
+            const l = document.getElementById('loginForm'), r = document.getElementById('regForm');
+            if(l.style.display==='none'){l.style.display='block'; r.style.display='none';}
+            else {l.style.display='none'; r.style.display='block';}
+        }
+
+        function closePlayer() {
+            if(activePlayer) activePlayer.unload();
+            document.getElementById('playerWrap').style.display = 'none';
+        }
 
     </script>
 </body>
