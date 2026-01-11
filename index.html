@@ -3,13 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>STANY MIN TV | iOS 26 HIGH-END</title>
+    <title>STANY MIN TV | iOS 26 OFFICIAL</title>
     
-    <!-- Icons & Fonts -->
+    <!-- Icons: FontAwesome Pro (Professional, No Emojis) -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=SF+Pro+Display:wght@300;400;600;700&display=swap" rel="stylesheet">
     
-    <!-- Video Player (Video.js with DRM Support) -->
+    <!-- Video Player (EME & DRM Ready) -->
     <link href="https://vjs.zencdn.net/7.20.3/video-js.css" rel="stylesheet" />
     <script src="https://vjs.zencdn.net/7.20.3/video.min.js"></script>
     
@@ -24,7 +24,7 @@
             --black: #000000;
             --white: #FFFFFF;
             --glass: rgba(255, 255, 255, 0.08);
-            --blur: blur(30px);
+            --blur: blur(35px);
         }
 
         * {
@@ -40,212 +40,232 @@
             height: 100vh;
         }
 
-        /* --- iOS 26 Splash --- */
+        /* --- iOS 26 Splash & Auth --- */
         #splash-screen {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: var(--black); z-index: 10000;
             display: flex; flex-direction: column; justify-content: center; align-items: center;
         }
-        .logo-box {
-            width: 90px; height: 90px; border: 4px solid var(--red);
-            border-radius: 24px; animation: pulse-ios 2s infinite;
+        .auth-card {
+            background: var(--glass); backdrop-filter: var(--blur);
+            padding: 30px; border-radius: 30px; text-align: center;
+            width: 85%; border: 1px solid rgba(255,255,255,0.1);
         }
-        @keyframes pulse-ios { 0% { transform: scale(1); } 50% { transform: scale(1.1); box-shadow: 0 0 50px var(--red); } 100% { transform: scale(1); } }
+        .google-btn {
+            background: var(--white); color: var(--black); border: none;
+            padding: 15px; border-radius: 30px; font-weight: 700; width: 100%;
+            margin-top: 20px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 10px;
+        }
 
         /* --- Ultimate Ad Engine --- */
         #ad-overlay {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: var(--black); z-index: 9000; display: none; flex-direction: column;
+            background: var(--black); z-index: 9500; display: none; flex-direction: column;
         }
-        .marquee-ad { background: var(--red); color: white; padding: 6px; font-weight: bold; overflow: hidden; font-size: 13px; }
-        .marquee-ad span { display: inline-block; white-space: nowrap; animation: move-text 15s linear infinite; }
-        @keyframes move-text { from { transform: translateX(100%); } to { transform: translateX(-100%); } }
+        .marquee-container { background: var(--red); color: white; padding: 8px; font-weight: bold; font-size: 13px; }
+        .marquee-text { display: inline-block; white-space: nowrap; animation: marquee 12s linear infinite; }
+        @keyframes marquee { from { transform: translateX(100%); } to { transform: translateX(-100%); } }
         
-        .ad-container { flex: 1; position: relative; display: flex; align-items: center; justify-content: center; background: #050505; }
-        .ad-media { width: 100%; max-height: 75vh; object-fit: contain; }
-        .ad-timer { position: absolute; top: 40px; right: 20px; border: 2px solid var(--red); width: 45px; height: 45px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 700; background: rgba(0,0,0,0.8); }
+        .ad-content { flex: 1; display: flex; align-items: center; justify-content: center; position: relative; }
+        .ad-media { width: 100%; max-height: 70vh; object-fit: contain; }
+        .ad-timer-ios { position: absolute; top: 40px; right: 20px; border: 2px solid var(--red); width: 45px; height: 45px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 700; background: rgba(0,0,0,0.8); }
 
         .social-hub {
             display: grid; grid-template-columns: repeat(6, 1fr); gap: 15px;
-            padding: 20px; background: var(--glass); backdrop-filter: var(--blur);
+            padding: 25px; background: var(--glass); backdrop-filter: var(--blur); border-top: 1px solid rgba(255,255,255,0.1);
         }
-        .social-hub i { font-size: 22px; color: var(--white); text-align: center; cursor: pointer; }
+        .social-hub i { font-size: 24px; color: var(--white); text-align: center; }
 
-        /* --- Header & Layout --- */
+        /* --- UI Header --- */
         header {
-            padding: 50px 20px 15px; background: rgba(0,0,0,0.7);
+            padding: 55px 20px 15px; background: rgba(0,0,0,0.8);
             backdrop-filter: var(--blur); position: sticky; top: 0; z-index: 800;
             display: flex; justify-content: space-between; align-items: center;
         }
-        .ios-title { font-size: 26px; font-weight: 800; }
-        .red-dot { color: var(--red); }
+        .logo-text { font-size: 26px; font-weight: 800; }
+        .red-txt { color: var(--red); }
 
+        /* --- Main Sections --- */
         .page { display: none; padding: 20px; padding-bottom: 120px; overflow-y: auto; height: 100vh; }
-        .active-page { display: block; animation: fade-in 0.4s ease; }
-        @keyframes fade-in { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        .active-page { display: block; animation: ios-zoom 0.4s ease; }
+        @keyframes ios-zoom { from { opacity: 0; transform: scale(0.9); } to { opacity: 1; transform: scale(1); } }
 
-        /* --- Sliding Images (Carousel) --- */
-        .carousel {
-            display: flex; overflow-x: auto; scroll-snap-type: x mandatory;
-            gap: 15px; padding-bottom: 20px; scrollbar-width: none;
-        }
+        /* Carousel with Ads Support */
+        .carousel { display: flex; overflow-x: auto; scroll-snap-type: x mandatory; gap: 15px; padding-bottom: 20px; scrollbar-width: none; }
         .carousel::-webkit-scrollbar { display: none; }
         .slide {
-            min-width: 85%; height: 180px; border-radius: 20px;
+            min-width: 88%; height: 200px; border-radius: 30px; 
             scroll-snap-align: center; position: relative; overflow: hidden;
+            border: 1px solid rgba(255,255,255,0.1);
         }
         .slide img { width: 100%; height: 100%; object-fit: cover; }
 
-        /* --- Simulizi Reader Mode (Drop Image) --- */
-        #story-reader {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: var(--black); z-index: 2000; display: none;
-        }
-        .drop-image-bg {
-            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-            background-size: cover; background-position: center;
-            filter: blur(40px) brightness(0.3); z-index: -1;
-        }
-        .reader-header { padding: 50px 20px; text-align: center; }
-        .reader-body { padding: 20px; line-height: 1.8; font-size: 17px; }
-
-        /* --- Floating Rounded Nav (iOS 26) --- */
-        .bottom-nav {
-            position: fixed; bottom: 25px; left: 20px; right: 20px;
-            height: 75px; background: rgba(20, 20, 20, 0.85);
-            backdrop-filter: var(--blur); border-radius: 40px;
-            display: flex; justify-content: space-around; align-items: center;
-            border: 1px solid rgba(255,255,255,0.1); z-index: 1000;
-        }
-        .nav-item { text-align: center; color: #777; text-decoration: none; font-size: 10px; font-weight: 600; }
-        .nav-item i { font-size: 22px; display: block; margin-bottom: 4px; }
-        .nav-item.active { color: var(--red); }
-
-        /* Chat Special Header */
+        /* --- Chat UI --- */
         #chat-header {
-            position: fixed; top: 0; right: 0; width: 100%; padding: 50px 20px 10px;
+            position: fixed; top: 0; right: 0; width: 100%; padding: 55px 25px 10px;
             background: var(--black); display: none; justify-content: flex-end; z-index: 1100;
         }
 
-        .card { background: var(--glass); backdrop-filter: var(--blur); border-radius: 20px; border: 1px solid rgba(255,255,255,0.05); padding: 12px; margin-bottom: 15px; }
-        .btn-ios { background: var(--red); color: white; border: none; padding: 14px; border-radius: 30px; font-weight: 700; width: 100%; cursor: pointer; }
+        /* --- Simulizi Book Reader --- */
+        #reader-view {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: var(--black); z-index: 2500; display: none; flex-direction: column;
+        }
+        .drop-image {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            background-size: cover; background-position: center;
+            filter: blur(50px) brightness(0.25); z-index: -1;
+        }
+        .reader-scroll { flex: 1; overflow-y: auto; padding: 50px 25px; }
+
+        /* --- Floating Rounded Nav (iOS 26 Style) --- */
+        .bottom-nav {
+            position: fixed; bottom: 25px; left: 20px; right: 20px;
+            height: 75px; background: rgba(15, 15, 15, 0.85);
+            backdrop-filter: var(--blur); border-radius: 38px;
+            display: flex; justify-content: space-around; align-items: center;
+            border: 1px solid rgba(255,255,255,0.12); z-index: 1000;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.6);
+        }
+        .nav-item { text-align: center; color: #666; text-decoration: none; font-size: 10px; font-weight: 700; }
+        .nav-item i { font-size: 22px; display: block; margin-bottom: 5px; }
+        .nav-item.active { color: var(--red); }
+
+        .card { background: var(--glass); backdrop-filter: var(--blur); border-radius: 25px; border: 1px solid rgba(255,255,255,0.06); padding: 15px; margin-bottom: 15px; }
+        .btn-red { background: var(--red); color: var(--white); border: none; padding: 16px; border-radius: 30px; font-weight: 700; width: 100%; cursor: pointer; }
         .hidden { display: none !important; }
     </style>
 </head>
 <body>
 
-    <!-- Splash Screen -->
+    <!-- Splash / Google Login Screen -->
     <div id="splash-screen">
-        <div class="logo-box"></div>
-        <h1 style="margin-top: 25px; font-weight: 700;">STANY <span class="red-dot">MIN TV</span></h1>
-        <p style="font-size: 11px; opacity: 0.5; margin-top: 5px;">POWERED BY iOS 26</p>
+        <div class="auth-card" id="login-container">
+            <div style="width: 80px; height: 80px; border: 4px solid var(--red); border-radius: 20px; margin: 0 auto 20px; animation: pulse 2s infinite;"></div>
+            <h1 style="font-weight: 800;">STANY <span class="red-txt">MIN TV</span></h1>
+            <p style="font-size: 12px; opacity: 0.6; margin-top: 5px;">STANYMINTV.COM OFFICIAL APP</p>
+            <button class="google-btn" onclick="googleLogin()">
+                <i class="fa-brands fa-google"></i> Sign up with Google
+            </button>
+        </div>
+        <p id="hwid-msg" style="color:var(--red); font-size: 11px; margin-top: 20px; display: none;">Device Locked: Use your registered device only.</p>
     </div>
 
-    <!-- Ad Overlay -->
+    <!-- Ultimate Ad Overlay -->
     <div id="ad-overlay">
-        <div class="marquee-ad"><span>• ADVERTISEMENT • WATCH TO UNLOCK FREE ACCESS • STANY MIN TV •</span></div>
-        <div class="ad-container">
-            <div class="ad-timer" id="ad-timer">15</div>
+        <div class="marquee-container"><div class="marquee-text" id="ad-marquee-top">SPONSORED BY STANY MIN TV • PREMIUM ACCESS AVAILABLE • CLICK SOCIAL ICONS BELOW</div></div>
+        <div class="ad-content">
+            <div class="ad-timer-ios" id="ad-timer">15</div>
             <img id="ad-img" class="ad-media">
         </div>
-        <div class="social-hub" id="social-hub"></div>
-        <div class="marquee-ad"><span>• SPONSORED CONTENT • VISIT OUR PARTNERS FOR MORE •</span></div>
-        <button id="skip-btn" class="btn-ios hidden" style="margin: 10px; width: calc(100% - 20px);">SKIP AD (PREMIUM ONLY)</button>
+        <div class="social-hub" id="ad-social-hub">
+            <!-- Dynamic Icons from Admin -->
+        </div>
+        <div class="marquee-container"><div class="marquee-text" id="ad-marquee-bottom">UNSKIPPABLE AD • WATCH TO UNLOCK ACCESS • STANYMINTV.COM</div></div>
+        <button id="skip-ad-btn" class="btn-red hidden" style="margin: 15px; width: calc(100% - 30px);">SKIP AD (PREMIUM)</button>
     </div>
 
     <!-- Header -->
     <header id="main-header">
-        <div class="ios-title">STANY<span class="red-dot">MIN</span></div>
-        <i class="fa-solid fa-magnifying-glass" style="font-size: 20px;"></i>
+        <div class="logo-text">STANY <span class="red-txt">MIN</span></div>
+        <i class="fa-solid fa-magnifying-glass" style="font-size: 22px;"></i>
     </header>
 
-    <!-- Chat Header (Back Arrow Right) -->
+    <!-- Chat Back Nav -->
     <div id="chat-header">
-        <i class="fa-solid fa-arrow-right-from-bracket" style="font-size: 24px; color: var(--red);" onclick="exitChat()"></i>
+        <i class="fa-solid fa-arrow-right-from-bracket" style="font-size: 26px; color: var(--red);" onclick="closeChat()"></i>
     </div>
 
     <!-- Main Content -->
     <main>
-        <!-- Live TV -->
+        <!-- Home / Live TV -->
         <section id="live" class="page active-page">
-            <h3 style="margin-bottom: 15px;">Live <span class="red-dot">Channels</span></h3>
-            <div id="live-list" style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px;"></div>
+            <h3 style="margin-bottom: 15px;"><i class="fa-solid fa-satellite-dish red-txt"></i> &nbsp; Live Stream</h3>
+            <div id="live-list" style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px;"></div>
         </section>
 
-        <!-- Movies (with Slider) -->
+        <!-- Movies with Rounded Sliding Carousel -->
         <section id="movies" class="page">
-            <div class="carousel" id="movie-carousel"></div>
-            <h3 style="margin: 20px 0 15px;">Cinema <span class="red-dot">Library</span></h3>
+            <div class="carousel" id="hero-slider"></div>
+            <h3 style="margin: 25px 0 15px;"><i class="fa-solid fa-clapperboard"></i> &nbsp; Movie Library</h3>
             <div id="movie-list" style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px;"></div>
         </section>
 
         <!-- Adult 18+ -->
         <section id="adult" class="page">
-            <div id="age-gate" class="card" style="text-align: center; padding: 50px 20px;">
-                <i class="fa-solid fa-circle-exclamation" style="font-size: 50px; color: var(--red);"></i>
-                <h2 style="margin: 20px 0;">AGE GATE</h2>
-                <p style="margin-bottom: 25px;">Maudhui haya ni kwa watu wenye umri wa miaka 18+ pekee. Je unayo miaka 18?</p>
-                <button class="btn-ios" onclick="unlockAdult()">NDIO, NINA MIAKA 18+</button>
+            <div id="age-gate" class="card" style="text-align: center; padding: 60px 20px;">
+                <i class="fa-solid fa-circle-exclamation" style="font-size: 55px; color: var(--red);"></i>
+                <h2 style="margin: 20px 0;">Age Verification</h2>
+                <p style="opacity: 0.7; margin-bottom: 30px;">This section is strictly for 18+ users only. Do you confirm you are of legal age?</p>
+                <button class="btn-red" onclick="unlockAdult()">Yes, I am 18+</button>
             </div>
             <div id="adult-list" class="hidden"></div>
         </section>
 
-        <!-- Chat -->
+        <!-- Chat Support -->
         <section id="chat" class="page">
-            <div id="chat-messages" style="height: 65vh; overflow-y: auto; padding: 10px; display: flex; flex-direction: column; gap: 10px;"></div>
-            <div style="display: flex; gap: 10px; padding: 10px;">
-                <input type="text" id="chat-input" placeholder="Andika ujumbe..." style="flex: 1; background: var(--glass); border: none; padding: 15px; border-radius: 25px; color: white;">
-                <button onclick="sendMsg()" class="btn-ios" style="width: 55px; border-radius: 50%;"><i class="fa-solid fa-paper-plane"></i></button>
+            <div id="chat-stream" style="height: 65vh; overflow-y: auto; padding: 10px; display: flex; flex-direction: column; gap: 15px;"></div>
+            <div style="display: flex; gap: 12px; padding: 10px; background: rgba(255,255,255,0.06); border-radius: 35px; margin-top: 15px; border: 1px solid rgba(255,255,255,0.1);">
+                <input type="text" id="msg-input" placeholder="Type a message..." style="flex: 1; background: transparent; border: none; padding: 12px; color: white; outline: none;">
+                <button onclick="sendMsg()" style="background:var(--red); border:none; width:48px; height:48px; border-radius:50%; color:white;"><i class="fa-solid fa-paper-plane"></i></button>
             </div>
         </section>
 
-        <!-- Simulizi Section -->
+        <!-- More Menu -->
         <section id="more" class="page">
-            <h3 style="margin-bottom: 20px;">Library & <span class="red-dot">More</span></h3>
-            <div class="card" onclick="openSimuliziList()"><i class="fa-solid fa-book-open red-dot"></i> &nbsp; Simulizi na Hadithi</div>
-            <div class="card"><i class="fa-solid fa-shield-halved red-dot"></i> &nbsp; Tech & Cybersecurity</div>
-            <div class="card"><i class="fa-solid fa-chart-line red-dot"></i> &nbsp; Betting Tips</div>
-            <div id="simulizi-list-container" class="hidden" style="margin-top: 20px;"></div>
+            <h3 style="margin-bottom: 25px;">Library & Services</h3>
+            <div class="card" onclick="openSimuliziList()"><i class="fa-solid fa-book red-txt"></i> &nbsp; Stories (Simulizi)</div>
+            <div class="card"><i class="fa-solid fa-user-shield red-txt"></i> &nbsp; Tech & Cyber Security</div>
+            <div class="card"><i class="fa-solid fa-chart-line red-txt"></i> &nbsp; Betting Tips</div>
+            <div class="card"><i class="fa-solid fa-download red-txt"></i> &nbsp; Downloads</div>
+            <div class="card" onclick="logout()"><i class="fa-solid fa-power-off"></i> &nbsp; Logout Account</div>
+            <div id="story-list-cont" class="hidden" style="margin-top: 20px;"></div>
         </section>
     </main>
 
-    <!-- Simulizi Reader UI -->
-    <div id="story-reader">
-        <div class="drop-image-bg" id="drop-img"></div>
-        <div class="reader-header">
-            <i class="fa-solid fa-chevron-down" onclick="closeReader()" style="font-size: 25px; color: white; margin-bottom: 20px;"></i>
-            <h1 id="r-title" class="red-dot"></h1>
-            <p id="r-author" style="font-size: 13px; opacity: 0.7;"></p>
-        </div>
-        <div class="reader-body card" id="r-content"></div>
-        <div style="display: flex; justify-content: space-between; padding: 20px;">
-            <button class="btn-ios" style="width: 45%;" onclick="prevPart()">BACK</button>
-            <button class="btn-ios" style="width: 45%;" onclick="nextPart()">NEXT</button>
+    <!-- Simulizi Reader View -->
+    <div id="reader-view">
+        <div class="drop-image" id="read-bg"></div>
+        <div class="reader-scroll">
+            <i class="fa-solid fa-chevron-down" onclick="exitReader()" style="font-size: 30px; margin-bottom: 30px;"></i>
+            <div style="text-align: center; margin-bottom: 35px;">
+                <h1 id="read-title" style="color:var(--red)"></h1>
+                <p id="read-author" style="opacity: 0.6; font-size: 14px; margin-top: 10px;"></p>
+                <div id="read-genre" style="display: inline-block; border: 1px solid var(--red); padding: 5px 15px; border-radius: 20px; font-size: 11px; font-weight: bold; margin-top: 15px;"></div>
+            </div>
+            <div class="card" style="background: rgba(0,0,0,0.5);">
+                <h4 id="read-episode" style="margin-bottom: 15px; color:var(--red)"></h4>
+                <div id="read-body" style="line-height: 1.9; font-size: 18px; text-align: justify; color: #ddd;"></div>
+            </div>
+            <div style="display: flex; justify-content: space-between; margin-top: 40px;">
+                <button class="btn-red" style="width: 45%; background: #222;" onclick="changePart(-1)">BACK</button>
+                <button class="btn-red" style="width: 45%;" onclick="changePart(1)">NEXT</button>
+            </div>
         </div>
     </div>
 
-    <!-- Floating Nav Bar -->
+    <!-- Floating Navigation Bar -->
     <div class="bottom-nav" id="bottom-nav">
-        <a href="javascript:void(0)" class="nav-item active" onclick="showPage('live')"><i class="fa-solid fa-tv"></i>Live</a>
-        <a href="javascript:void(0)" class="nav-item" onclick="showPage('movies')"><i class="fa-solid fa-film"></i>Movies</a>
-        <a href="javascript:void(0)" class="nav-item" onclick="showPage('adult')"><i class="fa-solid fa-pepper-hot"></i>Adult</a>
-        <a href="javascript:void(0)" class="nav-item" onclick="showPage('chat')"><i class="fa-solid fa-comments"></i>Chat</a>
-        <a href="javascript:void(0)" class="nav-item" onclick="showPage('more')"><i class="fa-solid fa-grip-vertical"></i>More</a>
+        <a href="javascript:void(0)" class="nav-item active" onclick="navTo('live', this)"><i class="fa-solid fa-tv"></i>Live</a>
+        <a href="javascript:void(0)" class="nav-item" onclick="navTo('movies', this)"><i class="fa-solid fa-film"></i>Movies</a>
+        <a href="javascript:void(0)" class="nav-item" onclick="navTo('adult', this)"><i class="fa-solid fa-pepper-hot"></i>Adult</a>
+        <a href="javascript:void(0)" class="nav-item" onclick="navTo('chat', this)"><i class="fa-solid fa-comments"></i>Chat</a>
+        <a href="javascript:void(0)" class="nav-item" onclick="navTo('more', this)"><i class="fa-solid fa-grip-vertical"></i>More</a>
     </div>
 
-    <!-- Player Modal -->
-    <div id="player-modal" class="hidden" style="position:fixed; top:0; left:0; width:100%; height:100%; background:#000; z-index:9999;">
-        <i class="fa-solid fa-circle-xmark" onclick="closePlayer()" style="position:absolute; top:40px; right:20px; z-index:10000; font-size: 35px;"></i>
-        <video id="main-player" class="video-js vjs-big-play-centered" style="width:100%; height:100%;"></video>
+    <!-- Player Window -->
+    <div id="player-view" class="hidden" style="position:fixed; top:0; left:0; width:100%; height:100%; background:#000; z-index:9000;">
+        <i class="fa-solid fa-xmark" onclick="stopPlayer()" style="position:absolute; top:45px; right:25px; z-index:9100; font-size: 35px;"></i>
+        <video id="stany-player" class="video-js vjs-big-play-centered" controls style="width:100%; height:100%;"></video>
     </div>
 
-    <!-- WhatsApp Floating Icon -->
-    <a href="https://wa.me/255XXXXXXXXX" id="wa-float" style="position:fixed; bottom:110px; right:25px; background:#25D366; width:55px; height:55px; border-radius:50%; display:flex; align-items:center; justify-content:center; text-decoration:none; box-shadow: 0 4px 15px rgba(0,0,0,0.3); z-index: 900;">
-        <i class="fa-brands fa-whatsapp" style="color:white; font-size: 30px;"></i>
+    <!-- Dynamic WhatsApp -->
+    <a href="https://wa.me/255XXXXXXXXX" id="wa-float" style="position:fixed; bottom:115px; right:25px; background:#25D366; width:58px; height:58px; border-radius:50%; display:flex; align-items:center; justify-content:center; text-decoration:none; box-shadow: 0 10px 25px rgba(0,0,0,0.4); z-index: 900;">
+        <i class="fa-brands fa-whatsapp" style="color:white; font-size: 32px;"></i>
     </a>
 
     <script>
-        // --- NEW FIREBASE CONFIG ---
+        // --- FIREBASE CONFIGURATION ---
         const firebaseConfig = {
             apiKey: "AIzaSyDiexD5WK9GLhQldr6zNmC8iYWc4em5eyM",
             authDomain: "stany-min-tv.firebaseapp.com",
@@ -260,55 +280,63 @@
         const db = firebase.database();
         const auth = firebase.auth();
 
+        let currentUser = null;
         let isPremium = false;
         let myHWID = localStorage.getItem('hwid') || 'STANY-' + Math.random().toString(36).substr(2, 9);
         localStorage.setItem('hwid', myHWID);
 
-        window.onload = () => {
-            setTimeout(() => {
-                document.getElementById('splash-screen').style.display = 'none';
-                initHWID();
-            }, 3000);
-            renderSocialIcons();
-        };
+        // --- GOOGLE AUTHENTICATION ---
+        function googleLogin() {
+            const provider = new firebase.auth.GoogleAuthProvider();
+            auth.signInWithPopup(provider).then(res => {
+                const user = res.user;
+                checkHWID(user);
+            }).catch(err => alert("Google Sign-in Failed: " + err.message));
+        }
 
-        // HWID Logic
-        function initHWID() {
-            auth.onAuthStateChanged(user => {
-                if(user) {
-                    db.ref('users/' + user.uid).on('value', snap => {
-                        const u = snap.val();
-                        if(u && u.hwid && u.hwid !== myHWID) {
-                            alert("Kifaa kimefungwa! Tumia simu uliyosajilia.");
-                            auth.signOut();
-                        } else if(!u.hwid) {
-                            db.ref('users/' + user.uid).update({ hwid: myHWID });
-                        }
-                        isPremium = u.isPremium || false;
-                        loadAppData();
-                    });
+        function checkHWID(user) {
+            db.ref('users/' + user.uid).on('value', snap => {
+                const u = snap.val();
+                if (u && u.hwid && u.hwid !== myHWID) {
+                    document.getElementById('login-container').style.display = 'none';
+                    document.getElementById('hwid-msg').style.display = 'block';
+                    auth.signOut();
+                } else {
+                    if (!u || !u.hwid) db.ref('users/' + user.uid).update({ hwid: myHWID, email: user.email, name: user.displayName });
+                    isPremium = u ? u.isPremium : false;
+                    document.getElementById('splash-screen').style.display = 'none';
+                    initApp();
                 }
             });
         }
 
-        // Ad Engine
-        function startAd(callback) {
+        auth.onAuthStateChanged(user => { if(user) checkHWID(user); });
+
+        // --- AD ENGINE LOGIC ---
+        function showAd(callback) {
             if (isPremium) return callback();
             const overlay = document.getElementById('ad-overlay');
-            const timerEl = document.getElementById('ad-timer');
             overlay.style.display = 'flex';
 
-            db.ref('ads').once('value', snap => {
-                const ads = snap.val();
-                const keys = Object.keys(ads);
-                const activeAd = ads[keys[Math.floor(Math.random() * keys.length)]];
-                document.getElementById('ad-img').src = activeAd.image;
+            db.ref('ads/config').once('value', snap => {
+                const config = snap.val();
+                document.getElementById('ad-img').src = config.image;
+                document.getElementById('ad-marquee-top').innerText = config.marqueeTop || "SPONSORED BY STANY MIN TV";
+                document.getElementById('ad-marquee-bottom').innerText = config.marqueeBottom || "STANYMINTV.COM OFFICIAL APP";
                 
-                let time = activeAd.duration || 15;
+                // Load Social Hub Icons from Admin
+                const hub = document.getElementById('ad-social-hub'); hub.innerHTML = '';
+                if(config.socialHub) {
+                    config.socialHub.forEach(item => {
+                        hub.innerHTML += `<i class="${item.icon}" onclick="window.open('${item.url}')"></i>`;
+                    });
+                }
+
+                let time = config.duration || 15;
                 const timer = setInterval(() => {
                     time--;
-                    timerEl.innerText = time;
-                    if(time <= 0) {
+                    document.getElementById('ad-timer').innerText = time;
+                    if (time <= 0) {
                         clearInterval(timer);
                         overlay.style.display = 'none';
                         callback();
@@ -317,19 +345,45 @@
             });
         }
 
-        function renderSocialIcons() {
-            const list = ['whatsapp', 'telegram', 'youtube', 'facebook', 'instagram', 'tiktok', 'discord', 'twitter', 'snapchat', 'linkedin', 'github', 'reddit', 'twitch', 'pinterest', 'skype', 'vimeo', 'slack', 'medium', 'quora', 'threads'];
-            const hub = document.getElementById('social-hub');
-            list.forEach(i => hub.innerHTML += `<i class="fa-brands fa-${i}" onclick="window.open('https://google.com')"></i>`);
+        // --- APP DATA ---
+        function initApp() {
+            // Load Live Channels
+            db.ref('channels').on('value', snap => {
+                const list = document.getElementById('live-list'); list.innerHTML = '';
+                snap.forEach(c => {
+                    const ch = c.val();
+                    list.innerHTML += `<div class="card" onclick="openPlayer('${ch.url}', '${ch.licUrl}', '${ch.token}')" style="text-align:center;"><img src="${ch.logo}" style="width:100%; border-radius:18px; aspect-ratio:1/1; object-fit:cover;"><p style="font-size:10px; font-weight:700; margin-top:5px;">${ch.name}</p></div>`;
+                });
+            });
+
+            // Load Movies & Carousel (Slideshow)
+            db.ref('movies').on('value', snap => {
+                const list = document.getElementById('movie-list');
+                const slider = document.getElementById('hero-slider');
+                list.innerHTML = ''; slider.innerHTML = '';
+                snap.forEach(m => {
+                    const mov = m.val();
+                    list.innerHTML += `<div class="card" onclick="openPlayer('${mov.url}')"><img src="${mov.poster}" style="width:100%; border-radius:22px;"><h4>${mov.title}</h4></div>`;
+                    if (mov.isSlider || mov.isCarouselAd) {
+                        slider.innerHTML += `
+                            <div class="slide" onclick="${mov.isCarouselAd ? "window.open('"+mov.adUrl+"')" : "openPlayer('"+mov.url+"')"}">
+                                <img src="${mov.poster}">
+                                <div style="position:absolute; bottom:15px; left:15px; background:rgba(0,0,0,0.5); padding:10px; border-radius:15px;">
+                                    <h2 style="font-size:16px;">${mov.title}</h2>
+                                    ${mov.isCarouselAd ? '<span style="color:var(--red); font-size:10px; font-weight:bold;">SPONSORED</span>' : ''}
+                                </div>
+                            </div>`;
+                    }
+                });
+            });
         }
 
-        // Navigation
-        function showPage(id) {
+        // --- NAVIGATION ---
+        function navTo(id, el) {
             document.querySelectorAll('.page').forEach(p => p.classList.remove('active-page'));
             document.getElementById(id).classList.add('active-page');
             document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
-            const nav = Array.from(document.querySelectorAll('.nav-item')).find(n => n.innerText.toLowerCase() === id);
-            if(nav) nav.classList.add('active');
+            if(el) el.classList.add('active');
 
             if(id === 'chat') {
                 document.getElementById('bottom-nav').style.display = 'none';
@@ -343,75 +397,60 @@
                 document.getElementById('wa-float').style.display = 'flex';
             }
         }
+        function closeChat() { navTo('live', document.querySelector('.nav-item')); }
 
-        function exitChat() { showPage('live'); }
-
-        // DRM Player
-        let player = videojs('main-player');
-        function playMedia(url, licUrl, token) {
-            startAd(() => {
-                document.getElementById('player-modal').classList.remove('hidden');
-                let config = { src: url, type: url.includes('.mpd') ? 'application/dash+xml' : 'application/x-mpegURL' };
+        // --- PLAYER ---
+        let vjs = videojs('stany-player');
+        function openPlayer(url, licUrl, token) {
+            showAd(() => {
+                document.getElementById('player-view').classList.remove('hidden');
+                let conf = { src: url, type: url.includes('.mpd') ? 'application/dash+xml' : 'application/x-mpegURL' };
                 if(licUrl) {
-                    config.keySystems = { 'com.widevine.alpha': { url: licUrl, headers: { 'Authorization': token ? 'Bearer ' + token : '' } } };
+                    conf.keySystems = { 'com.widevine.alpha': { url: licUrl, headers: { 'Authorization': token ? 'Bearer ' + token : '' } } };
                 }
-                player.src(config);
-                player.play();
+                vjs.src(conf);
+                vjs.play();
             });
         }
-        function closePlayer() { player.pause(); document.getElementById('player-modal').classList.add('hidden'); }
+        function stopPlayer() { vjs.pause(); document.getElementById('player-view').classList.add('hidden'); }
 
-        // Data Loaders
-        function loadAppData() {
-            // Live Channels
-            db.ref('channels').on('value', snap => {
-                const list = document.getElementById('live-list'); list.innerHTML = '';
-                snap.forEach(c => {
-                    const ch = c.val();
-                    list.innerHTML += `<div class="card" onclick="playMedia('${ch.url}', '${ch.licUrl}', '${ch.token}')" style="text-align:center;"><img src="${ch.logo}" style="width:100%; border-radius:15px;"><p style="font-size:10px; font-weight:700; margin-top:5px;">${ch.name}</p></div>`;
-                });
-            });
-
-            // Movies & Slider
-            db.ref('movies').on('value', snap => {
-                const list = document.getElementById('movie-list');
-                const slider = document.getElementById('movie-carousel');
-                list.innerHTML = ''; slider.innerHTML = '';
-                snap.forEach(m => {
-                    const mov = m.val();
-                    list.innerHTML += `<div class="card" onclick="playMedia('${mov.url}')"><img src="${mov.poster}" style="width:100%; border-radius:15px;"><h4>${mov.title}</h4></div>`;
-                    if(mov.isSlider) slider.innerHTML += `<div class="slide" onclick="playMedia('${mov.url}')"><img src="${mov.poster}"><div style="position:absolute; bottom:15px; left:15px;"><h2>${mov.title}</h2></div></div>`;
-                });
-            });
-        }
-
-        // Simulizi Logic
+        // --- SIMULIZI (STORIES) ---
+        let activeStory = null; let activePart = 0;
         function openSimuliziList() {
-            const cont = document.getElementById('simulizi-list-container');
-            cont.classList.toggle('hidden');
+            const cont = document.getElementById('story-list-cont'); cont.classList.toggle('hidden');
             db.ref('simulizi').once('value', snap => {
                 cont.innerHTML = '';
                 snap.forEach(s => {
                     const story = s.val();
-                    cont.innerHTML += `<div class="card" onclick="readStory('${s.key}')" style="display:flex; gap:15px;"><img src="${story.cover}" style="width:60px; height:80px; border-radius:10px;"><div><h4>${story.title}</h4><p style="font-size:11px;">${story.author} • ${story.genre}</p></div></div>`;
+                    cont.innerHTML += `<div class="card" onclick="readNow('${s.key}')" style="display:flex; gap:15px; align-items:center;"><img src="${story.cover}" style="width:60px; height:80px; border-radius:12px; object-fit:cover;"><div><h4>${story.title}</h4><p style="font-size:11px; opacity:0.6;">By ${story.author}</p></div></div>`;
                 });
             });
         }
-
-        function readStory(id) {
+        function readNow(id) {
             db.ref('simulizi/' + id).once('value', snap => {
-                const s = snap.val();
-                document.getElementById('r-title').innerText = s.title;
-                document.getElementById('r-author').innerText = "By " + s.author + " | " + s.genre;
-                document.getElementById('r-content').innerText = s.parts[0]; // Part 1
-                document.getElementById('drop-img').style.backgroundImage = `url('${s.cover}')`;
-                document.getElementById('story-reader').style.display = 'block';
+                activeStory = snap.val(); activePart = 0;
+                document.getElementById('read-title').innerText = activeStory.title;
+                document.getElementById('read-author').innerText = "Written by " + activeStory.author;
+                document.getElementById('read-genre').innerText = activeStory.genre;
+                document.getElementById('read-bg').style.backgroundImage = `url('${activeStory.cover}')`;
+                updateReader();
+                document.getElementById('reader-view').style.display = 'flex';
             });
         }
-        function closeReader() { document.getElementById('story-reader').style.display = 'none'; }
+        function updateReader() {
+            document.getElementById('read-episode').innerText = "EPISODE " + (activePart + 1);
+            document.getElementById('read-body').innerText = activeStory.parts[activePart].content;
+        }
+        function changePart(dir) {
+            if(dir > 0 && activePart < activeStory.parts.length - 1) activePart++;
+            else if(dir < 0 && activePart > 0) activePart--;
+            updateReader();
+        }
+        function exitReader() { document.getElementById('reader-view').style.display = 'none'; }
 
+        // --- ADULT GATE ---
         function unlockAdult() {
-            const pin = prompt("Ingiza Pin ya 18+:");
+            const pin = prompt("Enter 18+ Access PIN:");
             if(pin === "1234") {
                 document.getElementById('age-gate').classList.add('hidden');
                 document.getElementById('adult-list').classList.remove('hidden');
@@ -419,10 +458,10 @@
                     const list = document.getElementById('adult-list'); list.innerHTML = '';
                     snap.forEach(a => {
                         const v = a.val();
-                        list.innerHTML += `<div class="card" onclick="playMedia('${v.url}')"><h4>${v.title}</h4></div>`;
+                        list.innerHTML += `<div class="card" onclick="openPlayer('${v.url}')"><h4>${v.title}</h4></div>`;
                     });
                 });
-            }
+            } else { alert("Access Denied."); }
         }
     </script>
 </body>
