@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>STANY MIN TV | iOS 26 PRO MAX</title>
+    <title>STANY MIN TV | iOS 26 OFFICIAL</title>
     
     <!-- Icons: FontAwesome (No Emojis) -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -24,7 +24,7 @@
             --black: #000000;
             --white: #FFFFFF;
             --glass: rgba(255, 255, 255, 0.08);
-            --blur: blur(35px);
+            --blur: blur(40px);
             --sent: #FF0000;
             --received: #1C1C1E;
         }
@@ -37,7 +37,7 @@
 
         body { background-color: var(--black); color: var(--white); overflow: hidden; height: 100vh; }
 
-        /* --- Auth System --- */
+        /* --- iOS 26 Auth & Splash --- */
         #auth-screen {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: var(--black); z-index: 10000;
@@ -45,28 +45,28 @@
         }
         .auth-card {
             background: var(--glass); backdrop-filter: var(--blur);
-            padding: 30px; border-radius: 35px; width: 90%; text-align: center;
+            padding: 35px; border-radius: 40px; width: 90%; text-align: center;
             border: 1px solid rgba(255,255,255,0.1);
         }
         .ios-input {
-            width: 100%; padding: 15px; margin-top: 15px;
+            width: 100%; padding: 16px; margin-top: 15px;
             background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1);
             border-radius: 15px; color: white; outline: none;
         }
 
-        /* --- Ad Engine --- */
+        /* --- Ultimate Ad Engine --- */
         #ad-overlay {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: var(--black); z-index: 9500; display: none; flex-direction: column;
         }
-        .marquee-ad { background: var(--red); color: white; padding: 8px; font-weight: bold; font-size: 13px; overflow: hidden; }
+        .marquee-ad { background: var(--red); color: white; padding: 10px; font-weight: bold; overflow: hidden; font-size: 13px; }
         .marquee-ad span { display: inline-block; white-space: nowrap; animation: marquee 15s linear infinite; }
         @keyframes marquee { from { transform: translateX(100%); } to { transform: translateX(-100%); } }
-        .ad-timer { position: absolute; top: 40px; right: 25px; border: 2px solid var(--red); width: 48px; height: 48px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; background: rgba(0,0,0,0.85); }
+        .ad-timer { position: absolute; top: 50px; right: 25px; border: 2.5px solid var(--red); width: 50px; height: 50px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 800; background: rgba(0,0,0,0.85); }
 
-        /* --- Header & Navigation --- */
+        /* --- Header & Floating Nav --- */
         header {
-            padding: 55px 20px 15px; background: rgba(0,0,0,0.8);
+            padding: 60px 20px 15px; background: rgba(0,0,0,0.8);
             backdrop-filter: var(--blur); position: sticky; top: 0; z-index: 800;
             display: flex; justify-content: space-between; align-items: center;
         }
@@ -74,102 +74,107 @@
         .red-txt { color: var(--red); }
 
         .bottom-nav {
-            position: fixed; bottom: 25px; left: 20px; right: 20px;
-            height: 75px; background: rgba(18, 18, 18, 0.85);
+            position: fixed; bottom: 30px; left: 20px; right: 20px;
+            height: 75px; background: rgba(18, 18, 18, 0.8);
             backdrop-filter: var(--blur); border-radius: 40px;
             display: flex; justify-content: space-around; align-items: center;
-            border: 1px solid rgba(255,255,255,0.12); z-index: 1000;
+            border: 1px solid rgba(255,255,255,0.1); z-index: 1000;
         }
         .nav-item { text-align: center; color: #666; text-decoration: none; font-size: 10px; font-weight: 700; }
-        .nav-item i { font-size: 22px; display: block; margin-bottom: 5px; }
+        .nav-item i { font-size: 24px; display: block; margin-bottom: 5px; }
         .nav-item.active { color: var(--red); }
 
-        /* --- Chat Advanced (Bottom-Up Layout) --- */
+        /* --- Advanced Chat (Keyboard Aligned) --- */
         #chat-header {
-            position: fixed; top: 0; right: 0; width: 100%; padding: 55px 25px 15px;
-            background: var(--black); display: none; justify-content: flex-end; z-index: 1100;
+            position: fixed; top: 0; left: 0; width: 100%; padding: 60px 20px 15px;
+            background: var(--black); display: none; align-items: center; z-index: 1100;
             border-bottom: 1px solid var(--glass);
         }
         #chat-container {
-            height: calc(100vh - 80px); /* Space for input */
-            display: flex; flex-direction: column; justify-content: flex-end;
-            padding-bottom: 90px;
+            height: 100vh; display: flex; flex-direction: column; justify-content: flex-end;
+            padding-bottom: 165px;
         }
         #chat-messages {
             overflow-y: auto; padding: 20px;
-            display: flex; flex-direction: column; /* Normal order to stack bubbles */
-            gap: 12px;
+            display: flex; flex-direction: column; gap: 10px;
         }
-        .msg-bubble { 
-            padding: 12px 18px; border-radius: 22px; max-width: 80%; 
-            font-size: 15px; line-height: 1.4; position: relative;
-        }
-        .msg-sent { background: var(--sent); align-self: flex-end; color: white; border-bottom-right-radius: 4px; }
-        .msg-received { background: var(--received); align-self: flex-start; color: white; border-bottom-left-radius: 4px; }
-        .msg-name { font-size: 10px; opacity: 0.5; margin-bottom: 4px; font-weight: 800; }
+        .msg-bubble { padding: 12px 18px; border-radius: 22px; max-width: 80%; font-size: 15px; line-height: 1.4; }
+        .msg-sent { background: var(--sent); align-self: flex-end; border-bottom-right-radius: 4px; }
+        .msg-received { background: var(--received); align-self: flex-start; border-bottom-left-radius: 4px; }
+        .reply-tag { background: rgba(255,255,255,0.1); border-left: 3px solid var(--white); padding: 5px 10px; border-radius: 8px; font-size: 11px; margin-bottom: 5px; }
 
         .chat-input-area {
             position: fixed; bottom: 0; left: 0; width: 100%;
-            background: var(--black); padding: 15px 20px 35px;
-            border-top: 1px solid var(--glass); display: flex; gap: 10px;
-        }
-        .chat-input {
-            flex: 1; background: var(--received); border: none;
-            padding: 14px 20px; border-radius: 30px; color: white; outline: none;
+            background: var(--black); padding: 15px 20px 45px;
+            border-top: 1px solid var(--glass); z-index: 1200;
         }
 
-        /* --- Sub-pages --- */
-        .page { display: none; padding: 20px; padding-bottom: 120px; overflow-y: auto; height: 100vh; }
-        .active-page { display: block; animation: ios-zoom 0.4s ease; }
-        @keyframes ios-zoom { from { opacity: 0; transform: scale(0.95); } to { opacity: 1; transform: scale(1); } }
+        /* --- More Services Sub-Pages --- */
+        .sub-page {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: var(--black); z-index: 2000; display: none;
+            padding: 70px 20px; overflow-y: auto;
+        }
 
-        .card { background: var(--glass); backdrop-filter: var(--blur); border-radius: 25px; border: 1px solid rgba(255,255,255,0.06); padding: 15px; margin-bottom: 15px; }
-        .carousel { display: flex; overflow-x: auto; scroll-snap-type: x mandatory; gap: 15px; padding-bottom: 20px; scrollbar-width: none; }
-        .slide { min-width: 85%; height: 210px; border-radius: 30px; scroll-snap-align: center; position: relative; overflow: hidden; border: 1px solid var(--glass); }
+        /* --- Dynamic Sliding Carousels --- */
+        .carousel { display: flex; overflow-x: auto; scroll-snap-type: x mandatory; gap: 15px; padding-bottom: 15px; scrollbar-width: none; }
+        .carousel::-webkit-scrollbar { display: none; }
+        .slide {
+            min-width: 88%; height: 210px; border-radius: 30px; 
+            scroll-snap-align: center; position: relative; overflow: hidden;
+            border: 1px solid var(--glass);
+        }
         .slide img { width: 100%; height: 100%; object-fit: cover; }
 
-        /* Simulizi Reader */
-        #reader-view { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--black); z-index: 2500; display: none; }
-        .drop-image-bg { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background-size: cover; background-position: center; filter: blur(50px) brightness(0.2); z-index: -1; }
+        /* Simulizi Reader (Drop Image) */
+        .reader-view { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--black); z-index: 3000; display: none; }
+        .drop-image-bg {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            background-size: cover; background-position: center;
+            filter: blur(60px) brightness(0.25); z-index: -1;
+        }
 
-        .btn-red { background: var(--red); color: white; border: none; padding: 16px; border-radius: 30px; font-weight: 700; width: 100%; cursor: pointer; }
+        .card { background: var(--glass); backdrop-filter: var(--blur); border-radius: 25px; border: 1px solid rgba(255,255,255,0.06); padding: 18px; margin-bottom: 15px; }
+        .btn-red { background: var(--red); color: white; border: none; padding: 18px; border-radius: 30px; font-weight: 700; width: 100%; cursor: pointer; }
         .hidden { display: none !important; }
     </style>
 </head>
 <body>
 
-    <!-- Auth -->
+    <!-- Auth System -->
     <div id="auth-screen">
         <div class="auth-card" id="login-box">
-            <div style="width: 80px; height: 80px; border: 4px solid var(--red); border-radius: 20px; margin: 0 auto 20px; animation: pulse 2s infinite;"></div>
+            <div style="width: 85px; height: 85px; border: 4px solid var(--red); border-radius: 22px; margin: 0 auto 25px; animation: pulse 2s infinite;"></div>
             <h1 style="font-weight: 800;">STANY <span class="red-txt">MIN TV</span></h1>
-            <input type="email" id="auth-email" class="ios-input" placeholder="Email">
-            <input type="password" id="auth-pass" class="ios-input" placeholder="Password">
-            <button class="btn-red" style="margin-top:20px" onclick="emailAuth('login')">Sign In</button>
-            <button class="btn-red" style="background:transparent; border:1px solid var(--red);" onclick="toggleAuth('register')">Register</button>
-            <button class="btn-red" style="background:white; color:black; margin-top:20px;" onclick="googleAuth()">
-                <i class="fa-brands fa-google"></i> Sign in with Google
+            <div id="auth-fields">
+                <input type="email" id="email" class="ios-input" placeholder="Email Address">
+                <input type="password" id="pass" class="ios-input" placeholder="Password">
+                <button class="btn-red" style="margin-top:20px" onclick="handleAuth('login')">Sign In</button>
+                <button class="btn-red" style="background:transparent; border:1px solid var(--red); margin-top:10px" onclick="toggleAuth('reg')">Register Now</button>
+            </div>
+            <button class="btn-red" style="background:white; color:black; margin-top:20px" onclick="googleAuth()">
+                <i class="fa-brands fa-google"></i> Continue with Google
             </button>
         </div>
-        <div class="auth-card hidden" id="register-box">
-            <h2>Create Account</h2>
-            <input type="text" id="reg-name" class="ios-input" placeholder="Name">
+        <div class="auth-card hidden" id="reg-box">
+            <h2>Sign Up</h2>
+            <input type="text" id="reg-name" class="ios-input" placeholder="Full Name">
             <input type="email" id="reg-email" class="ios-input" placeholder="Email">
             <input type="password" id="reg-pass" class="ios-input" placeholder="Password">
-            <button class="btn-red" style="margin-top:20px" onclick="emailAuth('register')">Sign Up</button>
-            <p onclick="toggleAuth('login')" style="margin-top:20px; font-size:12px; opacity:0.6">Back to Login</p>
+            <button class="btn-red" onclick="handleAuth('reg')">Create Account</button>
+            <p onclick="toggleAuth('login')" style="margin-top:20px; font-size:12px; opacity:0.6">Already have an account? Login</p>
         </div>
     </div>
 
-    <!-- Ad Engine -->
+    <!-- Ad Engine Overlay -->
     <div id="ad-overlay">
-        <div class="marquee-ad"><span>• ADVERTISEMENT • VISIT STANYMINTV.COM • OFFICIAL SPONSOR • WATCH TO UNLOCK ACCESS •</span></div>
+        <div class="marquee-ad"><span>• ADVERTISEMENT • VISIT STANYMINTV.COM • OFFICIAL PARTNER • UNSKIPPABLE ACCESS •</span></div>
         <div style="flex:1; display:flex; align-items:center; justify-content:center; position:relative;">
             <div class="ad-timer" id="ad-timer">15</div>
-            <img id="ad-img" style="width:100%; max-height:70vh; object-fit:contain;">
+            <img id="ad-img" style="width:100%; max-height:75vh; object-fit:contain;">
         </div>
         <div id="ad-social-hub" style="display:grid; grid-template-columns:repeat(6, 1fr); gap:15px; padding:25px; background:var(--glass);"></div>
-        <div class="marquee-ad"><span>• UNSKIPPABLE • SPONSORED CONTENT • STANY MIN TV OFFICIAL •</span></div>
+        <div class="marquee-ad"><span>• POWERED BY STANY MIN TV PRO • CLICK ICONS TO JOIN SPONSOR •</span></div>
     </div>
 
     <!-- Header -->
@@ -178,32 +183,33 @@
         <i class="fa-solid fa-magnifying-glass" style="font-size: 22px;"></i>
     </header>
 
-    <!-- Chat Back Arrow (Top Right) -->
     <div id="chat-header">
-        <i class="fa-solid fa-arrow-right-from-bracket" style="font-size: 26px; color: var(--red);" onclick="closeChat()"></i>
+        <i class="fa-solid fa-chevron-left" style="font-size: 26px; color: var(--red);" onclick="closeChat()"></i>
+        <span style="margin-left: 20px; font-weight: 800;">MESSAGES</span>
     </div>
 
     <main>
-        <!-- Home -->
+        <!-- Section: Live TV -->
         <section id="live" class="page active-page">
+            <div class="carousel" id="live-carousel"></div>
             <h3 style="margin-bottom:20px;"><i class="fa-solid fa-satellite-dish red-txt"></i> &nbsp; Live Channels</h3>
             <div id="live-list" style="display:grid; grid-template-columns:repeat(3, 1fr); gap:12px;"></div>
         </section>
 
-        <!-- Movies -->
+        <!-- Section: Movies -->
         <section id="movies" class="page">
             <div class="carousel" id="movie-carousel"></div>
-            <h3 style="margin:25px 0 15px;"><i class="fa-solid fa-clapperboard red-txt"></i> &nbsp; Cinema Library</h3>
+            <h3 style="margin:25px 0 15px;"><i class="fa-solid fa-film red-txt"></i> &nbsp; Cinema Library</h3>
             <div id="movie-list" style="display:grid; grid-template-columns:repeat(2, 1fr); gap:15px;"></div>
         </section>
 
-        <!-- Adult 18+ -->
+        <!-- Section: Adult -->
         <section id="adult" class="page">
             <div id="age-gate" class="card" style="text-align:center; padding:60px 20px;">
                 <i class="fa-solid fa-circle-exclamation" style="font-size:55px; color:var(--red);"></i>
-                <h2>Adult Access</h2>
-                <p style="margin-top:15px; opacity:0.7;">Confirm you are 18 or older to enter.</p>
-                <button class="btn-red" style="margin-top:30px" onclick="unlockAdult()">Confirm 18+</button>
+                <h2 style="margin:20px 0;">18+ Warning</h2>
+                <p style="opacity:0.7;">This section is restricted to adults. Enter?</p>
+                <button class="btn-red" style="margin-top:20px" onclick="unlockAdult()">Yes, I am 18+</button>
             </div>
             <div id="adult-content" class="hidden">
                 <div class="carousel" id="adult-carousel"></div>
@@ -211,36 +217,53 @@
             </div>
         </section>
 
-        <!-- Chat (Fixed to bottom) -->
-        <section id="chat" class="page" style="padding:0; overflow:hidden;">
+        <!-- Section: Chat -->
+        <section id="chat" class="page" style="padding:0;">
             <div id="chat-container">
                 <div style="display:flex; background:var(--glass); border-radius:20px; padding:5px; margin: 100px 20px 10px;">
-                    <div class="nav-item" id="btn-public" style="flex:1; padding:10px; border-radius:15px; cursor:pointer;" onclick="toggleChat('public')">PUBLIC</div>
-                    <div class="nav-item" id="btn-bot" style="flex:1; padding:10px; border-radius:15px; cursor:pointer;" onclick="toggleChat('bot')">STANY BOT</div>
+                    <div id="sw-public" style="flex:1; text-align:center; padding:10px; border-radius:15px; cursor:pointer;" onclick="setChat('public')">PUBLIC</div>
+                    <div id="sw-bot" style="flex:1; text-align:center; padding:10px; border-radius:15px; cursor:pointer;" onclick="setChat('bot')">STANY BOT</div>
                 </div>
                 <div id="chat-messages"></div>
                 <div class="chat-input-area">
-                    <input type="text" id="msg-input" class="chat-input" placeholder="Aa...">
-                    <button onclick="sendMsg()" style="background:var(--red); border:none; width:48px; height:48px; border-radius:50%; color:white;"><i class="fa-solid fa-paper-plane"></i></button>
+                    <div id="reply-preview" style="display:none; background:var(--received); padding:8px 20px; border-radius:15px; margin-bottom:10px; justify-content:space-between;">
+                        <span id="reply-name" style="font-size:12px; opacity:0.7;"></span>
+                        <i class="fa-solid fa-xmark" onclick="cancelReply()"></i>
+                    </div>
+                    <div style="display:flex; gap:10px;">
+                        <input type="text" id="msg-input" class="ios-input" style="margin:0; border-radius:30px;" placeholder="Aa...">
+                        <button onclick="sendMsg()" style="background:var(--red); border:none; width:50px; height:50px; border-radius:50%; color:white;"><i class="fa-solid fa-paper-plane"></i></button>
+                    </div>
                 </div>
             </div>
         </section>
 
-        <!-- More -->
+        <!-- Section: More Services -->
         <section id="more" class="page">
-            <h3>More <span class="red-txt">Services</span></h3>
-            <div class="card" onclick="openSimulizi()"><i class="fa-solid fa-book red-txt"></i> &nbsp; Stories (Simulizi)</div>
-            <div class="card"><i class="fa-solid fa-shield-halved red-txt"></i> &nbsp; Tech Updates</div>
-            <div class="card"><i class="fa-solid fa-chart-line red-txt"></i> &nbsp; Betting Tips</div>
+            <div class="carousel" id="more-carousel"></div>
+            <h3 style="margin-bottom:25px;">Library & <span class="red-txt">Services</span></h3>
+            <div class="card" onclick="openSub('stories')"><i class="fa-solid fa-book red-txt"></i> &nbsp; Stories (Simulizi)</div>
+            <div class="card" onclick="openSub('tech')"><i class="fa-solid fa-microchip red-txt"></i> &nbsp; Tech Updates</div>
+            <div class="card" onclick="openSub('betting')"><i class="fa-solid fa-chart-line red-txt"></i> &nbsp; Betting Tips</div>
+            <div class="card" onclick="openSub('download')"><i class="fa-solid fa-download red-txt"></i> &nbsp; Downloads</div>
             <div class="card" onclick="logout()"><i class="fa-solid fa-power-off"></i> &nbsp; Sign Out</div>
-            <div id="story-list" class="hidden"></div>
         </section>
     </main>
 
-    <!-- Reader -->
-    <div id="reader-view">
+    <!-- Sub Pages Content -->
+    <div id="stories-page" class="sub-page">
+        <i class="fa-solid fa-chevron-left" onclick="closeSub('stories-page')" style="font-size:26px; margin-bottom:20px;"></i>
+        <div id="story-render"></div>
+    </div>
+    <div id="tech-page" class="sub-page">
+        <i class="fa-solid fa-chevron-left" onclick="closeSub('tech-page')" style="font-size:26px; margin-bottom:20px;"></i>
+        <div id="tech-render"></div>
+    </div>
+
+    <!-- Reader View -->
+    <div id="reader-view" class="reader-view">
         <div class="drop-image-bg" id="read-bg"></div>
-        <div style="flex:1; overflow-y:auto; padding:50px 25px;">
+        <div style="flex:1; overflow-y:auto; padding:60px 25px;">
             <i class="fa-solid fa-chevron-down" onclick="exitReader()" style="font-size:30px; margin-bottom:30px;"></i>
             <h1 id="read-title" class="red-txt" style="text-align:center;"></h1>
             <p id="read-author" style="text-align:center; opacity:0.6; margin-bottom:30px;"></p>
@@ -252,7 +275,7 @@
         </div>
     </div>
 
-    <!-- Nav -->
+    <!-- Floating Nav -->
     <div class="bottom-nav" id="bottom-nav">
         <a href="javascript:void(0)" class="nav-item active" onclick="navTo('live', this)"><i class="fa-solid fa-tv"></i>Live</a>
         <a href="javascript:void(0)" class="nav-item" onclick="navTo('movies', this)"><i class="fa-solid fa-film"></i>Movies</a>
@@ -261,14 +284,14 @@
         <a href="javascript:void(0)" class="nav-item" onclick="navTo('more', this)"><i class="fa-solid fa-grip-vertical"></i>More</a>
     </div>
 
-    <!-- Player -->
+    <!-- Player Window -->
     <div id="player-view" class="hidden" style="position:fixed; top:0; left:0; width:100%; height:100%; background:#000; z-index:9000;">
-        <i class="fa-solid fa-circle-xmark" onclick="stopPlayer()" style="position:absolute; top:50px; right:25px; z-index:9100; font-size:35px;"></i>
+        <i class="fa-solid fa-xmark" onclick="stopPlayer()" style="position:absolute; top:45px; right:25px; z-index:9100; font-size: 35px;"></i>
         <video id="stany-player" class="video-js vjs-big-play-centered" controls style="width:100%; height:100%;"></video>
     </div>
 
     <script>
-        // --- NEW FIREBASE CONFIG ---
+        // --- FIREBASE CONFIGURATION ---
         const firebaseConfig = {
             apiKey: "AIzaSyDiexD5WK9GLhQldr6zNmC8iYWc4em5eyM",
             authDomain: "stany-min-tv.firebaseapp.com",
@@ -283,26 +306,29 @@
         const db = firebase.database();
         const auth = firebase.auth();
 
-        let isPremium = false, activeChat = 'public', myHWID = localStorage.getItem('hwid') || 'STANY-'+Math.random().toString(36).substr(2,9);
+        let currentUser = null, isPremium = false, activeChat = 'public', replyData = null;
+        let myHWID = localStorage.getItem('hwid') || 'STANY-'+Math.random().toString(36).substr(2,9);
         localStorage.setItem('hwid', myHWID);
 
-        // --- AUTH ---
-        function toggleAuth(t) { document.getElementById('login-box').classList.toggle('hidden', t==='register'); document.getElementById('register-box').classList.toggle('hidden', t==='login'); }
-        function googleAuth() { auth.signInWithPopup(new firebase.auth.GoogleAuthProvider()).then(res => checkHWID(res.user)); }
-        function emailAuth(m) {
-            const e = m==='login' ? document.getElementById('auth-email').value : document.getElementById('reg-email').value;
-            const p = m==='login' ? document.getElementById('auth-pass').value : document.getElementById('reg-pass').value;
-            if(m==='register') {
-                auth.createUserWithEmailAndPassword(e, p).then(res => {
-                    res.user.updateProfile({displayName: document.getElementById('reg-name').value});
-                    checkHWID(res.user);
+        // --- AUTH LOGIC ---
+        function toggleAuth(t) { document.getElementById('login-box').classList.toggle('hidden', t==='reg'); document.getElementById('reg-box').classList.toggle('hidden', t==='login'); }
+        function googleAuth() { auth.signInWithPopup(new firebase.auth.GoogleAuthProvider()).then(r => checkHWID(r.user)); }
+        function handleAuth(m) {
+            if(m==='reg') {
+                const e = document.getElementById('reg-email').value, p = document.getElementById('reg-pass').value;
+                auth.createUserWithEmailAndPassword(e, p).then(r => {
+                    r.user.updateProfile({displayName: document.getElementById('reg-name').value});
+                    checkHWID(r.user);
                 }).catch(err => alert(err.message));
-            } else { auth.signInWithEmailAndPassword(e, p).then(res => checkHWID(res.user)).catch(err => alert(err.message)); }
+            } else {
+                const e = document.getElementById('email').value, p = document.getElementById('pass').value;
+                auth.signInWithEmailAndPassword(e, p).then(r => checkHWID(r.user)).catch(err => alert(err.message));
+            }
         }
         function checkHWID(user) {
-            db.ref('users/'+user.uid).once('value', snap => {
-                const u = snap.val();
-                if(u && u.hwid && u.hwid !== myHWID) { alert("Device Lock: Use your original device."); auth.signOut(); location.reload(); }
+            db.ref('users/'+user.uid).once('value', s => {
+                const u = s.val();
+                if(u && u.hwid && u.hwid !== myHWID) { alert("Device mismatch detected."); auth.signOut(); location.reload(); }
                 else {
                     if(!u || !u.hwid) db.ref('users/'+user.uid).update({hwid: myHWID, email: user.email, name: user.displayName || 'User'});
                     isPremium = u ? u.isPremium : false;
@@ -317,10 +343,10 @@
         function triggerAd(cb) {
             if(isPremium) return cb();
             const ov = document.getElementById('ad-overlay'); ov.style.display = 'flex';
-            db.ref('ads/config').once('value', snap => {
-                const c = snap.val(); document.getElementById('ad-img').src = c.image;
+            db.ref('ads/config').once('value', s => {
+                const c = s.val(); document.getElementById('ad-img').src = c.image;
                 const h = document.getElementById('ad-social-hub'); h.innerHTML = '';
-                if(c.socialHub) c.socialHub.forEach(i => h.innerHTML += `<i class="${i.icon}" onclick="window.open('${i.url}')" style="text-align:center; font-size:22px;"></i>`);
+                if(c.socialHub) c.socialHub.forEach(i => h.innerHTML += `<i class="${i.icon}" onclick="window.open('${i.url}')" style="text-align:center; font-size:24px; color:white;"></i>`);
                 let t = c.duration || 15;
                 const timer = setInterval(() => {
                     t--; document.getElementById('ad-timer').innerText = t;
@@ -329,60 +355,84 @@
             });
         }
 
-        // --- CORE LOADERS ---
+        // --- LOAD APP DATA ---
         function initApp() {
+            // Section Carousels
+            ['live', 'movie', 'adult', 'more'].forEach(type => {
+                db.ref('carousels/'+type).on('value', snap => {
+                    const slider = document.getElementById(type+'-carousel'); if(!slider) return; slider.innerHTML = '';
+                    snap.forEach(m => { const s = m.val(); slider.innerHTML += `<div class="slide" onclick="openPlayer('${s.url}')"><img src="${s.poster}"><div style="position:absolute; bottom:15px; left:15px;"><h2>${s.title}</h2></div></div>`; });
+                });
+            });
+
+            // Channels
             db.ref('channels').on('value', snap => {
                 const l = document.getElementById('live-list'); l.innerHTML = '';
                 snap.forEach(c => { const ch = c.val(); l.innerHTML += `<div class="card" onclick="openPlayer('${ch.url}', '${ch.licUrl}', '${ch.token}')" style="text-align:center;"><img src="${ch.logo}" style="width:100%; border-radius:15px;"><p style="font-size:10px; font-weight:700; margin-top:5px;">${ch.name}</p></div>`; });
             });
+
+            // Movies
             db.ref('movies').on('value', snap => {
-                const l = document.getElementById('movie-list'), s = document.getElementById('movie-carousel'); l.innerHTML = ''; s.innerHTML = '';
-                snap.forEach(m => {
-                    const mov = m.val();
-                    l.innerHTML += `<div class="card" onclick="openPlayer('${mov.url}')"><img src="${mov.poster}" style="width:100%; border-radius:20px;"><h4>${mov.title}</h4></div>`;
-                    if(mov.isSlider) s.innerHTML += `<div class="slide" onclick="openPlayer('${mov.url}')"><img src="${mov.poster}"><div style="position:absolute; bottom:15px; left:15px;"><h2>${mov.title}</h2></div></div>`;
-                });
+                const l = document.getElementById('movie-list'); l.innerHTML = '';
+                snap.forEach(m => { const v = m.val(); l.innerHTML += `<div class="card" onclick="openPlayer('${v.url}')"><img src="${v.poster}" style="width:100%; border-radius:20px;"><h4>${v.title}</h4></div>`; });
             });
         }
 
-        // --- CHAT SYSTEM (BOTTOM ALIGNED) ---
-        function toggleChat(t) {
+        // --- CHAT LOGIC ---
+        function setChat(t) {
             activeChat = t;
-            document.getElementById('btn-public').classList.toggle('active', t==='public');
-            document.getElementById('btn-bot').classList.toggle('active', t==='bot');
+            document.getElementById('sw-public').style.background = t==='public' ? 'var(--red)' : 'transparent';
+            document.getElementById('sw-bot').style.background = t==='bot' ? 'var(--red)' : 'transparent';
             listenChat();
         }
         function listenChat() {
-            const path = activeChat==='public' ? 'public_chat' : 'bot_chat/'+auth.currentUser.uid;
-            db.ref(path).limitToLast(25).on('value', snap => {
-                const box = document.getElementById('chat-messages'); box.innerHTML = '';
+            const p = activeChat==='public' ? 'public_chat' : 'bot_chat/'+auth.currentUser.uid;
+            db.ref(p).limitToLast(25).on('value', snap => {
+                const b = document.getElementById('chat-messages'); b.innerHTML = '';
                 snap.forEach(m => {
                     const d = m.val(); const isMe = d.uid === auth.currentUser.uid;
-                    box.innerHTML += `<div class="msg-bubble ${isMe ? 'msg-sent' : 'msg-received'}">${!isMe && activeChat==='public' ? `<div class="msg-name">${d.name}</div>`:''}${d.text}</div>`;
+                    let replyHtml = d.replyTo ? `<div class="reply-box">Replying to ${d.replyTo.name}: ${d.replyTo.text.substring(0,20)}...</div>` : '';
+                    b.innerHTML += `<div class="msg-bubble ${isMe ? 'msg-sent' : 'msg-received'}" onclick="setReply('${d.name}', '${d.text}')">${!isMe && activeChat==='public' ? `<div style="font-size:10px; font-weight:800; opacity:0.6; margin-bottom:4px;">${d.name}</div>`:''}${replyHtml}${d.text}</div>`;
                 });
-                box.scrollTop = box.scrollHeight;
+                b.scrollTop = b.scrollHeight;
             });
         }
+        function setReply(name, text) { replyData = {name, text}; document.getElementById('reply-preview').style.display='flex'; document.getElementById('reply-name').innerText="Replying to "+name; }
+        function cancelReply() { replyData = null; document.getElementById('reply-preview').style.display='none'; }
         function sendMsg() {
-            const input = document.getElementById('msg-input'); if(!input.value) return;
-            const path = activeChat==='public' ? 'public_chat' : 'bot_chat/'+auth.currentUser.uid;
-            db.ref(path).push({ uid: auth.currentUser.uid, name: auth.currentUser.displayName || 'User', text: input.value, timestamp: Date.now() });
-            input.value = '';
+            const i = document.getElementById('msg-input'); if(!i.value) return;
+            const p = activeChat==='public' ? 'public_chat' : 'bot_chat/'+auth.currentUser.uid;
+            db.ref(p).push({ uid: auth.currentUser.uid, name: auth.currentUser.displayName || 'User', text: i.value, replyTo: replyData, timestamp: Date.now() });
+            i.value = ''; cancelReply();
         }
 
-        // --- NAV ---
+        // --- NAVIGATION ---
         function navTo(id, el) {
             document.querySelectorAll('.page').forEach(p => p.classList.remove('active-page'));
             document.getElementById(id).classList.add('active-page');
             document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
             if(el) el.classList.add('active');
-            const isChat = id === 'chat';
-            document.getElementById('bottom-nav').style.display = isChat ? 'none' : 'flex';
-            document.getElementById('main-header').style.display = isChat ? 'none' : 'flex';
-            document.getElementById('chat-header').style.display = isChat ? 'flex' : 'none';
-            if(isChat) toggleChat('public');
+            const isC = id === 'chat';
+            document.getElementById('bottom-nav').style.display = isC ? 'none' : 'flex';
+            document.getElementById('main-header').style.display = isC ? 'none' : 'flex';
+            document.getElementById('chat-header').style.display = isC ? 'flex' : 'none';
+            if(isC) setChat('public');
         }
         function closeChat() { navTo('live', document.querySelector('.nav-item')); }
+
+        // --- MORE SERVICES ---
+        function openSub(id) {
+            if(id==='stories') { document.getElementById('stories-page').style.display='block'; renderStories(); }
+            if(id==='tech') { document.getElementById('tech-page').style.display='block'; renderTech(); }
+        }
+        function closeSub(id) { document.getElementById(id).style.display='none'; }
+
+        function renderStories() {
+            db.ref('simulizi').once('value', snap => {
+                const r = document.getElementById('story-render'); r.innerHTML = '';
+                snap.forEach(s => { const st = s.val(); r.innerHTML += `<div class="card" onclick="readStory('${s.key}')" style="display:flex; gap:15px; align-items:center;"><img src="${st.cover}" style="width:70px; height:100px; border-radius:12px; object-fit:cover;"><div><h4>${st.title}</h4><p style="font-size:12px; opacity:0.6;">By ${st.author}</p></div></div>`; });
+            });
+        }
 
         // --- PLAYER ---
         let player = videojs('stany-player');
@@ -396,18 +446,8 @@
         }
         function stopPlayer() { player.pause(); document.getElementById('player-view').classList.add('hidden'); }
 
-        // --- SIMULIZI ---
+        // --- STORY READER ---
         let sData, sPart=0;
-        function openSimulizi() {
-            const cont = document.getElementById('story-list'); cont.classList.toggle('hidden');
-            db.ref('simulizi').once('value', snap => {
-                cont.innerHTML = '';
-                snap.forEach(s => {
-                    const st = s.val();
-                    cont.innerHTML += `<div class="card" onclick="readStory('${s.key}')" style="display:flex; gap:15px; align-items:center;"><img src="${st.cover}" style="width:65px; height:90px; border-radius:12px; object-fit:cover;"><div><h4>${st.title}</h4><p style="font-size:11px; opacity:0.6;">By ${st.author}</p></div></div>`;
-                });
-            });
-        }
         function readStory(id) {
             db.ref('simulizi/'+id).once('value', snap => {
                 sData = snap.val(); sPart = 0;
@@ -426,13 +466,8 @@
             document.getElementById('age-gate').classList.add('hidden');
             document.getElementById('adult-content').classList.remove('hidden');
             db.ref('adult').on('value', snap => {
-                const l = document.getElementById('adult-list'), s = document.getElementById('adult-carousel');
-                l.innerHTML = ''; s.innerHTML = '';
-                snap.forEach(a => {
-                    const v = a.val();
-                    l.innerHTML += `<div class="card" onclick="openPlayer('${v.url}')"><img src="${v.poster}" style="width:100%; border-radius:15px;"><h4>${v.title}</h4></div>`;
-                    if(v.isSlider) s.innerHTML += `<div class="slide" onclick="openPlayer('${v.url}')"><img src="${v.poster}"><div style="position:absolute; bottom:15px; left:15px;"><h2>${v.title}</h2></div></div>`;
-                });
+                const l = document.getElementById('adult-list'); l.innerHTML = '';
+                snap.forEach(a => { const v = a.val(); l.innerHTML += `<div class="card" onclick="openPlayer('${v.url}')"><img src="${v.poster}" style="width:100%; border-radius:15px;"><h4>${v.title}</h4></div>`; });
             });
         }
         function logout() { auth.signOut(); location.reload(); }
