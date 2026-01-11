@@ -5,11 +5,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>STANY MIN TV | iOS 26 HIGH-END</title>
     
-    <!-- Fonts & Icons -->
+    <!-- Icons & Fonts -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=SF+Pro+Display:wght@300;400;600;700&display=swap" rel="stylesheet">
     
-    <!-- Video Player (Video.js with EME for DRM) -->
+    <!-- Video Player (Video.js with DRM Support) -->
     <link href="https://vjs.zencdn.net/7.20.3/video-js.css" rel="stylesheet" />
     <script src="https://vjs.zencdn.net/7.20.3/video.min.js"></script>
     
@@ -24,7 +24,7 @@
             --black: #000000;
             --white: #FFFFFF;
             --glass: rgba(255, 255, 255, 0.08);
-            --blur: blur(25px);
+            --blur: blur(30px);
         }
 
         * {
@@ -36,105 +36,99 @@
         body {
             background-color: var(--black);
             color: var(--white);
-            overflow-x: hidden;
+            overflow: hidden;
             height: 100vh;
         }
 
-        /* --- Splash Screen & Loader --- */
+        /* --- iOS 26 Splash --- */
         #splash-screen {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: var(--black); z-index: 10000;
             display: flex; flex-direction: column; justify-content: center; align-items: center;
         }
         .logo-box {
-            width: 80px; height: 80px; border: 4px solid var(--red);
-            border-radius: 20px; animation: ios-pulse 2s infinite;
+            width: 90px; height: 90px; border: 4px solid var(--red);
+            border-radius: 24px; animation: pulse-ios 2s infinite;
         }
-        @keyframes ios-pulse { 0% { transform: scale(1); opacity: 1; } 50% { transform: scale(1.1); opacity: 0.7; box-shadow: 0 0 40px var(--red); } 100% { transform: scale(1); opacity: 1; } }
+        @keyframes pulse-ios { 0% { transform: scale(1); } 50% { transform: scale(1.1); box-shadow: 0 0 50px var(--red); } 100% { transform: scale(1); } }
 
-        /* --- Ultimate Ad Engine UI --- */
+        /* --- Ultimate Ad Engine --- */
         #ad-overlay {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: var(--black); z-index: 9000; display: none; flex-direction: column;
         }
-        .marquee-ad { background: var(--red); color: white; padding: 6px 0; font-weight: 700; font-size: 13px; overflow: hidden; }
-        .marquee-ad span { display: inline-block; white-space: nowrap; animation: marquee 15s linear infinite; }
-        @keyframes marquee { 0% { transform: translateX(100%); } 100% { transform: translateX(-100%); } }
+        .marquee-ad { background: var(--red); color: white; padding: 6px; font-weight: bold; overflow: hidden; font-size: 13px; }
+        .marquee-ad span { display: inline-block; white-space: nowrap; animation: move-text 15s linear infinite; }
+        @keyframes move-text { from { transform: translateX(100%); } to { transform: translateX(-100%); } }
         
-        .ad-main { flex: 1; position: relative; display: flex; align-items: center; justify-content: center; background: #050505; }
-        .ad-media { width: 100%; max-height: 80vh; object-fit: contain; }
-        .ad-timer {
-            position: absolute; top: 40px; right: 20px;
-            background: rgba(0,0,0,0.8); width: 45px; height: 45px;
-            border-radius: 50%; border: 2px solid var(--red);
-            display: flex; align-items: center; justify-content: center; font-weight: bold;
-        }
+        .ad-container { flex: 1; position: relative; display: flex; align-items: center; justify-content: center; background: #050505; }
+        .ad-media { width: 100%; max-height: 75vh; object-fit: contain; }
+        .ad-timer { position: absolute; top: 40px; right: 20px; border: 2px solid var(--red); width: 45px; height: 45px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 700; background: rgba(0,0,0,0.8); }
+
         .social-hub {
             display: grid; grid-template-columns: repeat(6, 1fr); gap: 15px;
-            padding: 20px; background: var(--glass); backdrop-filter: var(--blur); border-top: 1px solid rgba(255,255,255,0.1);
+            padding: 20px; background: var(--glass); backdrop-filter: var(--blur);
         }
-        .social-hub i { font-size: 22px; color: var(--white); text-align: center; }
+        .social-hub i { font-size: 22px; color: var(--white); text-align: center; cursor: pointer; }
 
-        /* --- Layout & Glassmorphism --- */
+        /* --- Header & Layout --- */
         header {
             padding: 50px 20px 15px; background: rgba(0,0,0,0.7);
             backdrop-filter: var(--blur); position: sticky; top: 0; z-index: 800;
             display: flex; justify-content: space-between; align-items: center;
         }
-        .ios-title { font-size: 26px; font-weight: 800; letter-spacing: -1px; }
-        .red-text { color: var(--red); }
+        .ios-title { font-size: 26px; font-weight: 800; }
+        .red-dot { color: var(--red); }
 
-        .page { display: none; padding: 15px; padding-bottom: 100px; }
-        .active-page { display: block; animation: ios-slide 0.4s ease-out; }
-        @keyframes ios-slide { from { opacity: 0; transform: scale(0.95); } to { opacity: 1; transform: scale(1); } }
+        .page { display: none; padding: 20px; padding-bottom: 120px; overflow-y: auto; height: 100vh; }
+        .active-page { display: block; animation: fade-in 0.4s ease; }
+        @keyframes fade-in { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
-        .card {
-            background: var(--glass); backdrop-filter: var(--blur);
-            border-radius: 18px; padding: 12px; margin-bottom: 15px;
-            border: 1px solid rgba(255,255,255,0.05); position: relative;
-            overflow: hidden;
+        /* --- Sliding Images (Carousel) --- */
+        .carousel {
+            display: flex; overflow-x: auto; scroll-snap-type: x mandatory;
+            gap: 15px; padding-bottom: 20px; scrollbar-width: none;
         }
-        .rounded-btn {
-            background: var(--red); color: white; border: none;
-            padding: 14px; border-radius: 30px; font-weight: 600; width: 100%;
-            cursor: pointer; transition: 0.3s;
+        .carousel::-webkit-scrollbar { display: none; }
+        .slide {
+            min-width: 85%; height: 180px; border-radius: 20px;
+            scroll-snap-align: center; position: relative; overflow: hidden;
         }
+        .slide img { width: 100%; height: 100%; object-fit: cover; }
 
-        /* --- Navigation --- */
+        /* --- Simulizi Reader Mode (Drop Image) --- */
+        #story-reader {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: var(--black); z-index: 2000; display: none;
+        }
+        .drop-image-bg {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            background-size: cover; background-position: center;
+            filter: blur(40px) brightness(0.3); z-index: -1;
+        }
+        .reader-header { padding: 50px 20px; text-align: center; }
+        .reader-body { padding: 20px; line-height: 1.8; font-size: 17px; }
+
+        /* --- Floating Rounded Nav (iOS 26) --- */
         .bottom-nav {
-            position: fixed; bottom: 0; width: 100%; height: 85px;
-            background: rgba(0,0,0,0.85); backdrop-filter: var(--blur);
-            display: flex; justify-content: space-around; padding-top: 10px;
-            border-top: 0.5px solid rgba(255,255,255,0.1); z-index: 1000;
+            position: fixed; bottom: 25px; left: 20px; right: 20px;
+            height: 75px; background: rgba(20, 20, 20, 0.85);
+            backdrop-filter: var(--blur); border-radius: 40px;
+            display: flex; justify-content: space-around; align-items: center;
+            border: 1px solid rgba(255,255,255,0.1); z-index: 1000;
         }
-        .nav-item { text-align: center; color: #666; text-decoration: none; font-size: 10px; font-weight: 500; }
-        .nav-item i { font-size: 22px; display: block; margin-bottom: 5px; }
+        .nav-item { text-align: center; color: #777; text-decoration: none; font-size: 10px; font-weight: 600; }
+        .nav-item i { font-size: 22px; display: block; margin-bottom: 4px; }
         .nav-item.active { color: var(--red); }
 
-        /* --- Chat Navigation Logic --- */
-        .chat-header {
-            position: fixed; top: 0; left: 0; width: 100%; padding: 50px 20px 10px;
+        /* Chat Special Header */
+        #chat-header {
+            position: fixed; top: 0; right: 0; width: 100%; padding: 50px 20px 10px;
             background: var(--black); display: none; justify-content: flex-end; z-index: 1100;
         }
 
-        /* --- Simulizi Reader Mode --- */
-        .book-container { padding: 10px; line-height: 1.8; font-size: 17px; }
-        .drop-image {
-            width: 100%; height: 280px; object-fit: cover;
-            border-radius: 20px; filter: brightness(0.5); margin-bottom: -100px;
-        }
-        .book-content {
-            position: relative; background: var(--black); padding: 25px;
-            border-top-left-radius: 30px; border-top-right-radius: 30px;
-        }
-
-        /* --- Security & HWID --- */
-        #lock-screen {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: var(--black); z-index: 12000; display: none;
-            justify-content: center; align-items: center; text-align: center;
-        }
-
+        .card { background: var(--glass); backdrop-filter: var(--blur); border-radius: 20px; border: 1px solid rgba(255,255,255,0.05); padding: 12px; margin-bottom: 15px; }
+        .btn-ios { background: var(--red); color: white; border: none; padding: 14px; border-radius: 30px; font-weight: 700; width: 100%; cursor: pointer; }
         .hidden { display: none !important; }
     </style>
 </head>
@@ -143,121 +137,115 @@
     <!-- Splash Screen -->
     <div id="splash-screen">
         <div class="logo-box"></div>
-        <h1 style="margin-top: 25px; font-weight: 700; letter-spacing: 1px;">STANY <span class="red-text">MIN TV</span></h1>
-        <p style="font-size: 12px; color: #555; margin-top: 10px;">VERSION 26.0 HIGH-END</p>
+        <h1 style="margin-top: 25px; font-weight: 700;">STANY <span class="red-dot">MIN TV</span></h1>
+        <p style="font-size: 11px; opacity: 0.5; margin-top: 5px;">POWERED BY iOS 26</p>
     </div>
 
-    <!-- HWID Lock Screen -->
-    <div id="lock-screen">
-        <div class="card" style="width: 85%;">
-            <i class="fa-solid fa-mobile-screen-button" style="font-size: 50px; color: var(--red);"></i>
-            <h2 style="margin: 20px 0;">DEVICE LOCKED</h2>
-            <p style="color: #888;">Akaunti hii imefungwa kwenye kifaa kingine. Wasiliana na Admin kuhamisha kifaa.</p>
-            <p id="my-hwid" style="font-size: 10px; color: var(--red); margin: 15px 0;"></p>
-        </div>
-    </div>
-
-    <!-- Ad Engine Overlay -->
+    <!-- Ad Overlay -->
     <div id="ad-overlay">
-        <div class="marquee-ad"><span>• SPONSOR AD • GUSA ICON ZA CHINI KUTEMBELEA PLATFORMS ZA SPONSOR •</span></div>
-        <div class="ad-main">
+        <div class="marquee-ad"><span>• ADVERTISEMENT • WATCH TO UNLOCK FREE ACCESS • STANY MIN TV •</span></div>
+        <div class="ad-container">
             <div class="ad-timer" id="ad-timer">15</div>
             <img id="ad-img" class="ad-media">
-            <video id="ad-vid" class="ad-media hidden" playsinline></video>
         </div>
         <div class="social-hub" id="social-hub"></div>
-        <div class="marquee-ad"><span>• OFFICIAL PARTNER • BELEIVE IN QUALITY • STANY MIN TV •</span></div>
-        <button id="skip-ad-btn" class="rounded-btn hidden" style="margin: 10px; width: calc(100% - 20px);">SKIP AD (PREMIUM ONLY)</button>
+        <div class="marquee-ad"><span>• SPONSORED CONTENT • VISIT OUR PARTNERS FOR MORE •</span></div>
+        <button id="skip-btn" class="btn-ios hidden" style="margin: 10px; width: calc(100% - 20px);">SKIP AD (PREMIUM ONLY)</button>
     </div>
 
-    <!-- App Header -->
+    <!-- Header -->
     <header id="main-header">
-        <div class="ios-title">STANY <span class="red-text">MIN</span></div>
-        <div style="display: flex; gap: 15px;">
-            <i class="fa-solid fa-magnifying-glass"></i>
-            <i class="fa-solid fa-circle-user" onclick="showPage('profile')"></i>
-        </div>
+        <div class="ios-title">STANY<span class="red-dot">MIN</span></div>
+        <i class="fa-solid fa-magnifying-glass" style="font-size: 20px;"></i>
     </header>
 
-    <!-- Chat Page Back Arrow -->
-    <div class="chat-header" id="chat-header">
-        <i class="fa-solid fa-arrow-left" style="font-size: 24px; color: var(--red);" onclick="exitChat()"></i>
+    <!-- Chat Header (Back Arrow Right) -->
+    <div id="chat-header">
+        <i class="fa-solid fa-arrow-right-from-bracket" style="font-size: 24px; color: var(--red);" onclick="exitChat()"></i>
     </div>
 
-    <!-- Content Sections -->
+    <!-- Main Content -->
     <main>
-        <!-- Home / Live -->
+        <!-- Live TV -->
         <section id="live" class="page active-page">
-            <div id="slideshow" class="card" style="height: 180px; padding: 0;">
-                <!-- Slideshow via JS -->
-            </div>
-            <h3 style="margin: 15px 0;">Live <span class="red-text">Channels</span></h3>
+            <h3 style="margin-bottom: 15px;">Live <span class="red-dot">Channels</span></h3>
             <div id="live-list" style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px;"></div>
         </section>
 
-        <!-- Movies -->
+        <!-- Movies (with Slider) -->
         <section id="movies" class="page">
-            <h3 style="margin-bottom: 15px;">Latest <span class="red-text">Movies</span></h3>
+            <div class="carousel" id="movie-carousel"></div>
+            <h3 style="margin: 20px 0 15px;">Cinema <span class="red-dot">Library</span></h3>
             <div id="movie-list" style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px;"></div>
         </section>
 
         <!-- Adult 18+ -->
         <section id="adult" class="page">
-            <div id="adult-gate" class="card" style="text-align: center; padding: 40px 10px;">
-                <i class="fa-solid fa-hand" style="font-size: 40px; color: var(--red);"></i>
-                <h2 style="margin: 15px 0;">ONYO LA UMRI</h2>
-                <p>Maudhui haya ni kwa watu wenye umri wa miaka 18+ pekee.</p>
-                <button class="rounded-btn" style="margin-top: 20px;" onclick="unlockAdult()">NIMETIMIZA 18+</button>
+            <div id="age-gate" class="card" style="text-align: center; padding: 50px 20px;">
+                <i class="fa-solid fa-circle-exclamation" style="font-size: 50px; color: var(--red);"></i>
+                <h2 style="margin: 20px 0;">AGE GATE</h2>
+                <p style="margin-bottom: 25px;">Maudhui haya ni kwa watu wenye umri wa miaka 18+ pekee. Je unayo miaka 18?</p>
+                <button class="btn-ios" onclick="unlockAdult()">NDIO, NINA MIAKA 18+</button>
             </div>
             <div id="adult-list" class="hidden"></div>
         </section>
 
-        <!-- Chat Section -->
+        <!-- Chat -->
         <section id="chat" class="page">
-            <div id="chat-box" style="height: 65vh; overflow-y: auto; padding: 10px; display: flex; flex-direction: column; gap: 10px;"></div>
+            <div id="chat-messages" style="height: 65vh; overflow-y: auto; padding: 10px; display: flex; flex-direction: column; gap: 10px;"></div>
             <div style="display: flex; gap: 10px; padding: 10px;">
-                <input type="text" id="chat-input" placeholder="Aa..." style="flex: 1; background: var(--glass); border: none; padding: 15px; border-radius: 25px; color: white;">
-                <button onclick="sendMsg()" class="rounded-btn" style="width: 55px; border-radius: 50%;"><i class="fa-solid fa-paper-plane"></i></button>
+                <input type="text" id="chat-input" placeholder="Andika ujumbe..." style="flex: 1; background: var(--glass); border: none; padding: 15px; border-radius: 25px; color: white;">
+                <button onclick="sendMsg()" class="btn-ios" style="width: 55px; border-radius: 50%;"><i class="fa-solid fa-paper-plane"></i></button>
             </div>
         </section>
 
         <!-- Simulizi Section -->
-        <section id="simulizi" class="page">
-            <div id="story-list"></div>
-        </section>
-
-        <!-- Tech Updates -->
-        <section id="tech" class="page">
-            <div id="tech-list"></div>
-        </section>
-        
-        <!-- More / Library -->
         <section id="more" class="page">
-            <div class="card" onclick="showPage('simulizi')"><i class="fa-solid fa-book-open red-text"></i> &nbsp; Simulizi na Hadithi</div>
-            <div class="card" onclick="showPage('tech')"><i class="fa-solid fa-shield-halved red-text"></i> &nbsp; Tech & Cybersecurity</div>
-            <div class="card" onclick="showPage('downloads')"><i class="fa-solid fa-download red-text"></i> &nbsp; Downloads</div>
-            <div class="card" onclick="showPage('betting')"><i class="fa-solid fa-chart-line red-text"></i> &nbsp; Betting Tips</div>
-            <div class="card" onclick="logout()"><i class="fa-solid fa-right-from-bracket"></i> &nbsp; Logout</div>
+            <h3 style="margin-bottom: 20px;">Library & <span class="red-dot">More</span></h3>
+            <div class="card" onclick="openSimuliziList()"><i class="fa-solid fa-book-open red-dot"></i> &nbsp; Simulizi na Hadithi</div>
+            <div class="card"><i class="fa-solid fa-shield-halved red-dot"></i> &nbsp; Tech & Cybersecurity</div>
+            <div class="card"><i class="fa-solid fa-chart-line red-dot"></i> &nbsp; Betting Tips</div>
+            <div id="simulizi-list-container" class="hidden" style="margin-top: 20px;"></div>
         </section>
     </main>
 
-    <!-- Bottom Navigation -->
+    <!-- Simulizi Reader UI -->
+    <div id="story-reader">
+        <div class="drop-image-bg" id="drop-img"></div>
+        <div class="reader-header">
+            <i class="fa-solid fa-chevron-down" onclick="closeReader()" style="font-size: 25px; color: white; margin-bottom: 20px;"></i>
+            <h1 id="r-title" class="red-dot"></h1>
+            <p id="r-author" style="font-size: 13px; opacity: 0.7;"></p>
+        </div>
+        <div class="reader-body card" id="r-content"></div>
+        <div style="display: flex; justify-content: space-between; padding: 20px;">
+            <button class="btn-ios" style="width: 45%;" onclick="prevPart()">BACK</button>
+            <button class="btn-ios" style="width: 45%;" onclick="nextPart()">NEXT</button>
+        </div>
+    </div>
+
+    <!-- Floating Nav Bar -->
     <div class="bottom-nav" id="bottom-nav">
-        <a href="javascript:void(0)" class="nav-item active" onclick="showPage('live')"><i class="fa-solid fa-house"></i>Live</a>
-        <a href="javascript:void(0)" class="nav-item" onclick="showPage('movies')"><i class="fa-solid fa-play"></i>Movies</a>
+        <a href="javascript:void(0)" class="nav-item active" onclick="showPage('live')"><i class="fa-solid fa-tv"></i>Live</a>
+        <a href="javascript:void(0)" class="nav-item" onclick="showPage('movies')"><i class="fa-solid fa-film"></i>Movies</a>
         <a href="javascript:void(0)" class="nav-item" onclick="showPage('adult')"><i class="fa-solid fa-pepper-hot"></i>Adult</a>
-        <a href="javascript:void(0)" class="nav-item" onclick="showPage('chat')"><i class="fa-solid fa-comment-dots"></i>Chat</a>
+        <a href="javascript:void(0)" class="nav-item" onclick="showPage('chat')"><i class="fa-solid fa-comments"></i>Chat</a>
         <a href="javascript:void(0)" class="nav-item" onclick="showPage('more')"><i class="fa-solid fa-grip-vertical"></i>More</a>
     </div>
 
-    <!-- Video Player Modal -->
-    <div id="video-modal" class="hidden" style="position:fixed; top:0; left:0; width:100%; height:100%; background:#000; z-index:5000;">
-        <i class="fa-solid fa-circle-xmark" onclick="closePlayer()" style="position:absolute; top:40px; right:20px; z-index:5100; font-size: 35px; color: white;"></i>
+    <!-- Player Modal -->
+    <div id="player-modal" class="hidden" style="position:fixed; top:0; left:0; width:100%; height:100%; background:#000; z-index:9999;">
+        <i class="fa-solid fa-circle-xmark" onclick="closePlayer()" style="position:absolute; top:40px; right:20px; z-index:10000; font-size: 35px;"></i>
         <video id="main-player" class="video-js vjs-big-play-centered" style="width:100%; height:100%;"></video>
     </div>
 
+    <!-- WhatsApp Floating Icon -->
+    <a href="https://wa.me/255XXXXXXXXX" id="wa-float" style="position:fixed; bottom:110px; right:25px; background:#25D366; width:55px; height:55px; border-radius:50%; display:flex; align-items:center; justify-content:center; text-decoration:none; box-shadow: 0 4px 15px rgba(0,0,0,0.3); z-index: 900;">
+        <i class="fa-brands fa-whatsapp" style="color:white; font-size: 30px;"></i>
+    </a>
+
     <script>
-        // --- CONFIGURATION ---
+        // --- NEW FIREBASE CONFIG ---
         const firebaseConfig = {
             apiKey: "AIzaSyDiexD5WK9GLhQldr6zNmC8iYWc4em5eyM",
             authDomain: "stany-min-tv.firebaseapp.com",
@@ -265,228 +253,177 @@
             projectId: "stany-min-tv",
             storageBucket: "stany-min-tv.firebasestorage.app",
             messagingSenderId: "16513327552",
-            appId: "1:16513327552:web:b4b2247053f83aa0b8e825"
+            appId: "1:16513327552:web:b4b2247053f83aa0b8e825",
+            measurementId: "G-JM25LJXL5C"
         };
         firebase.initializeApp(firebaseConfig);
         const db = firebase.database();
         const auth = firebase.auth();
 
-        let currentUser = null;
         let isPremium = false;
         let myHWID = localStorage.getItem('hwid') || 'STANY-' + Math.random().toString(36).substr(2, 9);
         localStorage.setItem('hwid', myHWID);
 
-        // --- CORE INITIALIZATION ---
         window.onload = () => {
             setTimeout(() => {
                 document.getElementById('splash-screen').style.display = 'none';
-                checkAuth();
+                initHWID();
             }, 3000);
-            renderSocialHub();
+            renderSocialIcons();
         };
 
-        function checkAuth() {
+        // HWID Logic
+        function initHWID() {
             auth.onAuthStateChanged(user => {
-                if (user) {
-                    currentUser = user;
-                    verifyDevice(user.uid);
-                } else {
-                    // Redirect to login or show login UI
-                    console.log("No user logged in");
+                if(user) {
+                    db.ref('users/' + user.uid).on('value', snap => {
+                        const u = snap.val();
+                        if(u && u.hwid && u.hwid !== myHWID) {
+                            alert("Kifaa kimefungwa! Tumia simu uliyosajilia.");
+                            auth.signOut();
+                        } else if(!u.hwid) {
+                            db.ref('users/' + user.uid).update({ hwid: myHWID });
+                        }
+                        isPremium = u.isPremium || false;
+                        loadAppData();
+                    });
                 }
             });
         }
 
-        function verifyDevice(uid) {
-            db.ref('users/' + uid).on('value', snap => {
-                const data = snap.val();
-                if (data) {
-                    // HWID Check
-                    if (data.hwid && data.hwid !== myHWID) {
-                        document.getElementById('lock-screen').style.display = 'flex';
-                        document.getElementById('my-hwid').innerText = "DEVICE ID: " + myHWID;
-                        return;
-                    } else if (!data.hwid) {
-                        db.ref('users/' + uid).update({ hwid: myHWID });
-                    }
-                    
-                    isPremium = data.isPremium || false;
-                    loadMainData();
-                }
-            });
-        }
-
-        // --- AD ENGINE ---
-        function triggerAd(callback) {
+        // Ad Engine
+        function startAd(callback) {
             if (isPremium) return callback();
-
             const overlay = document.getElementById('ad-overlay');
             const timerEl = document.getElementById('ad-timer');
             overlay.style.display = 'flex';
 
-            // Get random ad from DB
             db.ref('ads').once('value', snap => {
                 const ads = snap.val();
-                if (ads) {
-                    const keys = Object.keys(ads);
-                    const randomAd = ads[keys[Math.floor(Math.random() * keys.length)]];
-                    
-                    document.getElementById('ad-img').src = randomAd.image;
-                    let timeLeft = randomAd.duration || 15;
-                    
-                    const timer = setInterval(() => {
-                        timeLeft--;
-                        timerEl.innerText = timeLeft;
-                        if (timeLeft <= 0) {
-                            clearInterval(timer);
-                            overlay.style.display = 'none';
-                            callback();
-                        }
-                    }, 1000);
-                } else {
-                    overlay.style.display = 'none';
-                    callback();
-                }
+                const keys = Object.keys(ads);
+                const activeAd = ads[keys[Math.floor(Math.random() * keys.length)]];
+                document.getElementById('ad-img').src = activeAd.image;
+                
+                let time = activeAd.duration || 15;
+                const timer = setInterval(() => {
+                    time--;
+                    timerEl.innerText = time;
+                    if(time <= 0) {
+                        clearInterval(timer);
+                        overlay.style.display = 'none';
+                        callback();
+                    }
+                }, 1000);
             });
         }
 
-        function renderSocialHub() {
-            const icons = ['whatsapp', 'telegram', 'youtube', 'facebook', 'instagram', 'twitter', 'tiktok', 'discord', 'snapchat', 'threads', 'linkedin', 'github', 'reddit', 'twitch', 'pinterest', 'skype', 'slack', 'vimeo', 'medium', 'quora'];
+        function renderSocialIcons() {
+            const list = ['whatsapp', 'telegram', 'youtube', 'facebook', 'instagram', 'tiktok', 'discord', 'twitter', 'snapchat', 'linkedin', 'github', 'reddit', 'twitch', 'pinterest', 'skype', 'vimeo', 'slack', 'medium', 'quora', 'threads'];
             const hub = document.getElementById('social-hub');
-            icons.forEach(icon => {
-                hub.innerHTML += `<i class="fa-brands fa-${icon}" onclick="sponsorLink('${icon}')"></i>`;
-            });
+            list.forEach(i => hub.innerHTML += `<i class="fa-brands fa-${i}" onclick="window.open('https://google.com')"></i>`);
         }
 
-        // --- PAGE NAVIGATION ---
+        // Navigation
         function showPage(id) {
             document.querySelectorAll('.page').forEach(p => p.classList.remove('active-page'));
             document.getElementById(id).classList.add('active-page');
-            
-            // Bottom Nav Active
             document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
-            const activeNav = Array.from(document.querySelectorAll('.nav-item')).find(n => n.innerText.toLowerCase() === id.toLowerCase());
-            if (activeNav) activeNav.classList.add('active');
+            const nav = Array.from(document.querySelectorAll('.nav-item')).find(n => n.innerText.toLowerCase() === id);
+            if(nav) nav.classList.add('active');
 
-            // Chat Special UI
-            if (id === 'chat') {
+            if(id === 'chat') {
                 document.getElementById('bottom-nav').style.display = 'none';
                 document.getElementById('main-header').style.display = 'none';
                 document.getElementById('chat-header').style.display = 'flex';
+                document.getElementById('wa-float').style.display = 'none';
             } else {
                 document.getElementById('bottom-nav').style.display = 'flex';
                 document.getElementById('main-header').style.display = 'flex';
                 document.getElementById('chat-header').style.display = 'none';
+                document.getElementById('wa-float').style.display = 'flex';
             }
         }
 
         function exitChat() { showPage('live'); }
 
-        // --- PLAYER & DRM LOGIC ---
-        let vPlayer = videojs('main-player');
-
-        function playContent(url, licUrl = null, token = null) {
-            triggerAd(() => {
-                document.getElementById('video-modal').classList.remove('hidden');
-                
-                let playerConfig = {
-                    src: url,
-                    type: url.includes('.mpd') ? 'application/dash+xml' : 'application/x-mpegURL'
-                };
-
-                if (licUrl) {
-                    playerConfig.keySystems = {
-                        'com.widevine.alpha': {
-                            url: licUrl,
-                            headers: { 'Authorization': token ? 'Bearer ' + token : '' }
-                        }
-                    };
+        // DRM Player
+        let player = videojs('main-player');
+        function playMedia(url, licUrl, token) {
+            startAd(() => {
+                document.getElementById('player-modal').classList.remove('hidden');
+                let config = { src: url, type: url.includes('.mpd') ? 'application/dash+xml' : 'application/x-mpegURL' };
+                if(licUrl) {
+                    config.keySystems = { 'com.widevine.alpha': { url: licUrl, headers: { 'Authorization': token ? 'Bearer ' + token : '' } } };
                 }
-
-                vPlayer.src(playerConfig);
-                vPlayer.play();
+                player.src(config);
+                player.play();
             });
         }
+        function closePlayer() { player.pause(); document.getElementById('player-modal').classList.add('hidden'); }
 
-        function closePlayer() {
-            vPlayer.pause();
-            document.getElementById('video-modal').classList.add('hidden');
-        }
-
-        // --- DATA LOADERS (Original Logic) ---
-        function loadMainData() {
+        // Data Loaders
+        function loadAppData() {
             // Live Channels
             db.ref('channels').on('value', snap => {
-                const list = document.getElementById('live-list');
-                list.innerHTML = '';
-                snap.forEach(child => {
-                    const ch = child.val();
-                    list.innerHTML += `
-                        <div class="card" style="padding:5px; text-align:center;" onclick="playContent('${ch.url}', '${ch.licUrl}', '${ch.token}')">
-                            <img src="${ch.logo}" style="width:100%; border-radius:12px;">
-                            <p style="font-size:11px; margin-top:5px; font-weight:600;">${ch.name}</p>
-                        </div>
-                    `;
+                const list = document.getElementById('live-list'); list.innerHTML = '';
+                snap.forEach(c => {
+                    const ch = c.val();
+                    list.innerHTML += `<div class="card" onclick="playMedia('${ch.url}', '${ch.licUrl}', '${ch.token}')" style="text-align:center;"><img src="${ch.logo}" style="width:100%; border-radius:15px;"><p style="font-size:10px; font-weight:700; margin-top:5px;">${ch.name}</p></div>`;
                 });
             });
 
-            // Simulizi Reader System
-            db.ref('simulizi').on('value', snap => {
-                const list = document.getElementById('story-list');
-                list.innerHTML = '';
-                snap.forEach(child => {
-                    const s = child.val();
-                    list.innerHTML += `
-                        <div class="card" onclick="readStory('${child.key}')">
-                            <div style="display:flex; gap:15px;">
-                                <img src="${s.cover}" style="width:80px; height:110px; border-radius:10px; object-fit:cover;">
-                                <div>
-                                    <h4 class="red-text">${s.title}</h4>
-                                    <p style="font-size:12px; color:#888;">${s.author}</p>
-                                    <p style="font-size:11px; margin-top:10px; opacity:0.7;">${s.genre} • ${s.parts} Parts</p>
-                                </div>
-                            </div>
-                        </div>
-                    `;
+            // Movies & Slider
+            db.ref('movies').on('value', snap => {
+                const list = document.getElementById('movie-list');
+                const slider = document.getElementById('movie-carousel');
+                list.innerHTML = ''; slider.innerHTML = '';
+                snap.forEach(m => {
+                    const mov = m.val();
+                    list.innerHTML += `<div class="card" onclick="playMedia('${mov.url}')"><img src="${mov.poster}" style="width:100%; border-radius:15px;"><h4>${mov.title}</h4></div>`;
+                    if(mov.isSlider) slider.innerHTML += `<div class="slide" onclick="playMedia('${mov.url}')"><img src="${mov.poster}"><div style="position:absolute; bottom:15px; left:15px;"><h2>${mov.title}</h2></div></div>`;
                 });
             });
         }
+
+        // Simulizi Logic
+        function openSimuliziList() {
+            const cont = document.getElementById('simulizi-list-container');
+            cont.classList.toggle('hidden');
+            db.ref('simulizi').once('value', snap => {
+                cont.innerHTML = '';
+                snap.forEach(s => {
+                    const story = s.val();
+                    cont.innerHTML += `<div class="card" onclick="readStory('${s.key}')" style="display:flex; gap:15px;"><img src="${story.cover}" style="width:60px; height:80px; border-radius:10px;"><div><h4>${story.title}</h4><p style="font-size:11px;">${story.author} • ${story.genre}</p></div></div>`;
+                });
+            });
+        }
+
+        function readStory(id) {
+            db.ref('simulizi/' + id).once('value', snap => {
+                const s = snap.val();
+                document.getElementById('r-title').innerText = s.title;
+                document.getElementById('r-author').innerText = "By " + s.author + " | " + s.genre;
+                document.getElementById('r-content').innerText = s.parts[0]; // Part 1
+                document.getElementById('drop-img').style.backgroundImage = `url('${s.cover}')`;
+                document.getElementById('story-reader').style.display = 'block';
+            });
+        }
+        function closeReader() { document.getElementById('story-reader').style.display = 'none'; }
 
         function unlockAdult() {
-            const pass = prompt("Enter 18+ Pin:");
-            if (pass === "1234") { // Inaweza kuwa dynamic kutoka DB
-                document.getElementById('adult-gate').classList.add('hidden');
+            const pin = prompt("Ingiza Pin ya 18+:");
+            if(pin === "1234") {
+                document.getElementById('age-gate').classList.add('hidden');
                 document.getElementById('adult-list').classList.remove('hidden');
-            } else { alert("Wrong Pin!"); }
-        }
-
-        function sendMsg() {
-            const input = document.getElementById('chat-input');
-            if (input.value) {
-                db.ref('chats').push({
-                    uid: currentUser.uid,
-                    name: currentUser.displayName || "User",
-                    msg: input.value,
-                    time: Date.now()
+                db.ref('adult').once('value', snap => {
+                    const list = document.getElementById('adult-list'); list.innerHTML = '';
+                    snap.forEach(a => {
+                        const v = a.val();
+                        list.innerHTML += `<div class="card" onclick="playMedia('${v.url}')"><h4>${v.title}</h4></div>`;
+                    });
                 });
-                input.value = '';
             }
         }
-
-        // Chat Listener
-        db.ref('chats').limitToLast(20).on('child_added', snap => {
-            const c = snap.val();
-            const box = document.getElementById('chat-box');
-            const isMe = c.uid === currentUser.uid;
-            box.innerHTML += `
-                <div style="align-self: ${isMe ? 'flex-end' : 'flex-start'}; background: ${isMe ? 'var(--red)' : 'var(--glass)'}; padding: 10px 15px; border-radius: 20px; max-width: 80%;">
-                    <p style="font-size:10px; font-weight:bold; opacity:0.6;">${c.name}</p>
-                    <p>${c.msg}</p>
-                </div>
-            `;
-            box.scrollTop = box.scrollHeight;
-        });
-
     </script>
 </body>
 </html>
